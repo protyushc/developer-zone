@@ -19,6 +19,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Interactive Particle Network</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -48,7 +49,7 @@
 <body>
   <div class="hud">
     <h1>Single-File Concept: Particle Network</h1>
-    <p>Move mouse to attract particles. Click to burst.</p>
+    <p>Move mouse or touch to attract particles. Click or tap to burst.</p>
   </div>
   <canvas id="canvas"></canvas>
 
@@ -73,6 +74,28 @@
     });
 
     window.addEventListener('mouseleave', () => {
+      mouse.x = null;
+      mouse.y = null;
+    });
+
+    window.addEventListener('touchmove', (e) => {
+      if (e.touches.length > 0) {
+        mouse.x = e.touches[0].clientX;
+        mouse.y = e.touches[0].clientY;
+      }
+    }, { passive: true });
+
+    window.addEventListener('touchstart', (e) => {
+      if (e.touches.length > 0) {
+        mouse.x = e.touches[0].clientX;
+        mouse.y = e.touches[0].clientY;
+        for (let i = 0; i < 25; i++) {
+          particles.push(new Particle(mouse.x, mouse.y, true));
+        }
+      }
+    }, { passive: true });
+
+    window.addEventListener('touchend', () => {
       mouse.x = null;
       mouse.y = null;
     });
@@ -453,6 +476,7 @@ store.subscribe(() => {
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>3D Glass Card</title>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -580,13 +604,13 @@ const btn = document.getElementById('pingBtn');
 
 console.log("3D Tilt Card interactive initialized.");
 
-window.addEventListener('mousemove', (e) => {
+function handleMove(clientX, clientY) {
   const rect = card.getBoundingClientRect();
   const cardCenterX = rect.left + rect.width / 2;
   const cardCenterY = rect.top + rect.height / 2;
 
-  const mouseX = e.clientX - cardCenterX;
-  const mouseY = e.clientY - cardCenterY;
+  const mouseX = clientX - cardCenterX;
+  const mouseY = clientY - cardCenterY;
 
   const rotateX = (-mouseY / (rect.height / 2)) * 18;
   const rotateY = (mouseX / (rect.width / 2)) * 18;
@@ -594,11 +618,23 @@ window.addEventListener('mousemove', (e) => {
   card.style.transform = \`rotateX(\${rotateX}deg) rotateY(\${rotateY}deg)\`;
 
   // Glow position relative to card
-  glow.style.left = \`\${e.clientX - rect.left}px\`;
-  glow.style.top = \`\${e.clientY - rect.top}px\`;
-});
+  glow.style.left = \`\${clientX - rect.left}px\`;
+  glow.style.top = \`\${clientY - rect.top}px\`;
+}
+
+window.addEventListener('mousemove', (e) => handleMove(e.clientX, e.clientY));
+
+window.addEventListener('touchmove', (e) => {
+  if (e.touches.length > 0) {
+    handleMove(e.touches[0].clientX, e.touches[0].clientY);
+  }
+}, { passive: true });
 
 window.addEventListener('mouseleave', () => {
+  card.style.transform = 'rotateX(0deg) rotateY(0deg)';
+});
+
+window.addEventListener('touchend', () => {
   card.style.transform = 'rotateX(0deg) rotateY(0deg)';
 });
 
@@ -622,6 +658,7 @@ btn.addEventListener('click', (e) => {
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Concept</title>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -676,6 +713,7 @@ document.getElementById('demoBtn').addEventListener('click', () => {
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Single-File Concept</title>
   <style>
     body {
@@ -717,7 +755,8 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     openTabIds: [],
     autoRun: true,
     theme: 'theme-dark',
-    logCount: 0
+    logCount: 0,
+    mobileActiveView: 'editor'
   };
 
   let runDebounceTimer = null;
@@ -742,6 +781,8 @@ document.getElementById('demoBtn').addEventListener('click', () => {
   // DOM Elements
   // ---------------------------------------------------------------------------
   const els = {
+    appContainer: document.getElementById('app'),
+    themeColorMeta: document.getElementById('themeColorMeta'),
     fileList: document.getElementById('fileList'),
     tabsBar: document.getElementById('tabsBar'),
     codeEditor: document.getElementById('codeEditor'),
@@ -781,7 +822,25 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     refreshPreviewBtn: document.getElementById('refreshPreviewBtn'),
     openNewTabBtn: document.getElementById('openNewTabBtn'),
     modeBadge: document.getElementById('modeBadge'),
-    toast: document.getElementById('toast')
+    toast: document.getElementById('toast'),
+    // Mobile Navigation & Drawer Elements
+    mobileNavBar: document.getElementById('mobileNavBar'),
+    mobileNavBtns: document.querySelectorAll('.mobile-nav-btn'),
+    mobileRunNavBtn: document.getElementById('mobileRunNavBtn'),
+    mobileThemeNavBtn: document.getElementById('mobileThemeNavBtn'),
+    mobileMenuBtn: document.getElementById('mobileMenuBtn'),
+    mobileDrawerBackdrop: document.getElementById('mobileDrawerBackdrop'),
+    mobileDrawer: document.getElementById('mobileDrawer'),
+    closeMobileDrawerBtn: document.getElementById('closeMobileDrawerBtn'),
+    mobileTemplateSelect: document.getElementById('mobileTemplateSelect'),
+    mobileAutoRunCheckbox: document.getElementById('mobileAutoRunCheckbox'),
+    mobileFormatBtn: document.getElementById('mobileFormatBtn'),
+    mobileNewTabBtn: document.getElementById('mobileNewTabBtn'),
+    mobileExportSingleHtmlBtn: document.getElementById('mobileExportSingleHtmlBtn'),
+    mobileExportZipBtn: document.getElementById('mobileExportZipBtn'),
+    mobileCopyBundleBtn: document.getElementById('mobileCopyBundleBtn'),
+    mobileResetBtn: document.getElementById('mobileResetBtn'),
+    mobileConsoleBadge: document.getElementById('mobileConsoleBadge')
   };
 
   // ---------------------------------------------------------------------------
@@ -862,6 +921,11 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     renderTabs();
     syncEditorContent();
     saveState();
+
+    // On mobile, auto-switch to editor view upon opening file
+    if (window.innerWidth <= 768) {
+      setMobileView('editor');
+    }
   }
 
   function closeTab(fileId, e) {
@@ -890,7 +954,7 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     const id = 'f-' + Date.now();
     const type = getFileType(name);
     let defaultContent = '';
-    if (type === 'html') defaultContent = '<!DOCTYPE html>\n<html>\n<head>\n  <title>New Page</title>\n</head>\n<body>\n  \n</body>\n</html>';
+    if (type === 'html') defaultContent = '<!DOCTYPE html>\n<html>\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>New Page</title>\n</head>\n<body>\n  \n</body>\n</html>';
     else if (type === 'css') defaultContent = '/* New Styles */\n';
     else if (type === 'js') defaultContent = '// New Module\n';
 
@@ -1000,7 +1064,8 @@ document.getElementById('demoBtn').addEventListener('click', () => {
       mode: mode,
       theme: theme,
       lineNumbers: true,
-      lineWrapping: false,
+      lineWrapping: window.innerWidth <= 768,
+      inputStyle: 'textarea',
       tabSize: 2,
       indentUnit: 2,
       autoCloseBrackets: true,
@@ -1111,6 +1176,16 @@ document.getElementById('demoBtn').addEventListener('click', () => {
 
     const parser = new DOMParser();
     const doc = parser.parseFromString(htmlContent, 'text/html');
+
+    // Ensure responsive viewport meta is present in preview
+    if (!doc.querySelector('meta[name="viewport"]')) {
+      const metaVp = doc.createElement('meta');
+      metaVp.name = 'viewport';
+      metaVp.content = 'width=device-width, initial-scale=1.0';
+      if (doc.head) {
+        doc.head.insertBefore(metaVp, doc.head.firstChild);
+      }
+    }
 
     // 2. Resolve CSS Links (<link rel="stylesheet" href="...">)
     const linkTags = Array.from(doc.querySelectorAll('link[rel="stylesheet"]'));
@@ -1248,6 +1323,14 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     state.logCount++;
     els.logCount.textContent = `${state.logCount} log${state.logCount === 1 ? '' : 's'}`;
 
+    if (els.mobileConsoleBadge) {
+      els.mobileConsoleBadge.textContent = state.logCount > 99 ? '99+' : state.logCount;
+      els.mobileConsoleBadge.classList.remove('hidden');
+      if (level === 'error') {
+        els.mobileConsoleBadge.classList.add('has-error');
+      }
+    }
+
     const emptyPlaceholder = els.consoleLogs.querySelector('.console-empty');
     if (emptyPlaceholder) emptyPlaceholder.remove();
 
@@ -1265,6 +1348,11 @@ document.getElementById('demoBtn').addEventListener('click', () => {
   function clearConsole() {
     state.logCount = 0;
     els.logCount.textContent = '0 logs';
+    if (els.mobileConsoleBadge) {
+      els.mobileConsoleBadge.textContent = '0';
+      els.mobileConsoleBadge.classList.add('hidden');
+      els.mobileConsoleBadge.classList.remove('has-error');
+    }
     els.consoleLogs.innerHTML = '<div class="console-empty">Console cleared.</div>';
   }
 
@@ -1479,27 +1567,90 @@ document.getElementById('demoBtn').addEventListener('click', () => {
   }
 
   // ---------------------------------------------------------------------------
-  // Resizable Panels
+  // Resizable Panels & Mobile View Controller
   // ---------------------------------------------------------------------------
+  function setMobileView(viewName) {
+    state.mobileActiveView = viewName;
+    if (els.appContainer) {
+      els.appContainer.setAttribute('data-mobile-view', viewName);
+    }
+
+    if (els.mobileNavBtns) {
+      els.mobileNavBtns.forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-view') === viewName);
+      });
+    }
+
+    if (viewName === 'editor') {
+      if (cmEditor) {
+        setTimeout(() => cmEditor.refresh(), 50);
+      }
+    } else if (viewName === 'preview') {
+      runCode();
+    } else if (viewName === 'console') {
+      if (els.mobileConsoleBadge) {
+        els.mobileConsoleBadge.classList.remove('has-error');
+      }
+    }
+  }
+
+  function openMobileDrawer() {
+    if (els.mobileDrawerBackdrop) {
+      els.mobileDrawerBackdrop.classList.remove('hidden');
+      if (els.mobileAutoRunCheckbox) {
+        els.mobileAutoRunCheckbox.checked = state.autoRun;
+      }
+    }
+  }
+
+  function closeMobileDrawer() {
+    if (els.mobileDrawerBackdrop) {
+      els.mobileDrawerBackdrop.classList.add('hidden');
+    }
+  }
+
+  function toggleTheme() {
+    state.theme = state.theme === 'theme-dark' ? 'theme-light' : 'theme-dark';
+    document.body.className = state.theme;
+    if (els.themeColorMeta) {
+      els.themeColorMeta.setAttribute('content', state.theme === 'theme-light' ? '#ffffff' : '#181a1f');
+    }
+    if (cmEditor) {
+      cmEditor.setOption('theme', getCodeMirrorTheme(state.theme));
+    }
+    saveState();
+  }
+
+  function handleRun(isMobile = false) {
+    runCode();
+    showToast('Code executed!');
+    if (isMobile && state.mobileActiveView === 'editor') {
+      setMobileView('preview');
+    }
+  }
+
   function setupResizers() {
     let isDraggingMain = false;
     let isDraggingConsole = false;
 
-    // Main splitter (Horizontal)
-    els.mainSplitter.addEventListener('mousedown', () => {
+    // Pointer events support both mouse and touch input
+    els.mainSplitter.addEventListener('pointerdown', (e) => {
       isDraggingMain = true;
+      try { els.mainSplitter.setPointerCapture(e.pointerId); } catch(err) {}
       els.mainSplitter.classList.add('dragging');
       document.body.style.cursor = 'col-resize';
+      e.preventDefault();
     });
 
-    // Console splitter (Vertical)
-    els.consoleSplitter.addEventListener('mousedown', () => {
+    els.consoleSplitter.addEventListener('pointerdown', (e) => {
       isDraggingConsole = true;
+      try { els.consoleSplitter.setPointerCapture(e.pointerId); } catch(err) {}
       els.consoleSplitter.classList.add('dragging');
       document.body.style.cursor = 'row-resize';
+      e.preventDefault();
     });
 
-    window.addEventListener('mousemove', (e) => {
+    window.addEventListener('pointermove', (e) => {
       if (isDraggingMain) {
         const workbenchRect = document.querySelector('.workbench').getBoundingClientRect();
         const explorerWidth = els.fileExplorer.classList.contains('collapsed') ? 0 : els.fileExplorer.offsetWidth;
@@ -1521,7 +1672,7 @@ document.getElementById('demoBtn').addEventListener('click', () => {
       }
     });
 
-    window.addEventListener('mouseup', () => {
+    const stopDragging = () => {
       if (isDraggingMain) {
         isDraggingMain = false;
         els.mainSplitter.classList.remove('dragging');
@@ -1533,7 +1684,10 @@ document.getElementById('demoBtn').addEventListener('click', () => {
         els.consoleSplitter.classList.remove('dragging');
         document.body.style.cursor = '';
       }
-    });
+    };
+
+    window.addEventListener('pointerup', stopDragging);
+    window.addEventListener('pointercancel', stopDragging);
   }
 
   // ---------------------------------------------------------------------------
@@ -1573,14 +1727,12 @@ document.getElementById('demoBtn').addEventListener('click', () => {
   // Event Listeners & Initialization
   // ---------------------------------------------------------------------------
   function initEventListeners() {
-    // Top Bar Actions
-    els.runBtn.addEventListener('click', () => {
-      runCode();
-      showToast('Code executed!');
-    });
+    // Top Bar Actions (Desktop)
+    els.runBtn.addEventListener('click', () => handleRun(false));
 
     els.autoRunCheckbox.addEventListener('change', (e) => {
       state.autoRun = e.target.checked;
+      if (els.mobileAutoRunCheckbox) els.mobileAutoRunCheckbox.checked = state.autoRun;
       saveState();
       if (state.autoRun) runCode();
     });
@@ -1591,19 +1743,99 @@ document.getElementById('demoBtn').addEventListener('click', () => {
       loadTemplate('blank-multifile');
     });
 
-    els.themeToggleBtn.addEventListener('click', () => {
-      state.theme = state.theme === 'theme-dark' ? 'theme-light' : 'theme-dark';
-      document.body.className = state.theme;
-      if (cmEditor) {
-        cmEditor.setOption('theme', getCodeMirrorTheme(state.theme));
-      }
-      saveState();
-    });
+    els.themeToggleBtn.addEventListener('click', toggleTheme);
 
     els.templateSelect.addEventListener('change', (e) => {
       loadTemplate(e.target.value);
       e.target.value = '';
     });
+
+    // Mobile Top Bar Controls
+    if (els.mobileRunNavBtn) {
+      els.mobileRunNavBtn.addEventListener('click', () => handleRun(true));
+    }
+    if (els.mobileThemeNavBtn) {
+      els.mobileThemeNavBtn.addEventListener('click', toggleTheme);
+    }
+    if (els.mobileMenuBtn) {
+      els.mobileMenuBtn.addEventListener('click', openMobileDrawer);
+    }
+    if (els.closeMobileDrawerBtn) {
+      els.closeMobileDrawerBtn.addEventListener('click', closeMobileDrawer);
+    }
+    if (els.mobileDrawerBackdrop) {
+      els.mobileDrawerBackdrop.addEventListener('click', (e) => {
+        if (e.target === els.mobileDrawerBackdrop) {
+          closeMobileDrawer();
+        }
+      });
+    }
+
+    // Mobile Bottom Navigation Bar
+    if (els.mobileNavBtns) {
+      els.mobileNavBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const view = btn.getAttribute('data-view');
+          if (view) setMobileView(view);
+        });
+      });
+    }
+
+    // Mobile Options Drawer Actions
+    if (els.mobileTemplateSelect) {
+      els.mobileTemplateSelect.addEventListener('change', (e) => {
+        const val = e.target.value;
+        closeMobileDrawer();
+        if (val) {
+          loadTemplate(val);
+          e.target.value = '';
+        }
+      });
+    }
+    if (els.mobileAutoRunCheckbox) {
+      els.mobileAutoRunCheckbox.addEventListener('change', (e) => {
+        state.autoRun = e.target.checked;
+        els.autoRunCheckbox.checked = state.autoRun;
+        saveState();
+        if (state.autoRun) runCode();
+      });
+    }
+    if (els.mobileFormatBtn) {
+      els.mobileFormatBtn.addEventListener('click', () => {
+        closeMobileDrawer();
+        formatActiveFile();
+      });
+    }
+    if (els.mobileNewTabBtn) {
+      els.mobileNewTabBtn.addEventListener('click', () => {
+        closeMobileDrawer();
+        els.openNewTabBtn.click();
+      });
+    }
+    if (els.mobileExportSingleHtmlBtn) {
+      els.mobileExportSingleHtmlBtn.addEventListener('click', () => {
+        closeMobileDrawer();
+        exportSingleHtml();
+      });
+    }
+    if (els.mobileExportZipBtn) {
+      els.mobileExportZipBtn.addEventListener('click', () => {
+        closeMobileDrawer();
+        exportZip();
+      });
+    }
+    if (els.mobileCopyBundleBtn) {
+      els.mobileCopyBundleBtn.addEventListener('click', () => {
+        closeMobileDrawer();
+        copyBundleToClipboard();
+      });
+    }
+    if (els.mobileResetBtn) {
+      els.mobileResetBtn.addEventListener('click', () => {
+        closeMobileDrawer();
+        loadTemplate('blank-multifile');
+      });
+    }
 
     // File Explorer Toggle
     els.collapseExplorerBtn.addEventListener('click', () => {
@@ -1667,6 +1899,14 @@ document.getElementById('demoBtn').addEventListener('click', () => {
       els.consoleToggleIcon.style.transform = isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)';
     });
 
+    // Window Resize / Orientation Change Handling
+    window.addEventListener('resize', () => {
+      if (cmEditor) {
+        cmEditor.setOption('lineWrapping', window.innerWidth <= 768);
+        cmEditor.refresh();
+      }
+    });
+
     setupEditorKeyHandlers();
     setupResizers();
   }
@@ -1681,8 +1921,15 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     }
 
     document.body.className = state.theme;
+    if (els.themeColorMeta) {
+      els.themeColorMeta.setAttribute('content', state.theme === 'theme-light' ? '#ffffff' : '#181a1f');
+    }
     els.autoRunCheckbox.checked = state.autoRun;
+    if (els.mobileAutoRunCheckbox) {
+      els.mobileAutoRunCheckbox.checked = state.autoRun;
+    }
 
+    setMobileView('editor');
     renderFileTree();
     renderTabs();
     initCodeMirror();

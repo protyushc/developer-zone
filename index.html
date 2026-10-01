@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+  <meta name="theme-color" content="#181a1f" id="themeColorMeta">
   <title>Web Playground - HTML, JS and CSS workbench</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,7 +15,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/eclipse.min.css">
 </head>
 <body class="theme-dark">
-  <div id="app" class="app-container">
+  <div id="app" class="app-container" data-mobile-view="editor">
     
     <!-- Top Navigation & Action Bar -->
     <header class="top-nav">
@@ -29,7 +30,7 @@
           <span class="badge" id="modeBadge">Multi-File</span>
         </div>
 
-        <div class="templates-dropdown">
+        <div class="templates-dropdown desktop-only">
           <label for="templateSelect" class="sr-only">Choose Template</label>
           <select id="templateSelect" title="Load Starter Template">
             <option value="" disabled selected>📂 Load Template...</option>
@@ -42,7 +43,7 @@
         </div>
       </div>
 
-      <div class="nav-center">
+      <div class="nav-center desktop-only">
         <button id="runBtn" class="btn btn-primary" title="Execute Code (Ctrl + Enter)">
           <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
             <polygon points="5 3 19 12 5 21 5 3"></polygon>
@@ -58,7 +59,7 @@
         </label>
       </div>
 
-      <div class="nav-right">
+      <div class="nav-right desktop-only">
         <!-- Layout & View Controls -->
         <button id="formatBtn" class="btn btn-icon" title="Format Active File">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
@@ -112,6 +113,36 @@
             <line x1="21" y1="12" x2="23" y2="12"></line>
             <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
             <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Mobile Top Bar Controls -->
+      <div class="nav-mobile-controls mobile-only">
+        <button id="mobileRunNavBtn" class="btn btn-primary" title="Execute Code">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          <span>Run</span>
+        </button>
+
+        <button id="mobileThemeNavBtn" class="btn btn-icon" title="Toggle Theme">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+          </svg>
+        </button>
+
+        <button id="mobileMenuBtn" class="btn btn-icon" title="Menu & Options">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
           </svg>
         </button>
       </div>
@@ -248,6 +279,138 @@
       </section>
 
     </main>
+
+    <!-- Mobile Bottom Navigation Bar -->
+    <nav class="mobile-nav-bar mobile-only" id="mobileNavBar" aria-label="Mobile Navigation">
+      <button class="mobile-nav-btn" data-view="files" title="Files">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+        </svg>
+        <span>Files</span>
+      </button>
+
+      <button class="mobile-nav-btn active" data-view="editor" title="Code Editor">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+          <polyline points="16 18 22 12 16 6"></polyline>
+          <polyline points="8 6 2 12 8 18"></polyline>
+        </svg>
+        <span>Code</span>
+      </button>
+
+      <button class="mobile-nav-btn" data-view="preview" title="Live Preview">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+        </svg>
+        <span>Preview</span>
+      </button>
+
+      <button class="mobile-nav-btn" data-view="console" title="Console">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+          <polyline points="4 17 10 11 4 5"></polyline>
+          <line x1="12" y1="19" x2="20" y2="19"></line>
+        </svg>
+        <span>Console</span>
+        <span id="mobileConsoleBadge" class="mobile-badge hidden">0</span>
+      </button>
+    </nav>
+
+    <!-- Mobile Options Drawer / Bottom Sheet -->
+    <div id="mobileDrawerBackdrop" class="drawer-backdrop hidden">
+      <div id="mobileDrawer" class="drawer-sheet">
+        <div class="drawer-header">
+          <div class="drawer-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+              <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+              <polyline points="2 17 12 22 22 17"></polyline>
+              <polyline points="2 12 12 17 22 12"></polyline>
+            </svg>
+            <span>Playground Options</span>
+          </div>
+          <button id="closeMobileDrawerBtn" class="icon-btn" title="Close Menu">&times;</button>
+        </div>
+        
+        <div class="drawer-content">
+          <div class="drawer-section">
+            <label class="drawer-label" for="mobileTemplateSelect">Starter Template</label>
+            <select id="mobileTemplateSelect" class="drawer-select">
+              <option value="" disabled selected>📂 Load Template...</option>
+              <option value="single-canvas">⚡ Single-File: Particle Simulation (Canvas)</option>
+              <option value="multifile-kanban">📦 Multi-File: Modular Kanban (ES Modules)</option>
+              <option value="glass-card">🎨 UI Concept: 3D Tilt Glass Card</option>
+              <option value="blank-multifile">📄 Blank Multi-File (HTML + CSS + JS)</option>
+              <option value="blank-single">📝 Blank Single File (index.html)</option>
+            </select>
+          </div>
+
+          <div class="drawer-section drawer-toggle-row">
+            <span class="drawer-label">Auto-Run Live Preview</span>
+            <label class="toggle-control">
+              <input type="checkbox" id="mobileAutoRunCheckbox" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="drawer-section">
+            <span class="drawer-label">Quick Actions</span>
+            <div class="drawer-btn-grid">
+              <button id="mobileFormatBtn" class="btn btn-secondary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                  <polyline points="4 7 4 4 20 4 20 7"></polyline>
+                  <line x1="9" y1="20" x2="15" y2="20"></line>
+                  <line x1="12" y1="4" x2="12" y2="20"></line>
+                </svg>
+                <span>Format Code</span>
+              </button>
+              <button id="mobileNewTabBtn" class="btn btn-secondary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+                <span>Open in Tab</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="drawer-section">
+            <span class="drawer-label">Export Project</span>
+            <div class="drawer-btn-list">
+              <button id="mobileExportSingleHtmlBtn" class="drawer-action-btn">
+                <div class="action-btn-info">
+                  <span class="action-btn-title">Standalone .HTML</span>
+                  <span class="action-btn-sub">All CSS & JS inlined into single file</span>
+                </div>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+              <button id="mobileExportZipBtn" class="drawer-action-btn">
+                <div class="action-btn-info">
+                  <span class="action-btn-title">Full Project (.ZIP)</span>
+                  <span class="action-btn-sub">Original directory structure</span>
+                </div>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+              <button id="mobileCopyBundleBtn" class="drawer-action-btn">
+                <div class="action-btn-info">
+                  <span class="action-btn-title">Copy Code to Clipboard</span>
+                  <span class="action-btn-sub">Ready to paste anywhere</span>
+                </div>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="drawer-section">
+            <button id="mobileResetBtn" class="btn btn-secondary btn-danger-subtle" style="width: 100%;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                <path d="M3 3v5h5"></path>
+              </svg>
+              <span>Reset Project to Defaults</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Modal for New File Creation -->
     <div id="fileModal" class="modal-backdrop hidden">
