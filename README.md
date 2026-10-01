@@ -40,27 +40,6 @@ A lightweight, zero-dependency, self-contained HTML, JavaScript, and CSS playgro
 
 ---
 
-## 🏃 How to Run
-
-Because this playground is pure client-side vanilla JavaScript, HTML, and CSS:
-
-### Option A: Direct Open
-Double-click [`index.html`](.../web-playground/index.html) in Windows File Explorer to open it in Chrome, Edge, or Firefox.
-
-### Option B: Local Static Server (Recommended)
-From PowerShell:
-```powershell
-cd C:\Users\Protyush\scratch\web-playground
-# Using Python
-python -m http.server 3000
-
-# Or using npx
-npx serve .
-```
-Then navigate to `http://localhost:3000`.
-
----
-
 ## ⌨️ Keyboard Shortcuts
 
 | Shortcut | Action |
