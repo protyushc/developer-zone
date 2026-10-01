@@ -74,6 +74,7 @@ body.theme-light {
 html, body {
   width: 100%;
   height: 100%;
+  height: 100dvh;
   overflow: hidden;
   font-family: var(--font-sans);
   background-color: var(--bg-primary);
@@ -81,6 +82,8 @@ html, body {
   font-size: 13px;
   line-height: 1.5;
   user-select: none;
+  -webkit-text-size-adjust: 100%;
+  overscroll-behavior: none;
 }
 
 /* App Layout */
@@ -88,7 +91,11 @@ html, body {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  width: 100vw;
+  height: 100dvh;
+  width: 100%;
+  width: 100dvw;
+  overflow: hidden;
+  position: relative;
 }
 
 /* Header Navigation */
@@ -100,7 +107,10 @@ html, body {
   align-items: center;
   justify-content: space-between;
   padding: 0 14px;
+  padding-left: max(14px, env(safe-area-inset-left));
+  padding-right: max(14px, env(safe-area-inset-right));
   z-index: 10;
+  flex-shrink: 0;
 }
 
 .nav-left, .nav-center, .nav-right {
@@ -607,6 +617,16 @@ html, body {
   background-color: var(--border-color);
   transition: background-color 0.2s;
   z-index: 5;
+  touch-action: none;
+  position: relative;
+}
+.splitter::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -8px;
+  right: -8px;
 }
 .splitter:hover, .splitter.dragging {
   background-color: var(--accent-primary-hover);
@@ -617,6 +637,16 @@ html, body {
   cursor: row-resize;
   background-color: var(--border-color);
   transition: background-color 0.2s;
+  touch-action: none;
+  position: relative;
+}
+.console-splitter::after {
+  content: "";
+  position: absolute;
+  top: -8px;
+  bottom: -8px;
+  left: 0;
+  right: 0;
 }
 .console-splitter:hover, .console-splitter.dragging {
   background-color: var(--accent-primary-hover);
@@ -879,4 +909,546 @@ html, body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-muted);
+}
+
+/* ==========================================================================
+   Mobile Navigation & Drawer Styles
+   ========================================================================== */
+
+/* Desktop defaults: mobile elements are hidden */
+.mobile-only {
+  display: none !important;
+}
+
+.desktop-only {
+  display: flex;
+}
+
+/* Mobile Bottom Navigation Bar */
+.mobile-nav-bar {
+  height: calc(52px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background-color: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  align-items: stretch;
+  justify-content: space-around;
+  z-index: 50;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.mobile-nav-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 6px 0;
+  position: relative;
+  transition: color 0.15s ease, transform 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-nav-btn:active {
+  transform: scale(0.95);
+}
+
+.mobile-nav-btn.active {
+  color: var(--accent-primary-hover);
+}
+
+.mobile-nav-btn svg {
+  transition: transform 0.15s ease;
+}
+
+.mobile-nav-btn.active svg {
+  transform: translateY(-1px);
+}
+
+.mobile-nav-btn span {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.mobile-badge {
+  position: absolute;
+  top: 4px;
+  right: calc(50% - 18px);
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border-radius: 9px;
+  background-color: var(--accent-primary);
+  color: #ffffff;
+  font-size: 9px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+}
+
+.mobile-badge.has-error {
+  background-color: var(--accent-danger);
+}
+
+/* Mobile Options Drawer / Bottom Sheet */
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.65);
+  z-index: 1500;
+  backdrop-filter: blur(4px);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  animation: drawerFadeIn 0.2s ease-out;
+}
+
+.drawer-sheet {
+  background-color: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+  border-radius: 18px 18px 0 0;
+  max-height: 85dvh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.6);
+  padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
+  animation: drawerSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+@keyframes drawerFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes drawerSlideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.drawer-header {
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-color);
+  user-select: none;
+}
+
+.drawer-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--text-bright);
+}
+
+.drawer-title svg {
+  stroke: var(--accent-primary-hover);
+}
+
+.drawer-content {
+  padding: 16px 18px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.drawer-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.drawer-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.drawer-select {
+  height: 44px;
+  background-color: var(--bg-tertiary);
+  color: var(--text-bright);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0 12px;
+  font-size: 14px;
+  outline: none;
+  cursor: pointer;
+}
+
+.drawer-select:focus {
+  border-color: var(--border-focus);
+}
+
+.drawer-toggle-row {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0;
+}
+
+.drawer-btn-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.drawer-btn-grid .btn {
+  height: 42px;
+  font-size: 13px;
+}
+
+.drawer-btn-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.drawer-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: var(--text-bright);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.drawer-action-btn:active,
+.drawer-action-btn:hover {
+  background-color: var(--bg-hover);
+  border-color: var(--text-muted);
+}
+
+.action-btn-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.action-btn-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-bright);
+}
+
+.action-btn-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.drawer-action-btn svg {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.btn-danger-subtle {
+  color: var(--accent-danger) !important;
+  border-color: rgba(224, 108, 117, 0.35) !important;
+  height: 42px;
+}
+
+.btn-danger-subtle:hover,
+.btn-danger-subtle:active {
+  background-color: rgba(224, 108, 117, 0.15) !important;
+}
+
+/* ==========================================================================
+   Responsive Mobile Media Queries
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none !important;
+  }
+
+  .mobile-only {
+    display: flex !important;
+  }
+
+  /* Keep helper classes hidden even if .mobile-only is applied */
+  .drawer-backdrop.hidden,
+  .mobile-badge.hidden,
+  .modal-backdrop.hidden,
+  .error-banner.hidden,
+  .toast.hidden,
+  .dropdown-menu.hidden {
+    display: none !important;
+  }
+
+  /* Header adjustments */
+  .top-nav {
+    height: 48px;
+    padding: 0 12px;
+  }
+
+  .brand {
+    gap: 6px;
+    font-size: 13px;
+  }
+
+  .brand-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .nav-mobile-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  #mobileRunNavBtn {
+    height: 32px;
+    padding: 0 12px;
+    font-size: 12px;
+    font-weight: 700;
+    gap: 5px;
+    border-radius: 6px;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .btn-icon {
+    width: 34px;
+    height: 34px;
+  }
+
+  /* Main Workbench Layout: Stacked full-width views */
+  .workbench {
+    flex-direction: column;
+    height: calc(100dvh - 48px - 52px - env(safe-area-inset-bottom, 0px));
+    width: 100vw;
+    overflow: hidden;
+  }
+
+  /* Splitters are hidden on mobile view */
+  .splitter,
+  .console-splitter {
+    display: none !important;
+  }
+
+  /* View 1: Files Explorer */
+  [data-mobile-view="files"] .file-explorer {
+    display: flex !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    flex: 1;
+    border-right: none;
+  }
+  [data-mobile-view="files"] .editor-pane,
+  [data-mobile-view="files"] .output-pane {
+    display: none !important;
+  }
+
+  .file-item {
+    padding: 10px 14px;
+    min-height: 44px;
+    font-size: 13px;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .file-item-actions {
+    display: flex !important;
+  }
+
+  .file-action-btn {
+    padding: 6px 8px;
+    font-size: 15px;
+  }
+
+  .explorer-header {
+    height: 42px;
+    padding: 0 14px;
+  }
+
+  #collapseExplorerBtn {
+    display: none !important;
+  }
+
+  /* View 2: Code Editor */
+  [data-mobile-view="editor"] .editor-pane {
+    display: flex !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    flex: 1;
+  }
+  [data-mobile-view="editor"] .file-explorer,
+  [data-mobile-view="editor"] .output-pane {
+    display: none !important;
+  }
+
+  #expandExplorerBtn {
+    display: none !important;
+  }
+
+  .tabs-bar-container {
+    height: 40px;
+    padding: 0 6px;
+  }
+
+  .tab {
+    height: 36px;
+    padding: 0 14px;
+    font-size: 12px;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .tab-close {
+    padding: 2px 4px;
+    font-size: 16px;
+    margin-left: 6px;
+  }
+
+  .CodeMirror {
+    font-size: 13.5px !important;
+    line-height: 21px !important;
+  }
+
+  .CodeMirror-linenumber {
+    font-size: 11px !important;
+    padding: 0 6px 0 2px !important;
+  }
+
+  /* View 3: Live Output Preview */
+  [data-mobile-view="preview"] .output-pane {
+    display: flex !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    flex: 1;
+  }
+  [data-mobile-view="preview"] .file-explorer,
+  [data-mobile-view="preview"] .editor-pane {
+    display: none !important;
+  }
+  [data-mobile-view="preview"] .iframe-container {
+    display: block !important;
+    flex: 1;
+  }
+  [data-mobile-view="preview"] .console-drawer {
+    display: none !important;
+  }
+
+  .output-header {
+    height: 40px;
+    padding: 0 12px;
+  }
+
+  .output-header .icon-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  /* View 4: Developer Console */
+  [data-mobile-view="console"] .output-pane {
+    display: flex !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    flex: 1;
+  }
+  [data-mobile-view="console"] .file-explorer,
+  [data-mobile-view="console"] .editor-pane,
+  [data-mobile-view="console"] .iframe-container,
+  [data-mobile-view="console"] .output-header {
+    display: none !important;
+  }
+  [data-mobile-view="console"] .console-drawer {
+    display: flex !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    flex: 1;
+    border-top: none;
+  }
+
+  #toggleConsoleBtn {
+    display: none !important;
+  }
+
+  .console-header {
+    height: 42px;
+    padding: 0 14px;
+  }
+
+  .console-logs {
+    padding: 8px 14px;
+    font-size: 12.5px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .console-line {
+    padding: 6px 0;
+  }
+
+  /* Mobile Modals */
+  .modal {
+    width: calc(100vw - 32px);
+    max-width: 380px;
+    margin: 16px;
+    border-radius: 12px;
+  }
+
+  .modal-body input {
+    height: 44px;
+    font-size: 16px !important; /* Prevents auto-zoom on iOS */
+    border-radius: 6px;
+  }
+
+  .modal-footer {
+    padding: 14px 16px;
+  }
+
+  .modal-footer .btn {
+    height: 42px;
+    padding: 0 18px;
+    font-size: 13px;
+  }
+
+  /* Mobile Toast */
+  .toast {
+    bottom: calc(56px + env(safe-area-inset-bottom, 0px) + 12px);
+    right: 16px;
+    left: 16px;
+    max-width: calc(100vw - 32px);
+    text-align: center;
+    border-radius: 8px;
+    padding: 12px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  #modeBadge {
+    display: none;
+  }
+
+  .top-nav {
+    padding: 0 10px;
+  }
+
+  .brand-title {
+    font-size: 13px;
+  }
 }
