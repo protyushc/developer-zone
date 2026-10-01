@@ -1110,43 +1110,119 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     const scroller = cm.getScrollerElement();
     if (!scroller) return;
 
-    let touchStartY = 0;
-    let touchStartX = 0;
+    let isTracking = false;
+    let isScrolling = false;
+    let startY = 0;
+    let startX = 0;
     let startScrollTop = 0;
     let startScrollLeft = 0;
-    let isTouchActive = false;
+    let lastY = 0;
+    let lastTime = 0;
+    let velocityY = 0;
+    let momentumRaf = null;
 
-    scroller.addEventListener('touchstart', (e) => {
-      if (e.touches.length === 1) {
-        touchStartY = e.touches[0].clientY;
-        touchStartX = e.touches[0].clientX;
-        startScrollTop = scroller.scrollTop;
-        startScrollLeft = scroller.scrollLeft;
-        isTouchActive = true;
+    function stopMomentum() {
+      if (momentumRaf) {
+        cancelAnimationFrame(momentumRaf);
+        momentumRaf = null;
       }
-    }, { passive: true });
+    }
 
-    scroller.addEventListener('touchmove', (e) => {
-      if (!isTouchActive || e.touches.length !== 1) return;
-      const currentY = e.touches[0].clientY;
-      const currentX = e.touches[0].clientX;
-      const deltaY = touchStartY - currentY;
-      const deltaX = touchStartX - currentX;
+    function onPointerDown(e) {
+      const isTouch = e.pointerType === 'touch' || e.pointerType === 'pen';
+      const isSmallScreen = window.innerWidth <= 768;
+      if (!isTouch && !isSmallScreen) return;
 
-      if (Math.abs(deltaY) > 3 || Math.abs(deltaX) > 3) {
+      stopMomentum();
+      isTracking = true;
+      isScrolling = false;
+      startY = e.clientY;
+      startX = e.clientX;
+      lastY = e.clientY;
+      lastTime = performance.now();
+      velocityY = 0;
+      startScrollTop = scroller.scrollTop;
+      startScrollLeft = scroller.scrollLeft;
+    }
+
+    function onPointerMove(e) {
+      if (!isTracking) return;
+
+      const now = performance.now();
+      const dt = now - lastTime;
+      const currentY = e.clientY;
+      const currentX = e.clientX;
+      const deltaY = startY - currentY;
+      const deltaX = startX - currentX;
+
+      if (dt > 10) {
+        const instantV = (lastY - currentY) / dt;
+        velocityY = velocityY * 0.4 + instantV * 0.6;
+        lastY = currentY;
+        lastTime = now;
+      }
+
+      if (!isScrolling && (Math.abs(deltaY) > 4 || Math.abs(deltaX) > 4)) {
+        isScrolling = true;
+      }
+
+      if (isScrolling) {
         scroller.scrollTop = startScrollTop + deltaY;
         if (!cm.getOption('lineWrapping')) {
           scroller.scrollLeft = startScrollLeft + deltaX;
         }
       }
-    }, { passive: true });
+    }
 
-    const endTouch = () => {
-      isTouchActive = false;
-    };
+    function onPointerUp() {
+      if (!isTracking) return;
+      isTracking = false;
 
-    scroller.addEventListener('touchend', endTouch, { passive: true });
-    scroller.addEventListener('touchcancel', endTouch, { passive: true });
+      if (isScrolling && Math.abs(velocityY) > 0.15) {
+        let v = velocityY * 16;
+        const friction = 0.94;
+
+        function step() {
+          if (Math.abs(v) < 0.5) {
+            momentumRaf = null;
+            return;
+          }
+          scroller.scrollTop += v;
+          v *= friction;
+          momentumRaf = requestAnimationFrame(step);
+        }
+        momentumRaf = requestAnimationFrame(step);
+      }
+    }
+
+    if (window.PointerEvent) {
+      scroller.addEventListener('pointerdown', onPointerDown, { passive: true });
+      window.addEventListener('pointermove', onPointerMove, { passive: true });
+      window.addEventListener('pointerup', onPointerUp, { passive: true });
+      window.addEventListener('pointercancel', onPointerUp, { passive: true });
+    } else {
+      scroller.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+          onPointerDown({
+            pointerType: 'touch',
+            clientX: e.touches[0].clientX,
+            clientY: e.touches[0].clientY
+          });
+        }
+      }, { passive: true });
+
+      window.addEventListener('touchmove', (e) => {
+        if (e.touches.length === 1) {
+          onPointerMove({
+            clientX: e.touches[0].clientX,
+            clientY: e.touches[0].clientY
+          });
+        }
+      }, { passive: true });
+
+      window.addEventListener('touchend', onPointerUp, { passive: true });
+      window.addEventListener('touchcancel', onPointerUp, { passive: true });
+    }
   }
 
   function syncEditorContent() {
