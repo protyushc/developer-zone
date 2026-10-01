@@ -1060,12 +1060,14 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     const mode = activeFile ? getCodeMirrorMode(activeFile.type) : 'htmlmixed';
     const theme = getCodeMirrorTheme(state.theme);
 
+    const isMobile = window.innerWidth <= 768 || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
     cmEditor = CodeMirror.fromTextArea(els.codeEditor, {
       mode: mode,
       theme: theme,
       lineNumbers: true,
-      lineWrapping: window.innerWidth <= 768,
-      inputStyle: 'textarea',
+      lineWrapping: isMobile,
+      inputStyle: isMobile ? 'contenteditable' : 'textarea',
       tabSize: 2,
       indentUnit: 2,
       autoCloseBrackets: true,
@@ -1089,6 +1091,8 @@ document.getElementById('demoBtn').addEventListener('click', () => {
       }
     });
 
+    setupMobileTouchScroll(cmEditor);
+
     cmEditor.on('change', () => {
       const activeFile = getActiveFile();
       if (activeFile && cmEditor.getValue() !== activeFile.content) {
@@ -1100,6 +1104,49 @@ document.getElementById('demoBtn').addEventListener('click', () => {
       const cursor = cmEditor.getCursor();
       els.cursorPos.textContent = `Ln ${cursor.line + 1}, Col ${cursor.ch + 1}`;
     });
+  }
+
+  function setupMobileTouchScroll(cm) {
+    const scroller = cm.getScrollerElement();
+    if (!scroller) return;
+
+    let touchStartY = 0;
+    let touchStartX = 0;
+    let startScrollTop = 0;
+    let startScrollLeft = 0;
+    let isTouchActive = false;
+
+    scroller.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 1) {
+        touchStartY = e.touches[0].clientY;
+        touchStartX = e.touches[0].clientX;
+        startScrollTop = scroller.scrollTop;
+        startScrollLeft = scroller.scrollLeft;
+        isTouchActive = true;
+      }
+    }, { passive: true });
+
+    scroller.addEventListener('touchmove', (e) => {
+      if (!isTouchActive || e.touches.length !== 1) return;
+      const currentY = e.touches[0].clientY;
+      const currentX = e.touches[0].clientX;
+      const deltaY = touchStartY - currentY;
+      const deltaX = touchStartX - currentX;
+
+      if (Math.abs(deltaY) > 3 || Math.abs(deltaX) > 3) {
+        scroller.scrollTop = startScrollTop + deltaY;
+        if (!cm.getOption('lineWrapping')) {
+          scroller.scrollLeft = startScrollLeft + deltaX;
+        }
+      }
+    }, { passive: true });
+
+    const endTouch = () => {
+      isTouchActive = false;
+    };
+
+    scroller.addEventListener('touchend', endTouch, { passive: true });
+    scroller.addEventListener('touchcancel', endTouch, { passive: true });
   }
 
   function syncEditorContent() {
@@ -1582,8 +1629,14 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     }
 
     if (viewName === 'editor') {
+      if (els.editorPane) {
+        els.editorPane.style.width = '';
+        els.editorPane.style.flex = '';
+      }
       if (cmEditor) {
-        setTimeout(() => cmEditor.refresh(), 50);
+        setTimeout(() => {
+          cmEditor.refresh();
+        }, 50);
       }
     } else if (viewName === 'preview') {
       runCode();
@@ -1901,8 +1954,13 @@ document.getElementById('demoBtn').addEventListener('click', () => {
 
     // Window Resize / Orientation Change Handling
     window.addEventListener('resize', () => {
+      const isMobile = window.innerWidth <= 768;
+      if (isMobile && els.editorPane) {
+        els.editorPane.style.width = '';
+        els.editorPane.style.flex = '';
+      }
       if (cmEditor) {
-        cmEditor.setOption('lineWrapping', window.innerWidth <= 768);
+        cmEditor.setOption('lineWrapping', isMobile);
         cmEditor.refresh();
       }
     });

@@ -456,12 +456,15 @@ html, body {
 
 /* 2. Code Editor Pane */
 .editor-pane {
-  flex: 1;
+  flex: 1 1 0%;
   display: flex;
   flex-direction: column;
   background-color: var(--bg-editor);
   min-width: 250px;
+  min-height: 0;
+  height: 100%;
   position: relative;
+  overflow: hidden;
 }
 
 .tabs-bar-container {
@@ -472,12 +475,15 @@ html, body {
   align-items: center;
   padding: 0 4px;
   user-select: none;
+  flex-shrink: 0;
 }
 .tabs-bar {
   display: flex;
   flex: 1;
   overflow-x: auto;
   gap: 2px;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
 }
 .tab {
   display: flex;
@@ -520,10 +526,12 @@ html, body {
 
 /* Textarea & Line Numbers Editor */
 .editor-wrapper {
-  flex: 1;
+  flex: 1 1 0%;
   display: flex;
   position: relative;
   overflow: hidden;
+  min-height: 0;
+  height: calc(100% - 36px);
   background-color: var(--bg-editor);
 }
 
@@ -539,6 +547,7 @@ html, body {
   padding: 12px 10px 12px 0;
   user-select: none;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 #codeEditor {
@@ -556,6 +565,10 @@ html, body {
   tab-size: 2;
   white-space: pre;
   overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x pan-y;
+  user-select: text;
+  -webkit-user-select: text;
 }
 
 /* CodeMirror Syntax Color Coding Integration */
@@ -565,18 +578,47 @@ html, body {
 }
 
 .CodeMirror {
-  flex: 1;
+  position: absolute !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   height: 100% !important;
   width: 100% !important;
   font-family: var(--font-mono) !important;
   font-size: 13px !important;
   line-height: 20px !important;
+  user-select: text !important;
+  -webkit-user-select: text !important;
 }
 
 .CodeMirror-scroll {
-  height: 100%;
-  overflow-y: auto;
-  overflow-x: auto;
+  height: 100% !important;
+  max-height: 100% !important;
+  overflow-y: auto !important;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  touch-action: pan-x pan-y !important;
+  overscroll-behavior: contain !important;
+  user-select: text !important;
+  -webkit-user-select: text !important;
+}
+
+.CodeMirror-sizer {
+  min-height: 100% !important;
+  touch-action: pan-x pan-y !important;
+}
+
+.CodeMirror-lines {
+  touch-action: pan-x pan-y !important;
+  user-select: text !important;
+  -webkit-user-select: text !important;
+}
+
+.CodeMirror-gutters {
+  touch-action: pan-x pan-y !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
 }
 
 /* Dracula theme tweaks for dark mode */
@@ -1290,14 +1332,29 @@ html, body {
   /* View 2: Code Editor */
   [data-mobile-view="editor"] .editor-pane {
     display: flex !important;
+    flex-direction: column !important;
     width: 100% !important;
-    min-width: 100% !important;
+    min-width: 0 !important;
     max-width: 100% !important;
-    flex: 1;
+    flex: 1 1 0% !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
   }
   [data-mobile-view="editor"] .file-explorer,
   [data-mobile-view="editor"] .output-pane {
     display: none !important;
+  }
+
+  [data-mobile-view="editor"] .editor-wrapper {
+    flex: 1 1 0% !important;
+    display: flex !important;
+    position: relative !important;
+    min-height: 0 !important;
+    height: calc(100% - 40px) !important;
+    max-height: calc(100% - 40px) !important;
+    overflow: hidden !important;
   }
 
   #expandExplorerBtn {
@@ -1307,6 +1364,7 @@ html, body {
   .tabs-bar-container {
     height: 40px;
     padding: 0 6px;
+    flex-shrink: 0;
   }
 
   .tab {
