@@ -1,0 +1,1698 @@
+/**
+ * Web Playground - Core Application Logic
+ * Supports Single-File & Multi-File (ES Modules, Virtual File System, In-browser Bundling)
+ */
+
+(function () {
+  'use strict';
+
+  // ---------------------------------------------------------------------------
+  // Starter Templates
+  // ---------------------------------------------------------------------------
+  const TEMPLATES = {
+    'single-canvas': [
+      {
+        id: 'f-index',
+        name: 'index.html',
+        type: 'html',
+        content: `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Interactive Particle Network</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: radial-gradient(circle at center, #111827 0%, #030712 100%);
+      height: 100vh;
+      overflow: hidden;
+      font-family: system-ui, sans-serif;
+      color: #94a3b8;
+    }
+    canvas { display: block; width: 100%; height: 100%; cursor: crosshair; }
+    .hud {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      pointer-events: none;
+      background: rgba(15, 23, 42, 0.75);
+      padding: 12px 18px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(8px);
+    }
+    .hud h1 { font-size: 15px; color: #38bdf8; margin-bottom: 4px; }
+    .hud p { font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="hud">
+    <h1>Single-File Concept: Particle Network</h1>
+    <p>Move mouse to attract particles. Click to burst.</p>
+  </div>
+  <canvas id="canvas"></canvas>
+
+  <script>
+    console.log("Initializing Canvas Particle Simulation...");
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    let width, height;
+    const particles = [];
+    const mouse = { x: null, y: null, radius: 120 };
+
+    function resize() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    window.addEventListener('mousemove', (e) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    });
+
+    window.addEventListener('mouseleave', () => {
+      mouse.x = null;
+      mouse.y = null;
+    });
+
+    window.addEventListener('click', () => {
+      console.log("Particle shockwave triggered at:", mouse.x, mouse.y);
+      for (let i = 0; i < 25; i++) {
+        particles.push(new Particle(mouse.x, mouse.y, true));
+      }
+    });
+
+    class Particle {
+      constructor(x, y, burst = false) {
+        this.x = x ?? Math.random() * width;
+        this.y = y ?? Math.random() * height;
+        const speed = burst ? Math.random() * 6 + 2 : Math.random() * 1.5 + 0.3;
+        const angle = Math.random() * Math.PI * 2;
+        this.vx = Math.cos(angle) * speed;
+        this.vy = Math.sin(angle) * speed;
+        this.size = burst ? Math.random() * 3 + 1 : Math.random() * 2 + 1.2;
+        this.life = burst ? 80 : Infinity;
+        this.color = burst ? '#f43f5e' : '#38bdf8';
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+
+        if (this.life !== Infinity) this.life--;
+
+        // Bounce
+        if (this.x < 0 || this.x > width) this.vx *= -1;
+        if (this.y < 0 || this.y > height) this.vy *= -1;
+
+        // Mouse attraction
+        if (mouse.x !== null) {
+          const dx = mouse.x - this.x;
+          const dy = mouse.y - this.y;
+          const dist = Math.hypot(dx, dy);
+          if (dist < mouse.radius) {
+            this.x += dx * 0.02;
+            this.y += dy * 0.02;
+          }
+        }
+      }
+
+      draw() {
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    // Initialize 80 particles
+    for (let i = 0; i < 80; i++) particles.push(new Particle());
+
+    function connect() {
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dist = Math.hypot(particles[i].x - particles[j].x, particles[i].y - particles[j].y);
+          if (dist < 90) {
+            ctx.strokeStyle = \`rgba(56, 189, 248, \${1 - dist / 90})\`;
+            ctx.lineWidth = 0.5;
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.update();
+        p.draw();
+        if (p.life <= 0) particles.splice(i, 1);
+      }
+      connect();
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+    console.log("Particle animation running with 80 nodes.");
+  </script>
+</body>
+</html>`
+      }
+    ],
+
+    'multifile-kanban': [
+      {
+        id: 'f-index',
+        name: 'index.html',
+        type: 'html',
+        content: `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modular Kanban App</title>
+  <!-- Multi-file virtual CSS link -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="header">
+      <div class="logo">⚡ TaskFlow <span>(ES Modules)</span></div>
+      <div class="new-task-bar">
+        <input type="text" id="taskInput" placeholder="What needs to be done?">
+        <button id="addBtn">Add Task</button>
+      </div>
+    </header>
+
+    <main class="board">
+      <div class="column" id="col-todo">
+        <div class="column-header">To Do <span class="counter" id="count-todo">0</span></div>
+        <div class="task-list" data-status="todo"></div>
+      </div>
+      <div class="column" id="col-progress">
+        <div class="column-header">In Progress <span class="counter" id="count-progress">0</span></div>
+        <div class="task-list" data-status="progress"></div>
+      </div>
+      <div class="column" id="col-done">
+        <div class="column-header">Completed <span class="counter" id="count-done">0</span></div>
+        <div class="task-list" data-status="done"></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Multi-file ES Module entry point -->
+  <script type="module" src="app.js"></script>
+</body>
+</html>`
+      },
+      {
+        id: 'f-css',
+        name: 'style.css',
+        type: 'css',
+        content: `* { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+body {
+  background: #0f172a;
+  color: #e2e8f0;
+  min-height: 100vh;
+  padding: 24px;
+}
+.app-shell { max-width: 900px; margin: 0 auto; }
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.logo { font-size: 20px; font-weight: 700; color: #38bdf8; }
+.logo span { font-size: 13px; color: #94a3b8; font-weight: normal; }
+.new-task-bar { display: flex; gap: 8px; }
+.new-task-bar input {
+  background: #1e293b;
+  border: 1px solid #334155;
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 6px;
+  outline: none;
+  width: 260px;
+}
+.new-task-bar input:focus { border-color: #38bdf8; }
+.new-task-bar button {
+  background: #0284c7;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.board {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+.column {
+  background: #1e293b;
+  border-radius: 8px;
+  padding: 16px;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+}
+.column-header {
+  font-weight: 600;
+  font-size: 14px;
+  color: #94a3b8;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.counter {
+  background: #334155;
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+}
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+.task-card {
+  background: #0f172a;
+  border: 1px solid #334155;
+  padding: 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+.task-card:hover { transform: translateY(-2px); border-color: #38bdf8; }
+.task-title { font-size: 13px; color: #f8fafc; word-break: break-word; }
+.task-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+}
+.move-btn {
+  background: #334155;
+  color: #94a3b8;
+  border: none;
+  padding: 3px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.move-btn:hover { background: #475569; color: #fff; }`
+      },
+      {
+        id: 'f-store',
+        name: 'store.js',
+        type: 'js',
+        content: `/**
+ * Modular State Store for Kanban
+ */
+export class TaskStore {
+  constructor() {
+    this.tasks = [
+      { id: 1, text: "Design UI Architecture", status: "done" },
+      { id: 2, text: "Implement ES Module virtual import maps", status: "progress" },
+      { id: 3, text: "Write unit tests for state persistence", status: "todo" }
+    ];
+    this.listeners = [];
+  }
+
+  getTasksByStatus(status) {
+    return this.tasks.filter(t => t.status === status);
+  }
+
+  addTask(text) {
+    if (!text.trim()) return;
+    const newTask = {
+      id: Date.now(),
+      text,
+      status: "todo"
+    };
+    this.tasks.push(newTask);
+    this.notify();
+    return newTask;
+  }
+
+  nextStatus(id) {
+    const task = this.tasks.find(t => t.id === id);
+    if (!task) return;
+    if (task.status === "todo") task.status = "progress";
+    else if (task.status === "progress") task.status = "done";
+    else if (task.status === "done") {
+      this.tasks = this.tasks.filter(t => t.id !== id);
+    }
+    this.notify();
+  }
+
+  subscribe(callback) {
+    this.listeners.push(callback);
+    callback(this.tasks);
+  }
+
+  notify() {
+    this.listeners.forEach(cb => cb(this.tasks));
+  }
+}`
+      },
+      {
+        id: 'f-app',
+        name: 'app.js',
+        type: 'js',
+        content: `// Import from virtual store.js module
+import { TaskStore } from './store.js';
+
+console.log("Starting Kanban application with ES Modules...");
+
+const store = new TaskStore();
+const input = document.getElementById('taskInput');
+const addBtn = document.getElementById('addBtn');
+
+function render() {
+  ['todo', 'progress', 'done'].forEach(status => {
+    const listEl = document.querySelector(\`.task-list[data-status="\${status}"]\`);
+    const countEl = document.getElementById(\`count-\${status}\`);
+    const tasks = store.getTasksByStatus(status);
+
+    countEl.textContent = tasks.length;
+    listEl.innerHTML = '';
+
+    tasks.forEach(task => {
+      const card = document.createElement('div');
+      card.className = 'task-card';
+
+      const nextAction = status === 'todo' ? 'Start' : (status === 'progress' ? 'Complete' : 'Archive');
+
+      card.innerHTML = \`
+        <div class="task-title">\${escapeHtml(task.text)}</div>
+        <div class="task-footer">
+          <span style="color:#64748b">#\${task.id.toString().slice(-4)}</span>
+          <button class="move-btn" data-id="\${task.id}">\${nextAction} →</button>
+        </div>
+      \`;
+
+      card.querySelector('button').addEventListener('click', () => {
+        console.log(\`Transitioning task \${task.id} from status "\${status}"\`);
+        store.nextStatus(task.id);
+      });
+
+      listEl.appendChild(card);
+    });
+  });
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function handleAdd() {
+  const text = input.value.trim();
+  if (text) {
+    console.log("New task created:", text);
+    store.addTask(text);
+    input.value = '';
+    input.focus();
+  }
+}
+
+addBtn.addEventListener('click', handleAdd);
+input.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') handleAdd();
+});
+
+store.subscribe(() => {
+  render();
+});
+`
+      }
+    ],
+
+    'glass-card': [
+      {
+        id: 'f-index',
+        name: 'index.html',
+        type: 'html',
+        content: `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>3D Glass Card</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="scene">
+    <div class="card" id="tiltCard">
+      <div class="card-glow"></div>
+      <div class="card-content">
+        <span class="chip">UI EXPERIMENT</span>
+        <h2>Quantum Shield</h2>
+        <p>Dynamic 3D perspective projection with real-time specular lighting calculation.</p>
+        <div class="stats">
+          <div><label>FREQUENCY</label><strong>4.2 GHz</strong></div>
+          <div><label>EFFICIENCY</label><strong>99.8%</strong></div>
+        </div>
+        <button class="btn" id="pingBtn">Send Pulse</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="tilt.js"></script>
+</body>
+</html>`
+      },
+      {
+        id: 'f-css',
+        name: 'style.css',
+        type: 'css',
+        content: `* { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
+body {
+  background: #090d16;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1000px;
+  overflow: hidden;
+}
+.scene {
+  transform-style: preserve-3d;
+}
+.card {
+  width: 320px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  padding: 30px;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+  transform-style: preserve-3d;
+  transition: transform 0.1s ease-out;
+  cursor: pointer;
+}
+.card-glow {
+  position: absolute;
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.35) 0%, transparent 70%);
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.3s;
+}
+.chip {
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+.card-content h2 {
+  color: #fff;
+  margin: 18px 0 8px;
+  font-size: 22px;
+}
+.card-content p {
+  color: #94a3b8;
+  font-size: 13px;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+.stats {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 16px;
+  margin-bottom: 20px;
+}
+.stats label {
+  display: block;
+  font-size: 10px;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+.stats strong {
+  color: #e2e8f0;
+  font-size: 14px;
+}
+.btn {
+  width: 100%;
+  padding: 10px;
+  background: #38bdf8;
+  color: #04101e;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn:hover { background: #7dd3fc; }`
+      },
+      {
+        id: 'f-js',
+        name: 'tilt.js',
+        type: 'js',
+        content: `const card = document.getElementById('tiltCard');
+const glow = document.querySelector('.card-glow');
+const btn = document.getElementById('pingBtn');
+
+console.log("3D Tilt Card interactive initialized.");
+
+window.addEventListener('mousemove', (e) => {
+  const rect = card.getBoundingClientRect();
+  const cardCenterX = rect.left + rect.width / 2;
+  const cardCenterY = rect.top + rect.height / 2;
+
+  const mouseX = e.clientX - cardCenterX;
+  const mouseY = e.clientY - cardCenterY;
+
+  const rotateX = (-mouseY / (rect.height / 2)) * 18;
+  const rotateY = (mouseX / (rect.width / 2)) * 18;
+
+  card.style.transform = \`rotateX(\${rotateX}deg) rotateY(\${rotateY}deg)\`;
+
+  // Glow position relative to card
+  glow.style.left = \`\${e.clientX - rect.left}px\`;
+  glow.style.top = \`\${e.clientY - rect.top}px\`;
+});
+
+window.addEventListener('mouseleave', () => {
+  card.style.transform = 'rotateX(0deg) rotateY(0deg)';
+});
+
+btn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  console.log("Pulse beacon emitted!");
+  card.style.borderColor = '#38bdf8';
+  setTimeout(() => {
+    card.style.borderColor = 'rgba(255, 255, 255, 0.12)';
+  }, 400);
+});`
+      }
+    ],
+
+    'blank-multifile': [
+      {
+        id: 'f-index',
+        name: 'index.html',
+        type: 'html',
+        content: `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Concept</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Hello from Web Playground!</h1>
+  <p>Start editing this project to see live updates.</p>
+  <button id="demoBtn">Click Me</button>
+
+  <script src="script.js"></script>
+</body>
+</html>`
+      },
+      {
+        id: 'f-css',
+        name: 'style.css',
+        type: 'css',
+        content: `body {
+  font-family: system-ui, sans-serif;
+  padding: 30px;
+  background-color: #f8fafc;
+  color: #1e293b;
+}
+h1 { color: #0284c7; }
+button {
+  margin-top: 15px;
+  padding: 8px 16px;
+  background: #0284c7;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}`
+      },
+      {
+        id: 'f-js',
+        name: 'script.js',
+        type: 'js',
+        content: `console.log("Concept loaded!");
+document.getElementById('demoBtn').addEventListener('click', () => {
+  console.log("Button clicked at:", new Date().toLocaleTimeString());
+  alert("Hello from script.js!");
+});`
+      }
+    ],
+
+    'blank-single': [
+      {
+        id: 'f-index',
+        name: 'index.html',
+        type: 'html',
+        content: `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Single-File Concept</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 40px;
+      text-align: center;
+      background: #111;
+      color: #eee;
+    }
+    .box {
+      display: inline-block;
+      padding: 20px 40px;
+      border: 2px solid #38bdf8;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>Single File Concept</h2>
+    <p>Everything in one file: HTML, &lt;style&gt;, and &lt;script&gt;.</p>
+  </div>
+
+  <script>
+    console.log("Single file concept running!");
+  </script>
+</body>
+</html>`
+      }
+    ]
+  };
+
+  // ---------------------------------------------------------------------------
+  // State
+  // ---------------------------------------------------------------------------
+  let state = {
+    files: [],
+    activeFileId: null,
+    openTabIds: [],
+    autoRun: true,
+    theme: 'theme-dark',
+    logCount: 0
+  };
+
+  let runDebounceTimer = null;
+  let activeBlobUrls = [];
+  let cmEditor = null;
+
+  function getCodeMirrorMode(fileType) {
+    switch (fileType) {
+      case 'html': return 'htmlmixed';
+      case 'css': return 'css';
+      case 'js': return 'javascript';
+      case 'json': return { name: 'javascript', json: true };
+      default: return 'text/plain';
+    }
+  }
+
+  function getCodeMirrorTheme(theme) {
+    return theme === 'theme-light' ? 'eclipse' : 'dracula';
+  }
+
+  // ---------------------------------------------------------------------------
+  // DOM Elements
+  // ---------------------------------------------------------------------------
+  const els = {
+    fileList: document.getElementById('fileList'),
+    tabsBar: document.getElementById('tabsBar'),
+    codeEditor: document.getElementById('codeEditor'),
+    lineNumbers: document.getElementById('lineNumbers'),
+    cursorPos: document.getElementById('cursorPos'),
+    previewFrame: document.getElementById('previewFrame'),
+    runBtn: document.getElementById('runBtn'),
+    autoRunCheckbox: document.getElementById('autoRunCheckbox'),
+    formatBtn: document.getElementById('formatBtn'),
+    resetBtn: document.getElementById('resetBtn'),
+    themeToggleBtn: document.getElementById('themeToggleBtn'),
+    templateSelect: document.getElementById('templateSelect'),
+    newFileBtn: document.getElementById('newFileBtn'),
+    fileModal: document.getElementById('fileModal'),
+    newFileName: document.getElementById('newFileName'),
+    confirmFileBtn: document.getElementById('confirmFileBtn'),
+    cancelFileBtn: document.getElementById('cancelFileBtn'),
+    closeModalBtn: document.getElementById('closeModalBtn'),
+    exportMenuBtn: document.getElementById('exportMenuBtn'),
+    exportDropdown: document.getElementById('exportDropdown'),
+    exportSingleHtmlBtn: document.getElementById('exportSingleHtmlBtn'),
+    exportZipBtn: document.getElementById('exportZipBtn'),
+    copyBundleBtn: document.getElementById('copyBundleBtn'),
+    clearConsoleBtn: document.getElementById('clearConsoleBtn'),
+    toggleConsoleBtn: document.getElementById('toggleConsoleBtn'),
+    consoleDrawer: document.getElementById('consoleDrawer'),
+    consoleLogs: document.getElementById('consoleLogs'),
+    consoleToggleIcon: document.getElementById('consoleToggleIcon'),
+    logCount: document.getElementById('logCount'),
+    runtimeErrorBanner: document.getElementById('runtimeErrorBanner'),
+    mainSplitter: document.getElementById('mainSplitter'),
+    consoleSplitter: document.getElementById('consoleSplitter'),
+    editorPane: document.getElementById('editorPane'),
+    fileExplorer: document.getElementById('fileExplorer'),
+    collapseExplorerBtn: document.getElementById('collapseExplorerBtn'),
+    expandExplorerBtn: document.getElementById('expandExplorerBtn'),
+    refreshPreviewBtn: document.getElementById('refreshPreviewBtn'),
+    openNewTabBtn: document.getElementById('openNewTabBtn'),
+    modeBadge: document.getElementById('modeBadge'),
+    toast: document.getElementById('toast')
+  };
+
+  // ---------------------------------------------------------------------------
+  // Persistence Helpers
+  // ---------------------------------------------------------------------------
+  const STORAGE_KEY = 'ag_web_playground_state';
+
+  function saveState() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        files: state.files,
+        activeFileId: state.activeFileId,
+        openTabIds: state.openTabIds,
+        autoRun: state.autoRun,
+        theme: state.theme
+      }));
+    } catch (e) {
+      console.warn("Could not save state to localStorage:", e);
+    }
+  }
+
+  function loadState() {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.files && parsed.files.length > 0) {
+          state.files = parsed.files;
+          state.activeFileId = parsed.activeFileId || parsed.files[0].id;
+          state.openTabIds = parsed.openTabIds || [state.activeFileId];
+          state.autoRun = parsed.autoRun ?? true;
+          state.theme = parsed.theme || 'theme-dark';
+          return true;
+        }
+      }
+    } catch (e) {
+      console.warn("Could not load state:", e);
+    }
+    return false;
+  }
+
+  // ---------------------------------------------------------------------------
+  // File System Operations
+  // ---------------------------------------------------------------------------
+  function getFileType(fileName) {
+    if (fileName.endsWith('.html') || fileName.endsWith('.htm')) return 'html';
+    if (fileName.endsWith('.css')) return 'css';
+    if (fileName.endsWith('.js') || fileName.endsWith('.mjs')) return 'js';
+    if (fileName.endsWith('.json')) return 'json';
+    return 'other';
+  }
+
+  function getActiveFile() {
+    return state.files.find(f => f.id === state.activeFileId) || state.files[0];
+  }
+
+  function setFileContent(fileId, content) {
+    const file = state.files.find(f => f.id === fileId);
+    if (file) {
+      file.content = content;
+      saveState();
+      if (state.autoRun) {
+        scheduleRun();
+      }
+    }
+  }
+
+  function openFile(fileId) {
+    const file = state.files.find(f => f.id === fileId);
+    if (!file) return;
+
+    state.activeFileId = fileId;
+    if (!state.openTabIds.includes(fileId)) {
+      state.openTabIds.push(fileId);
+    }
+
+    renderFileTree();
+    renderTabs();
+    syncEditorContent();
+    saveState();
+  }
+
+  function closeTab(fileId, e) {
+    if (e) e.stopPropagation();
+    state.openTabIds = state.openTabIds.filter(id => id !== fileId);
+
+    if (state.activeFileId === fileId) {
+      state.activeFileId = state.openTabIds.length > 0 
+        ? state.openTabIds[state.openTabIds.length - 1] 
+        : (state.files[0] ? state.files[0].id : null);
+    }
+
+    renderTabs();
+    renderFileTree();
+    syncEditorContent();
+    saveState();
+  }
+
+  function createFile(name) {
+    name = name.trim();
+    if (!name) return showToast('File name cannot be empty');
+
+    const exists = state.files.some(f => f.name.toLowerCase() === name.toLowerCase());
+    if (exists) return showToast(`File "${name}" already exists`);
+
+    const id = 'f-' + Date.now();
+    const type = getFileType(name);
+    let defaultContent = '';
+    if (type === 'html') defaultContent = '<!DOCTYPE html>\n<html>\n<head>\n  <title>New Page</title>\n</head>\n<body>\n  \n</body>\n</html>';
+    else if (type === 'css') defaultContent = '/* New Styles */\n';
+    else if (type === 'js') defaultContent = '// New Module\n';
+
+    const newFile = { id, name, type, content: defaultContent };
+    state.files.push(newFile);
+    openFile(id);
+    updateModeBadge();
+    showToast(`Created ${name}`);
+  }
+
+  function deleteFile(fileId, e) {
+    if (e) e.stopPropagation();
+    const file = state.files.find(f => f.id === fileId);
+    if (!file) return;
+
+    if (state.files.length <= 1) {
+      return showToast('Cannot delete the only file.');
+    }
+
+    if (!confirm(`Are you sure you want to delete "${file.name}"?`)) return;
+
+    state.files = state.files.filter(f => f.id !== fileId);
+    state.openTabIds = state.openTabIds.filter(id => id !== fileId);
+
+    if (state.activeFileId === fileId) {
+      state.activeFileId = state.files[0].id;
+      if (!state.openTabIds.includes(state.activeFileId)) {
+        state.openTabIds.push(state.activeFileId);
+      }
+    }
+
+    renderFileTree();
+    renderTabs();
+    syncEditorContent();
+    saveState();
+    updateModeBadge();
+    runCode();
+    showToast(`Deleted ${file.name}`);
+  }
+
+  function updateModeBadge() {
+    const isSingle = state.files.length === 1;
+    els.modeBadge.textContent = isSingle ? 'Single-File' : 'Multi-File';
+  }
+
+  // ---------------------------------------------------------------------------
+  // Rendering UI
+  // ---------------------------------------------------------------------------
+  function renderFileTree() {
+    els.fileList.innerHTML = '';
+    state.files.forEach(file => {
+      const item = document.createElement('div');
+      item.className = `file-item ${file.id === state.activeFileId ? 'active' : ''}`;
+      item.innerHTML = `
+        <div class="file-item-left">
+          <span class="file-icon ${file.type}">${file.type.toUpperCase()}</span>
+          <span class="file-name">${escapeHtml(file.name)}</span>
+        </div>
+        <div class="file-item-actions">
+          <button class="file-action-btn delete-file" title="Delete file">✕</button>
+        </div>
+      `;
+
+      item.addEventListener('click', () => openFile(file.id));
+      const delBtn = item.querySelector('.delete-file');
+      delBtn.addEventListener('click', (e) => deleteFile(file.id, e));
+
+      els.fileList.appendChild(item);
+    });
+  }
+
+  function renderTabs() {
+    els.tabsBar.innerHTML = '';
+    state.openTabIds.forEach(id => {
+      const file = state.files.find(f => f.id === id);
+      if (!file) return;
+
+      const tab = document.createElement('div');
+      tab.className = `tab ${file.id === state.activeFileId ? 'active' : ''}`;
+      tab.innerHTML = `
+        <span class="file-icon ${file.type}">${file.type.toUpperCase()}</span>
+        <span>${escapeHtml(file.name)}</span>
+        <span class="tab-close" title="Close Tab">&times;</span>
+      `;
+
+      tab.addEventListener('click', () => openFile(file.id));
+      tab.querySelector('.tab-close').addEventListener('click', (e) => closeTab(file.id, e));
+
+      els.tabsBar.appendChild(tab);
+    });
+  }
+
+  function initCodeMirror() {
+    if (typeof CodeMirror === 'undefined') {
+      console.warn("CodeMirror not loaded; falling back to basic textarea editor.");
+      return;
+    }
+
+    const wrapper = document.querySelector('.editor-wrapper');
+    if (wrapper) wrapper.classList.add('has-codemirror');
+
+    const activeFile = getActiveFile();
+    const mode = activeFile ? getCodeMirrorMode(activeFile.type) : 'htmlmixed';
+    const theme = getCodeMirrorTheme(state.theme);
+
+    cmEditor = CodeMirror.fromTextArea(els.codeEditor, {
+      mode: mode,
+      theme: theme,
+      lineNumbers: true,
+      lineWrapping: false,
+      tabSize: 2,
+      indentUnit: 2,
+      autoCloseBrackets: true,
+      autoCloseTags: true,
+      styleActiveLine: true,
+      extraKeys: {
+        'Ctrl-Enter': () => { runCode(); showToast('Code executed!'); },
+        'Cmd-Enter': () => { runCode(); showToast('Code executed!'); },
+        'Ctrl-S': () => { saveState(); runCode(); showToast('Project saved!'); },
+        'Cmd-S': () => { saveState(); runCode(); showToast('Project saved!'); },
+        'Tab': (cm) => {
+          if (cm.somethingSelected()) {
+            cm.indentSelection("add");
+          } else {
+            cm.replaceSelection("  ", "end");
+          }
+        },
+        'Shift-Tab': (cm) => {
+          cm.indentSelection("subtract");
+        }
+      }
+    });
+
+    cmEditor.on('change', () => {
+      const activeFile = getActiveFile();
+      if (activeFile && cmEditor.getValue() !== activeFile.content) {
+        setFileContent(activeFile.id, cmEditor.getValue());
+      }
+    });
+
+    cmEditor.on('cursorActivity', () => {
+      const cursor = cmEditor.getCursor();
+      els.cursorPos.textContent = `Ln ${cursor.line + 1}, Col ${cursor.ch + 1}`;
+    });
+  }
+
+  function syncEditorContent() {
+    const activeFile = getActiveFile();
+    if (!activeFile) {
+      if (cmEditor) {
+        cmEditor.setValue('');
+      } else {
+        els.codeEditor.value = '';
+        updateLineNumbers('');
+      }
+      return;
+    }
+
+    if (cmEditor) {
+      if (cmEditor.getValue() !== activeFile.content) {
+        cmEditor.setValue(activeFile.content);
+        cmEditor.clearHistory();
+      }
+      cmEditor.setOption('mode', getCodeMirrorMode(activeFile.type));
+      cmEditor.setOption('theme', getCodeMirrorTheme(state.theme));
+      setTimeout(() => cmEditor.refresh(), 10);
+    } else {
+      els.codeEditor.value = activeFile.content;
+      updateLineNumbers(activeFile.content);
+      updateCursorPos();
+    }
+  }
+
+  function updateLineNumbers(text) {
+    const lines = text.split('\n').length;
+    let numbers = '';
+    for (let i = 1; i <= lines; i++) {
+      numbers += i + '\n';
+    }
+    els.lineNumbers.innerText = numbers;
+  }
+
+  function updateCursorPos() {
+    const val = els.codeEditor.value;
+    const selStart = els.codeEditor.selectionStart;
+    const lines = val.substring(0, selStart).split('\n');
+    const row = lines.length;
+    const col = lines[lines.length - 1].length + 1;
+    els.cursorPos.textContent = `Ln ${row}, Col ${col}`;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Virtual Bundler & Sandboxed Execution Engine
+  // ---------------------------------------------------------------------------
+  function cleanActiveBlobs() {
+    activeBlobUrls.forEach(url => URL.revokeObjectURL(url));
+    activeBlobUrls = [];
+  }
+
+  /**
+   * Bundles virtual files into a single self-contained HTML document.
+   * Resolves <link href="xxx.css"> and generates an ES Module importmap for JS files.
+   */
+  function bundleProject() {
+    cleanActiveBlobs();
+
+    // 1. Identify Entry Point: Default to index.html, or first HTML file, or create minimal wrapper
+    let entryHtmlFile = state.files.find(f => f.name.toLowerCase() === 'index.html') 
+      || state.files.find(f => f.type === 'html');
+
+    let htmlContent = '';
+    if (entryHtmlFile) {
+      htmlContent = entryHtmlFile.content;
+    } else {
+      // If user has no HTML file (e.g. only JS and CSS), synthesize entry
+      htmlContent = `<!DOCTYPE html><html><head><title>Preview</title></head><body><div id="root"></div></body></html>`;
+    }
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(htmlContent, 'text/html');
+
+    // 2. Resolve CSS Links (<link rel="stylesheet" href="...">)
+    const linkTags = Array.from(doc.querySelectorAll('link[rel="stylesheet"]'));
+    linkTags.forEach(link => {
+      const href = link.getAttribute('href');
+      if (!href) return;
+      const cleanHref = href.replace(/^(\.\/|\/)/, '');
+      const matchingFile = state.files.find(f => f.name === cleanHref && f.type === 'css');
+      if (matchingFile) {
+        const styleTag = doc.createElement('style');
+        styleTag.setAttribute('data-bundle-source', matchingFile.name);
+        styleTag.textContent = matchingFile.content;
+        link.replaceWith(styleTag);
+      }
+    });
+
+    // 3. Resolve Virtual JavaScript Files via ES Module Import Map
+    // Modern browsers support native importmaps: { imports: { "./store.js": "blob:..." } }
+    const importMap = { imports: {} };
+    const jsFiles = state.files.filter(f => f.type === 'js');
+
+    jsFiles.forEach(file => {
+      const blob = new Blob([file.content], { type: 'application/javascript' });
+      const blobUrl = URL.createObjectURL(blob);
+      activeBlobUrls.push(blobUrl);
+
+      // Map variations: store.js, ./store.js, /store.js
+      importMap.imports[file.name] = blobUrl;
+      importMap.imports['./' + file.name] = blobUrl;
+      importMap.imports['/' + file.name] = blobUrl;
+    });
+
+    // 4. Resolve standard non-module <script src="...">
+    const scriptTags = Array.from(doc.querySelectorAll('script[src]'));
+    scriptTags.forEach(script => {
+      const src = script.getAttribute('src');
+      if (!src) return;
+      const cleanSrc = src.replace(/^(\.\/|\/)/, '');
+      const isModule = script.getAttribute('type') === 'module';
+
+      const matchingFile = jsFiles.find(f => f.name === cleanSrc);
+      if (matchingFile) {
+        if (isModule) {
+          // Point src to blob url
+          const blobUrl = importMap.imports[matchingFile.name];
+          script.setAttribute('src', blobUrl);
+        } else {
+          // Inline standard script
+          const inlineScript = doc.createElement('script');
+          inlineScript.setAttribute('data-bundle-source', matchingFile.name);
+          inlineScript.textContent = matchingFile.content;
+          script.replaceWith(inlineScript);
+        }
+      }
+    });
+
+    // 5. Inject Import Map if JS files exist
+    if (jsFiles.length > 0) {
+      const mapScript = doc.createElement('script');
+      mapScript.type = 'importmap';
+      mapScript.textContent = JSON.stringify(importMap, null, 2);
+      doc.head.insertBefore(mapScript, doc.head.firstChild);
+    }
+
+    // 6. Inject Console Interceptor & Error Boundary into <head>
+    const consoleInterceptor = doc.createElement('script');
+    consoleInterceptor.textContent = `
+      (function() {
+        function serialize(arg) {
+          if (arg === null) return 'null';
+          if (arg === undefined) return 'undefined';
+          if (typeof arg === 'object') {
+            try { return JSON.stringify(arg, null, 2); } catch(e) { return String(arg); }
+          }
+          return String(arg);
+        }
+        function send(level, args) {
+          try {
+            const formatted = Array.from(args).map(serialize).join(' ');
+            window.parent.postMessage({
+              type: 'AG_CONSOLE_EVENT',
+              level: level,
+              message: formatted,
+              timestamp: new Date().toLocaleTimeString()
+            }, '*');
+          } catch(err) {}
+        }
+        ['log', 'info', 'warn', 'error', 'debug'].forEach(function(fn) {
+          const original = console[fn];
+          console[fn] = function() {
+            send(fn, arguments);
+            if (original) original.apply(console, arguments);
+          };
+        });
+        window.addEventListener('error', function(e) {
+          send('error', [e.message + ' (' + (e.filename || 'script') + ':' + e.lineno + ')']);
+        });
+        window.addEventListener('unhandledrejection', function(e) {
+          send('error', ['Unhandled Promise Rejection: ' + (e.reason ? (e.reason.stack || e.reason) : e)]);
+        });
+      })();
+    `;
+    doc.head.insertBefore(consoleInterceptor, doc.head.firstChild);
+
+    return doc.documentElement.outerHTML;
+  }
+
+  function runCode() {
+    els.runtimeErrorBanner.classList.add('hidden');
+    els.runtimeErrorBanner.textContent = '';
+
+    try {
+      const bundledHtml = bundleProject();
+      els.previewFrame.srcdoc = bundledHtml;
+    } catch (err) {
+      displayRuntimeError('Compilation / Bundle Error: ' + err.message);
+    }
+  }
+
+  function scheduleRun() {
+    clearTimeout(runDebounceTimer);
+    runDebounceTimer = setTimeout(runCode, 500);
+  }
+
+  function displayRuntimeError(msg) {
+    els.runtimeErrorBanner.textContent = msg;
+    els.runtimeErrorBanner.classList.remove('hidden');
+    addConsoleLog('error', msg, new Date().toLocaleTimeString());
+  }
+
+  // ---------------------------------------------------------------------------
+  // Console Panel Management
+  // ---------------------------------------------------------------------------
+  function addConsoleLog(level, message, timestamp) {
+    state.logCount++;
+    els.logCount.textContent = `${state.logCount} log${state.logCount === 1 ? '' : 's'}`;
+
+    const emptyPlaceholder = els.consoleLogs.querySelector('.console-empty');
+    if (emptyPlaceholder) emptyPlaceholder.remove();
+
+    const line = document.createElement('div');
+    line.className = `console-line ${level}`;
+    line.innerHTML = `
+      <span class="timestamp">[${timestamp}]</span>
+      <span class="msg">${escapeHtml(message)}</span>
+    `;
+
+    els.consoleLogs.appendChild(line);
+    els.consoleLogs.scrollTop = els.consoleLogs.scrollHeight;
+  }
+
+  function clearConsole() {
+    state.logCount = 0;
+    els.logCount.textContent = '0 logs';
+    els.consoleLogs.innerHTML = '<div class="console-empty">Console cleared.</div>';
+  }
+
+  window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'AG_CONSOLE_EVENT') {
+      const { level, message, timestamp } = event.data;
+      addConsoleLog(level, message, timestamp);
+    }
+  });
+
+  // ---------------------------------------------------------------------------
+  // Editor Enhancements (Tabs, Newlines, Shortcuts)
+  // ---------------------------------------------------------------------------
+  function setupEditorKeyHandlers() {
+    const editor = els.codeEditor;
+
+    editor.addEventListener('input', () => {
+      const activeFile = getActiveFile();
+      if (activeFile) {
+        setFileContent(activeFile.id, editor.value);
+        updateLineNumbers(editor.value);
+      }
+    });
+
+    editor.addEventListener('keydown', (e) => {
+      // Shortcut: Ctrl + Enter to Run
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        runCode();
+        showToast('Code executed!');
+        return;
+      }
+
+      // Shortcut: Ctrl + S to save & run
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        saveState();
+        runCode();
+        showToast('Project saved!');
+        return;
+      }
+
+      // Tab Indentation handling
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        const start = editor.selectionStart;
+        const end = editor.selectionEnd;
+        const value = editor.value;
+
+        if (e.shiftKey) {
+          // Shift+Tab: Unindent
+          const before = value.substring(0, start);
+          const lastNewline = before.lastIndexOf('\n');
+          const lineStart = lastNewline === -1 ? 0 : lastNewline + 1;
+          if (value.substring(lineStart, lineStart + 2) === '  ') {
+            editor.value = value.substring(0, lineStart) + value.substring(lineStart + 2);
+            editor.selectionStart = editor.selectionEnd = Math.max(lineStart, start - 2);
+          }
+        } else {
+          // Tab: Insert 2 spaces
+          editor.value = value.substring(0, start) + '  ' + value.substring(end);
+          editor.selectionStart = editor.selectionEnd = start + 2;
+        }
+
+        const activeFile = getActiveFile();
+        if (activeFile) setFileContent(activeFile.id, editor.value);
+        updateLineNumbers(editor.value);
+        return;
+      }
+
+      // Auto-indent on Enter
+      if (e.key === 'Enter') {
+        const start = editor.selectionStart;
+        const value = editor.value;
+        const currentLine = value.substring(0, start).split('\n').pop();
+        const match = currentLine.match(/^\s+/);
+        const indent = match ? match[0] : '';
+
+        // If line ends with opening brace, add extra indent
+        const extraIndent = currentLine.trim().endsWith('{') ? '  ' : '';
+
+        setTimeout(() => {
+          const insert = indent + extraIndent;
+          if (insert) {
+            const pos = editor.selectionStart;
+            editor.value = editor.value.substring(0, pos) + insert + editor.value.substring(pos);
+            editor.selectionStart = editor.selectionEnd = pos + insert.length;
+            const activeFile = getActiveFile();
+            if (activeFile) setFileContent(activeFile.id, editor.value);
+            updateLineNumbers(editor.value);
+          }
+        }, 0);
+      }
+
+      // Auto-close brackets
+      const pairs = { '(': ')', '{': '}', '[': ']', '"': '"', "'": "'", '`': '`' };
+      if (pairs[e.key]) {
+        const start = editor.selectionStart;
+        const end = editor.selectionEnd;
+        if (start === end) {
+          const char = e.key;
+          const closeChar = pairs[char];
+          editor.value = editor.value.substring(0, start) + char + closeChar + editor.value.substring(end);
+          editor.selectionStart = editor.selectionEnd = start + 1;
+          e.preventDefault();
+          const activeFile = getActiveFile();
+          if (activeFile) setFileContent(activeFile.id, editor.value);
+          updateLineNumbers(editor.value);
+        }
+      }
+    });
+
+    // Synchronize scroll with line numbers
+    editor.addEventListener('scroll', () => {
+      els.lineNumbers.scrollTop = editor.scrollTop;
+    });
+
+    // Cursor position tracking
+    ['keyup', 'click', 'focus'].forEach(evt => {
+      editor.addEventListener(evt, updateCursorPos);
+    });
+  }
+
+  // ---------------------------------------------------------------------------
+  // Format / Pretty Print
+  // ---------------------------------------------------------------------------
+  function formatActiveFile() {
+    const file = getActiveFile();
+    if (!file) return;
+
+    let content = file.content;
+    try {
+      if (file.type === 'json') {
+        content = JSON.stringify(JSON.parse(content), null, 2);
+      } else {
+        // Lightweight standard indentation cleaning
+        const lines = content.split('\n');
+        let indentLevel = 0;
+        const formatted = lines.map(line => {
+          const trimmed = line.trim();
+          if (!trimmed) return '';
+          if (trimmed.startsWith('}') || trimmed.startsWith('</') || trimmed.startsWith(']')) {
+            indentLevel = Math.max(0, indentLevel - 1);
+          }
+          const res = '  '.repeat(indentLevel) + trimmed;
+          if (trimmed.endsWith('{') || (trimmed.startsWith('<') && !trimmed.startsWith('</') && !trimmed.endsWith('/>') && !trimmed.includes('</'))) {
+            if (!trimmed.startsWith('<!')) indentLevel++;
+          }
+          return res;
+        });
+        content = formatted.join('\n');
+      }
+
+      file.content = content;
+      syncEditorContent();
+      saveState();
+      showToast(`Formatted ${file.name}`);
+    } catch (e) {
+      showToast('Could not auto-format: ' + e.message);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Export Capabilities
+  // ---------------------------------------------------------------------------
+  function exportSingleHtml() {
+    // Generate standalone portable bundle where everything is fully inlined
+    const bundledHtml = bundleProject();
+    downloadFile('standalone_concept.html', bundledHtml, 'text/html');
+    showToast('Downloaded standalone_concept.html');
+  }
+
+  function exportZip() {
+    if (typeof JSZip === 'undefined') {
+      return showToast('JSZip not ready. Use Single .HTML export.');
+    }
+    const zip = new JSZip();
+    state.files.forEach(file => {
+      zip.file(file.name, file.content);
+    });
+
+    zip.generateAsync({ type: 'blob' }).then(content => {
+      const url = URL.createObjectURL(content);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'web_playground_project.zip';
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Downloaded project ZIP');
+    }).catch(err => {
+      showToast('ZIP error: ' + err.message);
+    });
+  }
+
+  function copyBundleToClipboard() {
+    const bundledHtml = bundleProject();
+    navigator.clipboard.writeText(bundledHtml).then(() => {
+      showToast('Copied standalone HTML to clipboard!');
+    }).catch(() => {
+      showToast('Failed to copy to clipboard');
+    });
+  }
+
+  function downloadFile(filename, content, type) {
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Resizable Panels
+  // ---------------------------------------------------------------------------
+  function setupResizers() {
+    let isDraggingMain = false;
+    let isDraggingConsole = false;
+
+    // Main splitter (Horizontal)
+    els.mainSplitter.addEventListener('mousedown', () => {
+      isDraggingMain = true;
+      els.mainSplitter.classList.add('dragging');
+      document.body.style.cursor = 'col-resize';
+    });
+
+    // Console splitter (Vertical)
+    els.consoleSplitter.addEventListener('mousedown', () => {
+      isDraggingConsole = true;
+      els.consoleSplitter.classList.add('dragging');
+      document.body.style.cursor = 'row-resize';
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (isDraggingMain) {
+        const workbenchRect = document.querySelector('.workbench').getBoundingClientRect();
+        const explorerWidth = els.fileExplorer.classList.contains('collapsed') ? 0 : els.fileExplorer.offsetWidth;
+        const newEditorWidth = e.clientX - workbenchRect.left - explorerWidth;
+        if (newEditorWidth > 200 && newEditorWidth < workbenchRect.width - explorerWidth - 200) {
+          els.editorPane.style.flex = 'none';
+          els.editorPane.style.width = `${newEditorWidth}px`;
+          if (cmEditor) cmEditor.refresh();
+        }
+      }
+
+      if (isDraggingConsole) {
+        const outputRect = document.getElementById('outputPane').getBoundingClientRect();
+        const newConsoleHeight = outputRect.bottom - e.clientY;
+        if (newConsoleHeight >= 36 && newConsoleHeight < outputRect.height - 100) {
+          els.consoleDrawer.classList.remove('collapsed');
+          els.consoleDrawer.style.height = `${newConsoleHeight}px`;
+        }
+      }
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (isDraggingMain) {
+        isDraggingMain = false;
+        els.mainSplitter.classList.remove('dragging');
+        document.body.style.cursor = '';
+        if (cmEditor) cmEditor.refresh();
+      }
+      if (isDraggingConsole) {
+        isDraggingConsole = false;
+        els.consoleSplitter.classList.remove('dragging');
+        document.body.style.cursor = '';
+      }
+    });
+  }
+
+  // ---------------------------------------------------------------------------
+  // Toast & Utilities
+  // ---------------------------------------------------------------------------
+  function showToast(message) {
+    els.toast.textContent = message;
+    els.toast.classList.remove('hidden');
+    clearTimeout(els.toast._timer);
+    els.toast._timer = setTimeout(() => {
+      els.toast.classList.add('hidden');
+    }, 2800);
+  }
+
+  function escapeHtml(str) {
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function loadTemplate(key) {
+    if (!TEMPLATES[key]) return;
+    if (confirm(`Load template "${key}"? This will overwrite your current playground files.`)) {
+      state.files = JSON.parse(JSON.stringify(TEMPLATES[key]));
+      state.activeFileId = state.files[0].id;
+      state.openTabIds = state.files.map(f => f.id);
+      renderFileTree();
+      renderTabs();
+      syncEditorContent();
+      updateModeBadge();
+      clearConsole();
+      runCode();
+      saveState();
+      showToast(`Loaded template`);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Event Listeners & Initialization
+  // ---------------------------------------------------------------------------
+  function initEventListeners() {
+    // Top Bar Actions
+    els.runBtn.addEventListener('click', () => {
+      runCode();
+      showToast('Code executed!');
+    });
+
+    els.autoRunCheckbox.addEventListener('change', (e) => {
+      state.autoRun = e.target.checked;
+      saveState();
+      if (state.autoRun) runCode();
+    });
+
+    els.formatBtn.addEventListener('click', formatActiveFile);
+
+    els.resetBtn.addEventListener('click', () => {
+      loadTemplate('blank-multifile');
+    });
+
+    els.themeToggleBtn.addEventListener('click', () => {
+      state.theme = state.theme === 'theme-dark' ? 'theme-light' : 'theme-dark';
+      document.body.className = state.theme;
+      if (cmEditor) {
+        cmEditor.setOption('theme', getCodeMirrorTheme(state.theme));
+      }
+      saveState();
+    });
+
+    els.templateSelect.addEventListener('change', (e) => {
+      loadTemplate(e.target.value);
+      e.target.value = '';
+    });
+
+    // File Explorer Toggle
+    els.collapseExplorerBtn.addEventListener('click', () => {
+      els.fileExplorer.classList.add('collapsed');
+      els.expandExplorerBtn.classList.remove('hidden');
+      if (cmEditor) setTimeout(() => cmEditor.refresh(), 160);
+    });
+    els.expandExplorerBtn.addEventListener('click', () => {
+      els.fileExplorer.classList.remove('collapsed');
+      els.expandExplorerBtn.classList.add('hidden');
+      if (cmEditor) setTimeout(() => cmEditor.refresh(), 160);
+    });
+
+    // Modal Create File
+    els.newFileBtn.addEventListener('click', () => {
+      els.newFileName.value = '';
+      els.fileModal.classList.remove('hidden');
+      setTimeout(() => els.newFileName.focus(), 50);
+    });
+    els.closeModalBtn.addEventListener('click', () => els.fileModal.classList.add('hidden'));
+    els.cancelFileBtn.addEventListener('click', () => els.fileModal.classList.add('hidden'));
+    els.confirmFileBtn.addEventListener('click', () => {
+      createFile(els.newFileName.value);
+      els.fileModal.classList.add('hidden');
+    });
+    els.newFileName.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        createFile(els.newFileName.value);
+        els.fileModal.classList.add('hidden');
+      } else if (e.key === 'Escape') {
+        els.fileModal.classList.add('hidden');
+      }
+    });
+
+    // Export Dropdown
+    els.exportMenuBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      els.exportDropdown.classList.toggle('hidden');
+    });
+    window.addEventListener('click', () => {
+      els.exportDropdown.classList.add('hidden');
+    });
+    els.exportSingleHtmlBtn.addEventListener('click', exportSingleHtml);
+    els.exportZipBtn.addEventListener('click', exportZip);
+    els.copyBundleBtn.addEventListener('click', copyBundleToClipboard);
+
+    // Output Preview Actions
+    els.refreshPreviewBtn.addEventListener('click', runCode);
+    els.openNewTabBtn.addEventListener('click', () => {
+      const bundledHtml = bundleProject();
+      const blob = new Blob([bundledHtml], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+    });
+
+    // Console Actions
+    els.clearConsoleBtn.addEventListener('click', clearConsole);
+    els.toggleConsoleBtn.addEventListener('click', () => {
+      els.consoleDrawer.classList.toggle('collapsed');
+      const isCollapsed = els.consoleDrawer.classList.contains('collapsed');
+      els.consoleToggleIcon.style.transform = isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)';
+    });
+
+    setupEditorKeyHandlers();
+    setupResizers();
+  }
+
+  function init() {
+    const hasExisting = loadState();
+    if (!hasExisting) {
+      // Default to the Modular Kanban multi-file template
+      state.files = JSON.parse(JSON.stringify(TEMPLATES['multifile-kanban']));
+      state.activeFileId = state.files[0].id;
+      state.openTabIds = state.files.map(f => f.id);
+    }
+
+    document.body.className = state.theme;
+    els.autoRunCheckbox.checked = state.autoRun;
+
+    renderFileTree();
+    renderTabs();
+    initCodeMirror();
+    syncEditorContent();
+    updateModeBadge();
+    initEventListeners();
+
+    // Initial Execution
+    setTimeout(runCode, 200);
+  }
+
+  init();
+})();
