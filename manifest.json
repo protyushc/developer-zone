@@ -1,7 +1,7 @@
 {
   "id": "web-playground-app",
   "name": "Web Playground",
-  "short_name": "WebPlayground",
+  "short_name": "Web Playground",
   "description": "Interactive code editor and live preview workbench for HTML, CSS, and JavaScript with in-browser bundling and virtual file system.",
   "start_url": "./index.html",
   "scope": "./",
