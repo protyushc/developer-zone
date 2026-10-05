@@ -764,10 +764,10 @@ document.getElementById('demoBtn').addEventListener('click', () => {
   let cmEditor = null;
 
   function isMobileViewport() {
-    const isSmallWidth = window.innerWidth <= 780;
+    const isSmallWidth = window.innerWidth <= 880;
     const isLandscapePhone = window.innerHeight <= 550 && window.innerWidth > window.innerHeight && window.innerWidth <= 920;
     const isUltraShort = window.innerHeight <= 500 && window.innerWidth <= 920;
-    const isTouchPhone = /Android|iPhone|iPod/i.test(navigator.userAgent) && window.innerWidth <= 780;
+    const isTouchPhone = /Android|iPhone|iPod|iPad/i.test(navigator.userAgent) && window.innerWidth <= 880;
     return isSmallWidth || isLandscapePhone || isUltraShort || isTouchPhone;
   }
 
@@ -849,6 +849,14 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     mobileCopyBundleBtn: document.getElementById('mobileCopyBundleBtn'),
     mobileResetBtn: document.getElementById('mobileResetBtn'),
     mobileConsoleBadge: document.getElementById('mobileConsoleBadge'),
+    accordionWebTools: document.getElementById('accordionWebTools'),
+    accordionDevTools: document.getElementById('accordionDevTools'),
+    webToolsActiveBadge: document.getElementById('webToolsActiveBadge'),
+    devToolsActiveBadge: document.getElementById('devToolsActiveBadge'),
+    webWorkbenchStatusTag: document.getElementById('webWorkbenchStatusTag'),
+    regexStatusTag: document.getElementById('regexStatusTag'),
+    cronStatusTag: document.getElementById('cronStatusTag'),
+    accordionExport: document.getElementById('accordionExport'),
     // PWA & Installation Elements
     installAppBtn: document.getElementById('installAppBtn'),
     mobileInstallAppBtn: document.getElementById('mobileInstallAppBtn'),
@@ -1827,14 +1835,41 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     });
   }
 
-  function copyBundleToClipboard() {
-    const bundledHtml = bundleProject();
-    navigator.clipboard.writeText(bundledHtml).then(() => {
-      showToast('Copied standalone HTML to clipboard!');
-    }).catch(() => {
-      showToast('Failed to copy to clipboard');
-    });
+  function copyCurrentFileToClipboard() {
+    const file = getActiveFile();
+    if (!file) {
+      showToast('No active file to copy');
+      return;
+    }
+    const content = cmEditor ? cmEditor.getValue() : (els.codeEditor ? els.codeEditor.value : file.content);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(content).then(() => {
+        showToast(`Copied ${file.name} to clipboard!`);
+      }).catch(() => {
+        fallbackCopyText(content, file.name);
+      });
+    } else {
+      fallbackCopyText(content, file.name);
+    }
   }
+
+  function fallbackCopyText(text, fileName = 'current file') {
+    try {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      showToast(`Copied ${fileName} to clipboard!`);
+    } catch (err) {
+      showToast('Failed to copy to clipboard');
+    }
+  }
+
+  const copyBundleToClipboard = copyCurrentFileToClipboard;
 
   function downloadFile(filename, content, type) {
     const blob = new Blob([content], { type });
@@ -1880,12 +1915,49 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     }
   }
 
+  function syncDrawerState() {
+    if (currentAppMode === 'web') {
+      if (els.accordionWebTools) els.accordionWebTools.open = true;
+      if (els.accordionDevTools) els.accordionDevTools.open = false;
+      if (els.webToolsActiveBadge) els.webToolsActiveBadge.classList.remove('hidden');
+      if (els.devToolsActiveBadge) els.devToolsActiveBadge.classList.add('hidden');
+      if (els.mobileWebToolsBtn) els.mobileWebToolsBtn.classList.add('active');
+      if (els.webWorkbenchStatusTag) els.webWorkbenchStatusTag.classList.remove('hidden');
+      if (els.mobileRegexBtn) els.mobileRegexBtn.classList.remove('active');
+      if (els.mobileCronBtn) els.mobileCronBtn.classList.remove('active');
+      if (els.regexStatusTag) els.regexStatusTag.classList.add('hidden');
+      if (els.cronStatusTag) els.cronStatusTag.classList.add('hidden');
+      if (els.mobileWebToolUtils) els.mobileWebToolUtils.classList.remove('hidden');
+    } else {
+      if (els.accordionWebTools) els.accordionWebTools.open = false;
+      if (els.accordionDevTools) els.accordionDevTools.open = true;
+      if (els.webToolsActiveBadge) els.webToolsActiveBadge.classList.add('hidden');
+      if (els.devToolsActiveBadge) els.devToolsActiveBadge.classList.remove('hidden');
+      if (els.mobileWebToolsBtn) els.mobileWebToolsBtn.classList.remove('active');
+      if (els.webWorkbenchStatusTag) els.webWorkbenchStatusTag.classList.add('hidden');
+      if (els.mobileWebToolUtils) els.mobileWebToolUtils.classList.add('hidden');
+
+      if (currentAppMode === 'cron') {
+        if (els.mobileCronBtn) els.mobileCronBtn.classList.add('active');
+        if (els.mobileRegexBtn) els.mobileRegexBtn.classList.remove('active');
+        if (els.cronStatusTag) els.cronStatusTag.classList.remove('hidden');
+        if (els.regexStatusTag) els.regexStatusTag.classList.add('hidden');
+      } else {
+        if (els.mobileRegexBtn) els.mobileRegexBtn.classList.add('active');
+        if (els.mobileCronBtn) els.mobileCronBtn.classList.remove('active');
+        if (els.regexStatusTag) els.regexStatusTag.classList.remove('hidden');
+        if (els.cronStatusTag) els.cronStatusTag.classList.add('hidden');
+      }
+    }
+  }
+
   function openMobileDrawer() {
     if (els.mobileDrawerBackdrop) {
       els.mobileDrawerBackdrop.classList.remove('hidden');
       if (els.mobileAutoRunCheckbox) {
         els.mobileAutoRunCheckbox.checked = state.autoRun;
       }
+      syncDrawerState();
       if (!history.state || history.state.drawer !== 'open') {
         history.pushState({ drawer: 'open' }, '');
       }
@@ -2074,7 +2146,6 @@ document.getElementById('demoBtn').addEventListener('click', () => {
       });
     }
     if (els.closeMobileDrawerBtn) {
-      els.closeMobileDrawerBtn.style.display = 'none'; // hide the close button since we use hamburger to close
       els.closeMobileDrawerBtn.addEventListener('click', closeMobileDrawer);
     }
     if (els.mobileDrawerBackdrop) {
@@ -2103,6 +2174,7 @@ document.getElementById('demoBtn').addEventListener('click', () => {
         closeMobileDrawer();
         if (val) {
           loadTemplate(val);
+          setAppMode('web');
         }
       });
     });
@@ -3033,6 +3105,7 @@ document.getElementById('demoBtn').addEventListener('click', () => {
       if (els.desktopWebToolRight) els.desktopWebToolRight.classList.remove('hidden');
       if (els.mobileRunNavBtn) els.mobileRunNavBtn.classList.remove('hidden');
       if (els.mobileWebToolUtils) els.mobileWebToolUtils.classList.remove('hidden');
+      syncDrawerState();
     } else {
       if (els.devWorkbench) els.devWorkbench.classList.remove('hidden');
       if (els.navDevToolsBtn) els.navDevToolsBtn.classList.add('active');
@@ -3062,6 +3135,7 @@ document.getElementById('demoBtn').addEventListener('click', () => {
       updateRegexChecker();
       if (els.regexPatternInput) setTimeout(() => els.regexPatternInput.focus(), 50);
     }
+    syncDrawerState();
   }
 
   function initDevToolsDefaults() {
