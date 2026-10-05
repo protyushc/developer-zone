@@ -1886,14 +1886,26 @@ document.getElementById('demoBtn').addEventListener('click', () => {
       if (els.mobileAutoRunCheckbox) {
         els.mobileAutoRunCheckbox.checked = state.autoRun;
       }
+      if (!history.state || history.state.drawer !== 'open') {
+        history.pushState({ drawer: 'open' }, '');
+      }
     }
   }
 
-  function closeMobileDrawer() {
-    if (els.mobileDrawerBackdrop) {
+  function closeMobileDrawer(skipHistory = false) {
+    if (els.mobileDrawerBackdrop && !els.mobileDrawerBackdrop.classList.contains('hidden')) {
       els.mobileDrawerBackdrop.classList.add('hidden');
+      if (!skipHistory && history.state && history.state.drawer === 'open') {
+        history.back();
+      }
     }
   }
+
+  window.addEventListener('popstate', (e) => {
+    if (els.mobileDrawerBackdrop && !els.mobileDrawerBackdrop.classList.contains('hidden')) {
+      closeMobileDrawer(true);
+    }
+  });
 
   function toggleTheme() {
     state.theme = state.theme === 'theme-dark' ? 'theme-light' : 'theme-dark';
@@ -2053,9 +2065,16 @@ document.getElementById('demoBtn').addEventListener('click', () => {
       els.mobileThemeNavBtn.addEventListener('click', toggleTheme);
     }
     if (els.mobileMenuBtn) {
-      els.mobileMenuBtn.addEventListener('click', openMobileDrawer);
+      els.mobileMenuBtn.addEventListener('click', () => {
+        if (els.mobileDrawerBackdrop.classList.contains('hidden')) {
+          openMobileDrawer();
+        } else {
+          closeMobileDrawer();
+        }
+      });
     }
     if (els.closeMobileDrawerBtn) {
+      els.closeMobileDrawerBtn.style.display = 'none'; // hide the close button since we use hamburger to close
       els.closeMobileDrawerBtn.addEventListener('click', closeMobileDrawer);
     }
     if (els.mobileDrawerBackdrop) {
