@@ -24,31 +24,31 @@
   "dir": "ltr",
   "icons": [
     {
-      "src": "icons/icon-192.png",
+      "src": "assets/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icons/icon-512.png",
+      "src": "assets/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icons/icon-maskable-192.png",
+      "src": "assets/icons/icon-maskable-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "icons/icon-maskable-512.png",
+      "src": "assets/icons/icon-maskable-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "icons/icon.svg",
+      "src": "assets/icons/icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
@@ -62,7 +62,7 @@
       "url": "./index.html#template=multifile-kanban",
       "icons": [
         {
-          "src": "icons/icon-192.png",
+          "src": "assets/icons/icon-192.png",
           "sizes": "192x192"
         }
       ]
@@ -74,7 +74,7 @@
       "url": "./index.html#template=single-canvas",
       "icons": [
         {
-          "src": "icons/icon-192.png",
+          "src": "assets/icons/icon-192.png",
           "sizes": "192x192"
         }
       ]
@@ -86,7 +86,7 @@
       "url": "./index.html#template=blank-multifile",
       "icons": [
         {
-          "src": "icons/icon-192.png",
+          "src": "assets/icons/icon-192.png",
           "sizes": "192x192"
         }
       ]
