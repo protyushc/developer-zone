@@ -1,0 +1,96 @@
+{
+  "id": "web-playground-app",
+  "name": "Web Playground",
+  "short_name": "WebPlayground",
+  "description": "Interactive code editor and live preview workbench for HTML, CSS, and JavaScript with in-browser bundling and virtual file system.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui",
+    "browser"
+  ],
+  "orientation": "any",
+  "background_color": "#181a1f",
+  "theme_color": "#181a1f",
+  "categories": [
+    "developer",
+    "productivity",
+    "education",
+    "utilities"
+  ],
+  "lang": "en",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Modular Kanban Project",
+      "short_name": "Kanban",
+      "description": "Open with Modular Kanban starter template",
+      "url": "./index.html#template=multifile-kanban",
+      "icons": [
+        {
+          "src": "icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Particle Simulation",
+      "short_name": "Particles",
+      "description": "Open with interactive Canvas Particle template",
+      "url": "./index.html#template=single-canvas",
+      "icons": [
+        {
+          "src": "icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Blank Project",
+      "short_name": "Blank",
+      "description": "Start fresh with empty HTML, CSS, and JS files",
+      "url": "./index.html#template=blank-multifile",
+      "icons": [
+        {
+          "src": "icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}
+

@@ -39,7 +39,13 @@ A lightweight, zero-dependency, self-contained HTML, JavaScript, and CSS playgro
    - **Mobile Options Drawer**: Slide-up sheet for loading templates, live preview toggles, code formatting, and exports.
    - **Responsive Live Preview**: Injects `<meta name="viewport">` into sandboxed output if not specified.
 
-7. **Export & Sharing**:
+7. **Progressive Web App (PWA) & Offline Capability**:
+   - **Installable Native Window**: Built-in **Install App** button in the desktop top-bar and mobile options drawer triggering native app installation (`beforeinstallprompt`).
+   - **Cross-Platform Install Guide**: Integrated install modal providing step-by-step guidance for Chrome, Edge, Safari iOS (Add to Home Screen), and Android.
+   - **Complete Offline Support**: Powered by a Service Worker (`sw.js`) that pre-caches all core assets and local vendor dependencies (CodeMirror, JSZip, fonts).
+   - **App Manifest**: Web App Manifest (`manifest.json`) with standard and maskable icons (192px and 512px) and quick template launch shortcuts.
+
+8. **Export & Sharing**:
    - **Single Standalone `.html`**: Inlines all virtual CSS and JavaScript files into one portable `.html` file that can be double-clicked and opened in any browser offline.
    - **Project `.zip`**: Exports individual files organized in a ZIP archive.
    - **Clipboard**: Copy bundled code in one click.

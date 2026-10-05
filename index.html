@@ -5,7 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover"/>
   <meta name="theme-color" content="#181a1f" id="themeColorMeta"/>
   <title>Web Playground - HTML, JS and CSS workbench</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23007acc' stroke-width='2'><polygon points='12 2 2 7 12 12 22 7 12 2'/><polyline points='2 17 12 22 22 17'/><polyline points='2 12 12 17 22 12'/></svg>"/>
+  <meta name="description" content="Interactive code editor and live preview workbench for HTML, CSS, and JavaScript with in-browser bundling and virtual file system."/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="WebPlayground"/>
+  <link rel="manifest" href="manifest.json"/>
+  <link rel="apple-touch-icon" href="icons/icon-192.png"/>
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg"/>
   <link rel="stylesheet" href="vendor/fonts/fonts.css"/>
   <link rel="stylesheet" href="styles.css"/>
   <!-- Local CodeMirror Syntax Color Coding Styles & Themes -->
@@ -93,6 +100,16 @@
             </button>
           </div>
         </div>
+
+        <button id="installAppBtn" class="btn btn-secondary install-app-btn" title="Install Web Playground as App">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15">
+            <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
+            <polyline points="9 11 12 14 15 11"></polyline>
+            <line x1="12" y1="7" x2="12" y2="14"></line>
+            <line x1="10" y1="18" x2="14" y2="18"></line>
+          </svg>
+          <span class="install-btn-text">Install App</span>
+        </button>
 
         <button id="resetBtn" class="btn btn-icon" title="Reset to Defaults">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
@@ -398,6 +415,24 @@
             </div>
           </div>
 
+          <div class="drawer-section" id="mobilePwaSection">
+            <span class="drawer-label">App &amp; Offline</span>
+            <div class="drawer-btn-list">
+              <button id="mobileInstallAppBtn" class="drawer-action-btn install-app-btn">
+                <div class="action-btn-info">
+                  <span class="action-btn-title">Install Web Playground</span>
+                  <span class="action-btn-sub">Add to Home Screen or Desktop</span>
+                </div>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                  <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
+                  <polyline points="9 11 12 14 15 11"></polyline>
+                  <line x1="12" y1="7" x2="12" y2="14"></line>
+                  <line x1="10" y1="18" x2="14" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+          </div>
+
           <div class="drawer-section">
             <button id="mobileResetBtn" class="btn btn-secondary btn-danger-subtle" style="width: 100%;">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
@@ -426,6 +461,45 @@
         <div class="modal-footer">
           <button id="cancelFileBtn" class="btn btn-secondary">Cancel</button>
           <button id="confirmFileBtn" class="btn btn-primary">Create File</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal for PWA Installation Instructions & Fallback -->
+    <div id="installModal" class="modal-backdrop hidden">
+      <div class="modal pwa-modal">
+        <div class="modal-header">
+          <div class="pwa-modal-header-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+              <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
+              <polyline points="9 11 12 14 15 11"></polyline>
+              <line x1="12" y1="7" x2="12" y2="14"></line>
+              <line x1="10" y1="18" x2="14" y2="18"></line>
+            </svg>
+            <h3>Install Web Playground</h3>
+          </div>
+          <button id="closeInstallModalBtn" class="icon-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="pwa-hero">
+            <img src="icons/icon-192.png" alt="Web Playground" class="pwa-hero-icon" width="56" height="56" />
+            <div class="pwa-hero-text">
+              <h4>Web Playground</h4>
+              <p>Install as standalone application for fast, offline coding</p>
+              <div class="pwa-badges">
+                <span class="pwa-pill">⚡ Works 100% Offline</span>
+                <span class="pwa-pill">🚀 Native Window</span>
+                <span class="pwa-pill">💾 Local Storage</span>
+              </div>
+            </div>
+          </div>
+          <div class="pwa-instructions-box" id="pwaInstructionsBox">
+            <!-- Populated dynamically based on platform -->
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="cancelInstallModalBtn" class="btn btn-secondary">Close</button>
+          <button id="modalNativeInstallBtn" class="btn btn-primary hidden">Install Now</button>
         </div>
       </div>
     </div>
