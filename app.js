@@ -848,7 +848,16 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     mobileExportZipBtn: document.getElementById('mobileExportZipBtn'),
     mobileCopyBundleBtn: document.getElementById('mobileCopyBundleBtn'),
     mobileResetBtn: document.getElementById('mobileResetBtn'),
-    mobileConsoleBadge: document.getElementById('mobileConsoleBadge')
+    mobileConsoleBadge: document.getElementById('mobileConsoleBadge'),
+    // PWA & Installation Elements
+    installAppBtn: document.getElementById('installAppBtn'),
+    mobileInstallAppBtn: document.getElementById('mobileInstallAppBtn'),
+    mobilePwaSection: document.getElementById('mobilePwaSection'),
+    installModal: document.getElementById('installModal'),
+    closeInstallModalBtn: document.getElementById('closeInstallModalBtn'),
+    cancelInstallModalBtn: document.getElementById('cancelInstallModalBtn'),
+    modalNativeInstallBtn: document.getElementById('modalNativeInstallBtn'),
+    pwaInstructionsBox: document.getElementById('pwaInstructionsBox')
   };
 
   // ---------------------------------------------------------------------------
@@ -2102,11 +2111,288 @@ document.getElementById('demoBtn').addEventListener('click', () => {
 
     setupEditorKeyHandlers();
     setupResizers();
+
+    // PWA Install Handlers
+    if (els.installAppBtn) {
+      els.installAppBtn.addEventListener('click', triggerInstallFlow);
+    }
+    if (els.mobileInstallAppBtn) {
+      els.mobileInstallAppBtn.addEventListener('click', () => {
+        closeMobileDrawer();
+        triggerInstallFlow();
+      });
+    }
+    if (els.closeInstallModalBtn) {
+      els.closeInstallModalBtn.addEventListener('click', closeInstallModal);
+    }
+    if (els.cancelInstallModalBtn) {
+      els.cancelInstallModalBtn.addEventListener('click', closeInstallModal);
+    }
+    if (els.modalNativeInstallBtn) {
+      els.modalNativeInstallBtn.addEventListener('click', triggerInstallFlow);
+    }
+    if (els.installModal) {
+      els.installModal.addEventListener('click', (e) => {
+        if (e.target === els.installModal) {
+          closeInstallModal();
+        }
+      });
+    }
+
+    // PWA Browser Install Prompt Event
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      updateInstallButtonUI();
+    });
+
+    // PWA Installed Event
+    window.addEventListener('appinstalled', () => {
+      deferredInstallPrompt = null;
+      updateInstallButtonUI();
+      closeInstallModal();
+      showToast('🎉 Web Playground installed successfully!');
+    });
+  }
+
+  // ---------------------------------------------------------------------------
+  // Progressive Web App (PWA) & Offline Controller
+  // ---------------------------------------------------------------------------
+  let deferredInstallPrompt = null;
+
+  function isStandaloneMode() {
+    return window.matchMedia('(display-mode: standalone)').matches ||
+           window.navigator.standalone === true ||
+           document.referrer.includes('android-app://');
+  }
+
+  function getPlatformInfo() {
+    const ua = navigator.userAgent || '';
+    const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const isAndroid = /Android/i.test(ua);
+    const isEdge = /Edg\//i.test(ua);
+    const isChrome = /Chrome\//i.test(ua) && !isEdge;
+    const isSafari = /Safari\//i.test(ua) && !isChrome && !isEdge;
+    const isFirefox = /Firefox\//i.test(ua);
+    const isMac = /Macintosh/i.test(ua) && !isIOS;
+    const isWindows = /Windows/i.test(ua);
+
+    return { isIOS, isAndroid, isEdge, isChrome, isSafari, isFirefox, isMac, isWindows };
+  }
+
+  function updateInstallButtonUI() {
+    const isInstalled = isStandaloneMode();
+
+    if (isInstalled) {
+      if (els.installAppBtn) {
+        els.installAppBtn.classList.add('hidden');
+      }
+      if (els.mobileInstallAppBtn) {
+        els.mobileInstallAppBtn.classList.add('hidden');
+      }
+      if (els.mobilePwaSection) {
+        els.mobilePwaSection.classList.add('hidden');
+      }
+      return;
+    }
+
+    if (els.installAppBtn) {
+      els.installAppBtn.classList.remove('hidden');
+    }
+    if (els.mobileInstallAppBtn) {
+      els.mobileInstallAppBtn.classList.remove('hidden');
+    }
+    if (els.mobilePwaSection) {
+      els.mobilePwaSection.classList.remove('hidden');
+    }
+
+    if (els.modalNativeInstallBtn) {
+      if (deferredInstallPrompt) {
+        els.modalNativeInstallBtn.classList.remove('hidden');
+      } else {
+        els.modalNativeInstallBtn.classList.add('hidden');
+      }
+    }
+  }
+
+  function renderInstallInstructions() {
+    if (!els.pwaInstructionsBox) return;
+
+    if (deferredInstallPrompt) {
+      els.pwaInstructionsBox.innerHTML = `
+        <div class="pwa-highlight-note">
+          🎉 Web Playground is ready to install directly from your browser!
+        </div>
+        <div class="pwa-step-card">
+          <div class="pwa-step-num">1</div>
+          <div class="pwa-step-content">
+            Click the <strong>"Install Now"</strong> button below to open the prompt.
+          </div>
+        </div>
+        <div class="pwa-step-card">
+          <div class="pwa-step-num">2</div>
+          <div class="pwa-step-content">
+            Confirm the browser prompt to install Web Playground as a standalone native app.
+          </div>
+        </div>
+      `;
+      if (els.modalNativeInstallBtn) {
+        els.modalNativeInstallBtn.classList.remove('hidden');
+      }
+      return;
+    }
+
+    const { isIOS, isAndroid } = getPlatformInfo();
+
+    if (isIOS) {
+      els.pwaInstructionsBox.innerHTML = `
+        <div class="pwa-step-card">
+          <div class="pwa-step-num">1</div>
+          <div class="pwa-step-content">
+            Tap the <strong>Share</strong> button <span class="pwa-inline-kbd">⎋</span> in Safari's bottom toolbar.
+          </div>
+        </div>
+        <div class="pwa-step-card">
+          <div class="pwa-step-num">2</div>
+          <div class="pwa-step-content">
+            Scroll down the menu and tap <strong>"Add to Home Screen"</strong> <span class="pwa-inline-kbd">⊞</span>.
+          </div>
+        </div>
+        <div class="pwa-step-card">
+          <div class="pwa-step-num">3</div>
+          <div class="pwa-step-content">
+            Tap <strong>"Add"</strong> in the top-right corner to launch with its own icon and full-screen view.
+          </div>
+        </div>
+      `;
+    } else if (isAndroid) {
+      els.pwaInstructionsBox.innerHTML = `
+        <div class="pwa-step-card">
+          <div class="pwa-step-num">1</div>
+          <div class="pwa-step-content">
+            Tap the browser menu <span class="pwa-inline-kbd">⋮</span> at the top-right of Chrome.
+          </div>
+        </div>
+        <div class="pwa-step-card">
+          <div class="pwa-step-num">2</div>
+          <div class="pwa-step-content">
+            Select <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong>.
+          </div>
+        </div>
+        <div class="pwa-step-card">
+          <div class="pwa-step-num">3</div>
+          <div class="pwa-step-content">
+            Follow the prompt to add Web Playground to your home screen and app launcher.
+          </div>
+        </div>
+      `;
+    } else {
+      els.pwaInstructionsBox.innerHTML = `
+        <div class="pwa-step-card">
+          <div class="pwa-step-num">1</div>
+          <div class="pwa-step-content">
+            Look for the <strong>Install App icon</strong> <span class="pwa-inline-kbd">⊕</span> in the right side of the address bar.
+          </div>
+        </div>
+        <div class="pwa-step-card">
+          <div class="pwa-step-num">2</div>
+          <div class="pwa-step-content">
+            Or open the browser menu <span class="pwa-inline-kbd">⋮</span> &rarr; select <strong>"Save and share"</strong> or <strong>"Apps"</strong> &rarr; <strong>"Install Web Playground"</strong>.
+          </div>
+        </div>
+        <div class="pwa-step-card">
+          <div class="pwa-step-num">3</div>
+          <div class="pwa-step-content">
+            Click <strong>Install</strong> to enjoy a dedicated window, faster launch, and full offline coding!
+          </div>
+        </div>
+      `;
+    }
+
+    if (els.modalNativeInstallBtn) {
+      els.modalNativeInstallBtn.classList.add('hidden');
+    }
+  }
+
+  function openInstallModal() {
+    renderInstallInstructions();
+    if (els.installModal) {
+      els.installModal.classList.remove('hidden');
+    }
+  }
+
+  function closeInstallModal() {
+    if (els.installModal) {
+      els.installModal.classList.add('hidden');
+    }
+  }
+
+  async function triggerInstallFlow() {
+    if (deferredInstallPrompt) {
+      try {
+        deferredInstallPrompt.prompt();
+        const choice = await deferredInstallPrompt.userChoice;
+        if (choice && choice.outcome === 'accepted') {
+          showToast('Installing Web Playground...');
+        }
+      } catch (err) {
+        console.warn('Install prompt error:', err);
+      }
+      deferredInstallPrompt = null;
+      updateInstallButtonUI();
+      closeInstallModal();
+    } else {
+      openInstallModal();
+    }
+  }
+
+  function registerServiceWorker() {
+    const isSupported = 'serviceWorker' in navigator;
+    const isSecureOrLocal = window.location.protocol === 'https:' ||
+      window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1';
+
+    if (isSupported && isSecureOrLocal) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then((reg) => {
+            reg.addEventListener('updatefound', () => {
+              const newWorker = reg.installing;
+              if (newWorker) {
+                newWorker.addEventListener('statechange', () => {
+                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    showToast('⚡ Web Playground updated! Refresh to use the latest version.');
+                  }
+                });
+              }
+            });
+          })
+          .catch((err) => {
+            console.warn('[PWA] Service Worker registration failed:', err);
+          });
+      });
+    }
+  }
+
+  function handleStartupTemplate() {
+    const hash = window.location.hash;
+    if (hash && hash.startsWith('#template=')) {
+      const templateKey = hash.replace('#template=', '').trim();
+      if (TEMPLATES[templateKey]) {
+        state.files = JSON.parse(JSON.stringify(TEMPLATES[templateKey]));
+        state.activeFileId = state.files[0].id;
+        state.openTabIds = state.files.map(f => f.id);
+        saveState();
+        return true;
+      }
+    }
+    return false;
   }
 
   function init() {
-    const hasExisting = loadState();
-    if (!hasExisting) {
+    const hasHashTemplate = handleStartupTemplate();
+    const hasExisting = !hasHashTemplate && loadState();
+    if (!hasExisting && !hasHashTemplate) {
       // Default to the Modular Kanban multi-file template
       state.files = JSON.parse(JSON.stringify(TEMPLATES['multifile-kanban']));
       state.activeFileId = state.files[0].id;
@@ -2129,6 +2415,8 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     syncEditorContent();
     updateModeBadge();
     initEventListeners();
+    updateInstallButtonUI();
+    registerServiceWorker();
 
     // Initial Execution
     setTimeout(runCode, 200);
