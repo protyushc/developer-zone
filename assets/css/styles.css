@@ -1907,6 +1907,40 @@ body.theme-light .modern-select {
   letter-spacing: 0.6px;
 }
 
+.drawer-details {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background-color: var(--bg-tertiary);
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.drawer-details .drawer-btn-list {
+  padding: 8px;
+  border-top: 1px solid var(--border-color);
+  background-color: var(--bg-secondary);
+}
+.drawer-summary {
+  padding: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  list-style: none;
+  margin: 0;
+}
+.drawer-summary::-webkit-details-marker {
+  display: none;
+}
+.drawer-summary::after {
+  content: '▼';
+  font-size: 10px;
+  color: var(--text-muted);
+  transition: transform 0.2s;
+}
+.drawer-details[open] .drawer-summary::after {
+  transform: rotate(180deg);
+}
+
 .drawer-select {
   height: 44px;
   font-size: 14px;

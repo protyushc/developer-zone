@@ -840,7 +840,7 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     mobileDrawerBackdrop: document.getElementById('mobileDrawerBackdrop'),
     mobileDrawer: document.getElementById('mobileDrawer'),
     closeMobileDrawerBtn: document.getElementById('closeMobileDrawerBtn'),
-    mobileTemplateSelect: document.getElementById('mobileTemplateSelect'),
+
     mobileAutoRunCheckbox: document.getElementById('mobileAutoRunCheckbox'),
     mobileFormatBtn: document.getElementById('mobileFormatBtn'),
     mobileNewTabBtn: document.getElementById('mobileNewTabBtn'),
@@ -867,6 +867,9 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     devToolsNavLeft: document.getElementById('devToolsNavLeft'),
     navRegexTabBtn: document.getElementById('navRegexTabBtn'),
     navCronTabBtn: document.getElementById('navCronTabBtn'),
+    desktopWebToolCenter: document.getElementById('desktopWebToolCenter'),
+    desktopWebToolRight: document.getElementById('desktopWebToolRight'),
+    mobileWebToolUtils: document.getElementById('mobileWebToolUtils'),
     mobileWebToolsBtn: document.getElementById('mobileWebToolsBtn'),
     mobileRegexBtn: document.getElementById('mobileRegexBtn'),
     mobileCronBtn: document.getElementById('mobileCronBtn'),
@@ -2000,6 +2003,7 @@ document.getElementById('demoBtn').addEventListener('click', () => {
   function loadTemplate(key) {
     if (!TEMPLATES[key]) return;
     if (confirm(`Load template "${key}"? This will overwrite your current Developer Zone files.`)) {
+      setAppMode('web');
       state.files = JSON.parse(JSON.stringify(TEMPLATES[key]));
       state.activeFileId = state.files[0].id;
       state.openTabIds = state.files.map(f => f.id);
@@ -2073,16 +2077,16 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     }
 
     // Mobile Options Drawer Actions
-    if (els.mobileTemplateSelect) {
-      els.mobileTemplateSelect.addEventListener('change', (e) => {
-        const val = e.target.value;
+    const mobileTemplateBtns = document.querySelectorAll('.mobile-template-btn');
+    mobileTemplateBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const val = btn.getAttribute('data-value');
         closeMobileDrawer();
         if (val) {
           loadTemplate(val);
-          e.target.value = '';
         }
       });
-    }
+    });
     if (els.mobileAutoRunCheckbox) {
       els.mobileAutoRunCheckbox.addEventListener('change', (e) => {
         state.autoRun = e.target.checked;
@@ -3006,11 +3010,19 @@ document.getElementById('demoBtn').addEventListener('click', () => {
       if (els.navWebToolsBtn) els.navWebToolsBtn.classList.add('active');
       if (els.webToolsNavLeft) els.webToolsNavLeft.classList.remove('hidden');
       if (els.mobileNavBar) els.mobileNavBar.classList.remove('hidden');
+      if (els.desktopWebToolCenter) els.desktopWebToolCenter.classList.remove('hidden');
+      if (els.desktopWebToolRight) els.desktopWebToolRight.classList.remove('hidden');
+      if (els.mobileRunNavBtn) els.mobileRunNavBtn.classList.remove('hidden');
+      if (els.mobileWebToolUtils) els.mobileWebToolUtils.classList.remove('hidden');
     } else {
       if (els.devWorkbench) els.devWorkbench.classList.remove('hidden');
       if (els.navDevToolsBtn) els.navDevToolsBtn.classList.add('active');
       if (els.devToolsNavLeft) els.devToolsNavLeft.classList.remove('hidden');
       if (els.mobileNavBar) els.mobileNavBar.classList.add('hidden');
+      if (els.desktopWebToolCenter) els.desktopWebToolCenter.classList.add('hidden');
+      if (els.desktopWebToolRight) els.desktopWebToolRight.classList.add('hidden');
+      if (els.mobileRunNavBtn) els.mobileRunNavBtn.classList.add('hidden');
+      if (els.mobileWebToolUtils) els.mobileWebToolUtils.classList.add('hidden');
       switchDevToolsTab(mode);
     }
   }
