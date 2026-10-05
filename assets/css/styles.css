@@ -1833,26 +1833,36 @@ body.theme-light .modern-select {
   left: 0;
   right: 0;
   bottom: 0;
+  width: 100%;
+  max-width: 100vw;
+  height: calc(100vh - 48px);
+  height: calc(100dvh - 48px);
+  max-height: calc(100dvh - 48px);
   background-color: rgba(0, 0, 0, 0.65);
   z-index: 1500;
   backdrop-filter: blur(4px);
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: flex-start;
+  align-items: stretch;
   animation: drawerFadeIn 0.2s ease-out;
+  overflow: hidden;
 }
 
 .drawer-sheet {
   background-color: var(--bg-secondary);
   border-top: 1px solid var(--border-color);
   border-radius: 0;
+  width: 100%;
+  max-width: 100%;
   height: 100%;
-  max-height: none;
+  max-height: 100%;
+  margin: 0;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.6);
-  padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
-  animation: drawerSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  flex: 1 1 auto;
+  box-shadow: none;
+  animation: drawerSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   overflow: hidden;
 }
 
@@ -1867,12 +1877,14 @@ body.theme-light .modern-select {
 }
 
 .drawer-header {
-  padding: 14px 18px;
+  padding: 12px 18px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid var(--border-color);
   user-select: none;
+  flex-shrink: 0;
+  background-color: var(--bg-secondary);
 }
 
 .drawer-title {
@@ -1889,14 +1901,69 @@ body.theme-light .modern-select {
 }
 
 .drawer-content {
-  padding: 16px 18px;
-  overflow-y: auto;
+  padding: 16px 18px max(32px, env(safe-area-inset-bottom, 32px)) 18px;
+  overflow-y: scroll;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
   gap: 16px;
   -webkit-overflow-scrolling: touch;
-  flex: 1;
+  touch-action: pan-y;
+  overscroll-behavior-y: contain;
+  flex: 1 1 0px;
   min-height: 0;
+  height: 0;
+  scrollbar-width: thin;
+  scrollbar-color: #5c6370 rgba(0, 0, 0, 0.25);
+  scrollbar-gutter: stable;
+}
+
+/* Clear, always-visible scrollbars for the hamburger menu */
+.drawer-content::-webkit-scrollbar {
+  width: 8px !important;
+  display: block !important;
+}
+
+.drawer-content::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.25) !important;
+  border-radius: 4px !important;
+}
+
+.drawer-content::-webkit-scrollbar-thumb {
+  background: #5c6370 !important;
+  border-radius: 4px !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+.drawer-content::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-primary-hover) !important;
+}
+
+/* Light Theme Scrollbar */
+body.theme-light .drawer-content {
+  scrollbar-color: #94a3b8 rgba(0, 0, 0, 0.06);
+}
+
+body.theme-light .drawer-content::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.06) !important;
+}
+
+body.theme-light .drawer-content::-webkit-scrollbar-thumb {
+  background: #94a3b8 !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+body.theme-light .drawer-content::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-primary) !important;
+}
+
+.drawer-divider {
+  height: 1px;
+  background-color: var(--border-color);
+  margin: 4px 0 8px 0;
+  width: 100%;
+  flex-shrink: 0;
+  opacity: 0.8;
 }
 
 .drawer-section {
@@ -2190,24 +2257,7 @@ body.theme-light .modern-select {
 }
 
 #closeMobileDrawerBtn {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  color: var(--text-muted);
-  border-radius: 6px;
-  cursor: pointer;
-  background: transparent;
-  border: none;
-  transition: all 0.15s ease;
-}
-
-#closeMobileDrawerBtn:hover,
-#closeMobileDrawerBtn:active {
-  color: var(--text-bright);
-  background-color: var(--bg-hover);
+  display: none !important;
 }
 
 .btn-danger-subtle {
@@ -2319,9 +2369,9 @@ body.theme-light .modern-select {
   }
 
   .drawer-sheet {
-    max-width: 480px;
-    margin-left: auto;
-    width: 100%;
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
   }
 
   /* Header adjustments */
@@ -2672,9 +2722,20 @@ body.theme-light .modern-select {
     height: 16px;
   }
 
+  .drawer-backdrop {
+    top: 38px;
+    height: calc(100vh - 38px);
+    height: calc(100dvh - 38px);
+    max-height: calc(100dvh - 38px);
+  }
+
   .drawer-sheet {
-    max-height: 94dvh;
-    border-radius: 12px 12px 0 0;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
   }
 
   .drawer-header {
@@ -2683,28 +2744,11 @@ body.theme-light .modern-select {
   }
 
   .drawer-content {
-    max-height: calc(94dvh - 38px);
-    overflow-y: auto;
-    padding: 10px 14px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px 14px;
-    flex: 1;
-    min-height: 0;
-  }
-
-  .drawer-section {
-    margin-bottom: 6px;
-  }
-
-  .drawer-content .drawer-section:last-child {
-    grid-column: span 2;
-  }
-
-  .drawer-select,
-  .drawer-btn {
-    height: 36px;
-    font-size: 12px;
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 10px 14px max(24px, env(safe-area-inset-bottom, 24px)) 14px;
+    gap: 12px;
+    max-height: none;
   }
 
   .modal {
