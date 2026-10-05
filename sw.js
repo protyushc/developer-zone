@@ -3,16 +3,26 @@
  * Provides full offline support, asset pre-caching, and instant loading.
  */
 
-const CACHE_NAME = 'webplayground-cache-v3';
+const CACHE_NAME = 'webplayground-cache-v4';
 
 const PRECACHE_ASSETS = [
   './',
   './index.html',
+  './favicon.ico',
   './assets/css/styles.css',
   './assets/js/app.js',
   './manifest.json',
-  // Icons
+  // Standard & Desktop Icons
+  './assets/icons/favicon.ico',
+  './assets/icons/icon-16.png',
+  './assets/icons/icon-32.png',
+  './assets/icons/icon-48.png',
+  './assets/icons/icon-72.png',
+  './assets/icons/icon-96.png',
+  './assets/icons/icon-128.png',
+  './assets/icons/icon-144.png',
   './assets/icons/icon-192.png',
+  './assets/icons/icon-256.png',
   './assets/icons/icon-512.png',
   './assets/icons/icon-maskable-192.png',
   './assets/icons/icon-maskable-512.png',
@@ -133,6 +143,24 @@ self.addEventListener('fetch', (event) => {
         .catch(() => {
           return caches.match('./index.html').then((cached) => cached || caches.match(request));
         })
+    );
+    return;
+  }
+
+  // Handle manifest.json: Network-first to ensure immediate propagation of app name and icon updates
+  if (request.url.includes('manifest.json')) {
+    event.respondWith(
+      fetch(request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const responseClone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(request, responseClone);
+            });
+          }
+          return networkResponse;
+        })
+        .catch(() => caches.match(request).then((cached) => cached || caches.match('./manifest.json')))
     );
     return;
   }

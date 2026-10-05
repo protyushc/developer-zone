@@ -185,8 +185,38 @@ if (-not (Test-Path $iconsDir)) {
     New-Item -ItemType Directory -Force -Path $iconsDir | Out-Null
 }
 
+Render-AppIcon -size 16  -outputPath (Join-Path $iconsDir "icon-16.png") -isMaskable $false
+Render-AppIcon -size 32  -outputPath (Join-Path $iconsDir "icon-32.png") -isMaskable $false
+Render-AppIcon -size 48  -outputPath (Join-Path $iconsDir "icon-48.png") -isMaskable $false
+Render-AppIcon -size 72  -outputPath (Join-Path $iconsDir "icon-72.png") -isMaskable $false
+Render-AppIcon -size 96  -outputPath (Join-Path $iconsDir "icon-96.png") -isMaskable $false
+Render-AppIcon -size 128 -outputPath (Join-Path $iconsDir "icon-128.png") -isMaskable $false
+Render-AppIcon -size 144 -outputPath (Join-Path $iconsDir "icon-144.png") -isMaskable $false
 Render-AppIcon -size 192 -outputPath (Join-Path $iconsDir "icon-192.png") -isMaskable $false
+Render-AppIcon -size 256 -outputPath (Join-Path $iconsDir "icon-256.png") -isMaskable $false
 Render-AppIcon -size 512 -outputPath (Join-Path $iconsDir "icon-512.png") -isMaskable $false
 Render-AppIcon -size 192 -outputPath (Join-Path $iconsDir "icon-maskable-192.png") -isMaskable $true
 Render-AppIcon -size 512 -outputPath (Join-Path $iconsDir "icon-maskable-512.png") -isMaskable $true
+
+# Generate standard favicon.ico from 32x32 bitmap
+$icoBmp = [System.Drawing.Bitmap]::FromFile((Join-Path $iconsDir "icon-32.png"))
+$hIcon = $icoBmp.GetHicon()
+$iconObj = [System.Drawing.Icon]::FromHandle($hIcon)
+
+$rootIco = Join-Path $PSScriptRoot "favicon.ico"
+$assetsIco = Join-Path $iconsDir "favicon.ico"
+
+$fs1 = [System.IO.File]::Create($rootIco)
+$iconObj.Save($fs1)
+$fs1.Close()
+
+$fs2 = [System.IO.File]::Create($assetsIco)
+$iconObj.Save($fs2)
+$fs2.Close()
+
+$iconObj.Dispose()
+$icoBmp.Dispose()
+
+Write-Output "Generated: $rootIco"
+Write-Output "Generated: $assetsIco"
 
