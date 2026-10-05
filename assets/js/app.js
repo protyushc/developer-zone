@@ -24,11 +24,11 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      background: radial-gradient(circle at center, #111827 0%, #030712 100%);
+      background: radial-gradient(circle at center, #f8fafc 0%, #e2e8f0 100%);
       height: 100vh;
       overflow: hidden;
       font-family: system-ui, sans-serif;
-      color: #94a3b8;
+      color: #334155;
     }
     canvas { display: block; width: 100%; height: 100%; cursor: crosshair; }
     .hud {
@@ -36,13 +36,13 @@
       top: 20px;
       left: 20px;
       pointer-events: none;
-      background: rgba(15, 23, 42, 0.75);
+      background: rgba(255, 255, 255, 0.85);
       padding: 12px 18px;
       border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(0, 0, 0, 0.1);
       backdrop-filter: blur(8px);
     }
-    .hud h1 { font-size: 15px; color: #38bdf8; margin-bottom: 4px; }
+    .hud h1 { font-size: 15px; color: #0284c7; margin-bottom: 4px; }
     .hud p { font-size: 12px; }
   </style>
 </head>
@@ -117,7 +117,7 @@
         this.vy = Math.sin(angle) * speed;
         this.size = burst ? Math.random() * 3 + 1 : Math.random() * 2 + 1.2;
         this.life = burst ? 80 : Infinity;
-        this.color = burst ? '#f43f5e' : '#38bdf8';
+        this.color = burst ? '#e11d48' : '#0284c7';
       }
 
       update() {
@@ -240,8 +240,8 @@
         type: 'css',
         content: `* { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
 body {
-  background: #0f172a;
-  color: #e2e8f0;
+  background: #f8fafc;
+  color: #1e293b;
   min-height: 100vh;
   padding: 24px;
 }
@@ -254,19 +254,19 @@ body {
   flex-wrap: wrap;
   gap: 16px;
 }
-.logo { font-size: 20px; font-weight: 700; color: #38bdf8; }
-.logo span { font-size: 13px; color: #94a3b8; font-weight: normal; }
+.logo { font-size: 20px; font-weight: 700; color: #0284c7; }
+.logo span { font-size: 13px; color: #475569; font-weight: normal; }
 .new-task-bar { display: flex; gap: 8px; }
 .new-task-bar input {
-  background: #1e293b;
-  border: 1px solid #334155;
-  color: #fff;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #334155;
   padding: 8px 14px;
   border-radius: 6px;
   outline: none;
   width: 260px;
 }
-.new-task-bar input:focus { border-color: #38bdf8; }
+.new-task-bar input:focus { border-color: #0284c7; }
 .new-task-bar button {
   background: #0284c7;
   color: white;
@@ -292,7 +292,7 @@ body {
 .column-header {
   font-weight: 600;
   font-size: 14px;
-  color: #94a3b8;
+  color: #475569;
   margin-bottom: 12px;
   display: flex;
   justify-content: space-between;
@@ -300,8 +300,8 @@ body {
   letter-spacing: 0.5px;
 }
 .counter {
-  background: #334155;
-  color: #fff;
+  background: #e2e8f0;
+  color: #0f172a;
   padding: 2px 8px;
   border-radius: 12px;
   font-size: 11px;
@@ -323,8 +323,8 @@ body {
   gap: 8px;
   transition: transform 0.15s ease, border-color 0.15s ease;
 }
-.task-card:hover { transform: translateY(-2px); border-color: #38bdf8; }
-.task-title { font-size: 13px; color: #f8fafc; word-break: break-word; }
+.task-card:hover { transform: translateY(-2px); border-color: #0284c7; }
+.task-title { font-size: 13px; color: #0f172a; word-break: break-word; }
 .task-footer {
   display: flex;
   justify-content: space-between;
@@ -333,13 +333,13 @@ body {
 }
 .move-btn {
   background: #334155;
-  color: #94a3b8;
+  color: #475569;
   border: none;
   padding: 3px 8px;
   border-radius: 4px;
   cursor: pointer;
 }
-.move-btn:hover { background: #475569; color: #fff; }`
+.move-btn:hover { background: #cbd5e1; color: #0f172a; }`
       },
       {
         id: 'f-store',
@@ -485,14 +485,14 @@ store.subscribe(() => {
     <div class="card" id="tiltCard">
       <div class="card-glow"></div>
       <div class="card-content">
-        <span class="chip">UI EXPERIMENT</span>
-        <h2>Quantum Shield</h2>
-        <p>Dynamic 3D perspective projection with real-time specular lighting calculation.</p>
+        <span class="chip">DEV TOOLS</span>
+        <h2>Developer Zone</h2>
+        <p>Interactive code workbench, live playground, and essential developer utilities.</p>
         <div class="stats">
-          <div><label>FREQUENCY</label><strong>4.2 GHz</strong></div>
-          <div><label>EFFICIENCY</label><strong>99.8%</strong></div>
+          <div><label>MODE</label><strong>Multi-File</strong></div>
+          <div><label>STATUS</label><strong>Active</strong></div>
         </div>
-        <button class="btn" id="pingBtn">Send Pulse</button>
+        <button class="btn" id="pingBtn">Run Build</button>
       </div>
     </div>
   </div>
@@ -507,7 +507,7 @@ store.subscribe(() => {
         type: 'css',
         content: `* { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
 body {
-  background: #090d16;
+  background: #f1f5f9;
   height: 100vh;
   display: flex;
   align-items: center;
@@ -520,14 +520,14 @@ body {
 }
 .card {
   width: 320px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.9);
   border-radius: 20px;
   padding: 30px;
   position: relative;
   overflow: hidden;
   backdrop-filter: blur(16px);
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
   transform-style: preserve-3d;
   transition: transform 0.1s ease-out;
   cursor: pointer;
@@ -536,7 +536,7 @@ body {
   position: absolute;
   width: 250px;
   height: 250px;
-  background: radial-gradient(circle, rgba(56, 189, 248, 0.35) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(2, 132, 199, 0.15) 0%, transparent 70%);
   top: 0;
   left: 0;
   pointer-events: none;
@@ -551,7 +551,7 @@ body {
   letter-spacing: 1px;
   padding: 4px 10px;
   border-radius: 20px;
-  border: 1px solid rgba(56, 189, 248, 0.3);
+  border: 1px solid rgba(2, 132, 199, 0.3);
 }
 .card-content h2 {
   color: #fff;
@@ -567,7 +567,7 @@ body {
 .stats {
   display: flex;
   justify-content: space-between;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
   padding-top: 16px;
   margin-bottom: 20px;
 }
@@ -578,21 +578,21 @@ body {
   margin-bottom: 4px;
 }
 .stats strong {
-  color: #e2e8f0;
+  color: #0f172a;
   font-size: 14px;
 }
 .btn {
   width: 100%;
   padding: 10px;
-  background: #38bdf8;
-  color: #04101e;
+  background: #0ea5e9;
+  color: #ffffff;
   border: none;
   border-radius: 8px;
   font-weight: 700;
   cursor: pointer;
   transition: background 0.2s;
 }
-.btn:hover { background: #7dd3fc; }`
+.btn:hover { background: #0284c7; }`
       },
       {
         id: 'f-js',
@@ -640,10 +640,10 @@ window.addEventListener('touchend', () => {
 
 btn.addEventListener('click', (e) => {
   e.stopPropagation();
-  console.log("Pulse beacon emitted!");
-  card.style.borderColor = '#38bdf8';
+  console.log("Build process started!");
+  card.style.borderColor = '#0ea5e9';
   setTimeout(() => {
-    card.style.borderColor = 'rgba(255, 255, 255, 0.12)';
+    card.style.borderColor = 'rgba(255, 255, 255, 0.9)';
   }, 400);
 });`
       }
@@ -720,13 +720,13 @@ document.getElementById('demoBtn').addEventListener('click', () => {
       font-family: sans-serif;
       padding: 40px;
       text-align: center;
-      background: #111;
-      color: #eee;
+      background: #f8fafc;
+      color: #1e293b;
     }
     .box {
       display: inline-block;
       padding: 20px 40px;
-      border: 2px solid #38bdf8;
+      border: 2px solid #0ea5e9;
       border-radius: 8px;
     }
   </style>
@@ -859,16 +859,17 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     modalNativeInstallBtn: document.getElementById('modalNativeInstallBtn'),
     pwaInstructionsBox: document.getElementById('pwaInstructionsBox'),
     // Developer Tools (Regex & Cron)
-    devToolsMenuBtn: document.getElementById('devToolsMenuBtn'),
-    devToolsDropdown: document.getElementById('devToolsDropdown'),
-    navOpenRegexBtn: document.getElementById('navOpenRegexBtn'),
-    navOpenCronBtn: document.getElementById('navOpenCronBtn'),
+    webWorkbench: document.getElementById('webWorkbench'),
+    devWorkbench: document.getElementById('devWorkbench'),
+    navWebToolsBtn: document.getElementById('navWebToolsBtn'),
+    navDevToolsBtn: document.getElementById('navDevToolsBtn'),
+    webToolsNavLeft: document.getElementById('webToolsNavLeft'),
+    devToolsNavLeft: document.getElementById('devToolsNavLeft'),
+    navRegexTabBtn: document.getElementById('navRegexTabBtn'),
+    navCronTabBtn: document.getElementById('navCronTabBtn'),
+    mobileWebToolsBtn: document.getElementById('mobileWebToolsBtn'),
     mobileRegexBtn: document.getElementById('mobileRegexBtn'),
     mobileCronBtn: document.getElementById('mobileCronBtn'),
-    devToolsModal: document.getElementById('devToolsModal'),
-    closeDevToolsModalBtn: document.getElementById('closeDevToolsModalBtn'),
-    tabRegexBtn: document.getElementById('tabRegexBtn'),
-    tabCronBtn: document.getElementById('tabCronBtn'),
     regexPane: document.getElementById('regexPane'),
     cronPane: document.getElementById('cronPane'),
     // RegEx Elements
@@ -2269,53 +2270,37 @@ document.getElementById('demoBtn').addEventListener('click', () => {
       });
     }
 
-    // Developer Tools Dropdown & Modal Controls
-    if (els.devToolsMenuBtn && els.devToolsDropdown) {
-      els.devToolsMenuBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        els.devToolsDropdown.classList.toggle('hidden');
-      });
-      window.addEventListener('click', () => {
-        els.devToolsDropdown.classList.add('hidden');
-      });
+    // Application Mode Switcher (Web Tools vs Dev Tools)
+    if (els.navWebToolsBtn) {
+      els.navWebToolsBtn.addEventListener('click', () => setAppMode('web'));
+    }
+    if (els.navDevToolsBtn) {
+      els.navDevToolsBtn.addEventListener('click', () => setAppMode('regex'));
+    }
+    if (els.navRegexTabBtn) {
+      els.navRegexTabBtn.addEventListener('click', () => setAppMode('regex'));
+    }
+    if (els.navCronTabBtn) {
+      els.navCronTabBtn.addEventListener('click', () => setAppMode('cron'));
     }
 
-    if (els.navOpenRegexBtn) {
-      els.navOpenRegexBtn.addEventListener('click', () => openDevToolsModal('regex'));
+    if (els.mobileWebToolsBtn) {
+      els.mobileWebToolsBtn.addEventListener('click', () => {
+        closeMobileDrawer();
+        setAppMode('web');
+      });
     }
-    if (els.navOpenCronBtn) {
-      els.navOpenCronBtn.addEventListener('click', () => openDevToolsModal('cron'));
-    }
-
     if (els.mobileRegexBtn) {
       els.mobileRegexBtn.addEventListener('click', () => {
         closeMobileDrawer();
-        openDevToolsModal('regex');
+        setAppMode('regex');
       });
     }
     if (els.mobileCronBtn) {
       els.mobileCronBtn.addEventListener('click', () => {
         closeMobileDrawer();
-        openDevToolsModal('cron');
+        setAppMode('cron');
       });
-    }
-
-    if (els.closeDevToolsModalBtn) {
-      els.closeDevToolsModalBtn.addEventListener('click', closeDevToolsModal);
-    }
-    if (els.devToolsModal) {
-      els.devToolsModal.addEventListener('click', (e) => {
-        if (e.target === els.devToolsModal) {
-          closeDevToolsModal();
-        }
-      });
-    }
-
-    if (els.tabRegexBtn) {
-      els.tabRegexBtn.addEventListener('click', () => switchDevToolsTab('regex'));
-    }
-    if (els.tabCronBtn) {
-      els.tabCronBtn.addEventListener('click', () => switchDevToolsTab('cron'));
     }
 
     // RegEx Listeners
@@ -3003,31 +2988,44 @@ document.getElementById('demoBtn').addEventListener('click', () => {
   // ---------------------------------------------------------------------------
   // DevTools Modal Controls & Tab Management
   // ---------------------------------------------------------------------------
-  function openDevToolsModal(tab = 'regex') {
-    if (els.devToolsDropdown) els.devToolsDropdown.classList.add('hidden');
-    if (els.devToolsModal) {
-      els.devToolsModal.classList.remove('hidden');
-    }
-    switchDevToolsTab(tab);
-  }
+  let currentAppMode = 'web'; // 'web', 'regex', 'cron'
 
-  function closeDevToolsModal() {
-    if (els.devToolsModal) {
-      els.devToolsModal.classList.add('hidden');
+  function setAppMode(mode) {
+    currentAppMode = mode;
+    
+    if (els.webWorkbench) els.webWorkbench.classList.add('hidden');
+    if (els.devWorkbench) els.devWorkbench.classList.add('hidden');
+    
+    if (els.navWebToolsBtn) els.navWebToolsBtn.classList.remove('active');
+    if (els.navDevToolsBtn) els.navDevToolsBtn.classList.remove('active');
+    if (els.webToolsNavLeft) els.webToolsNavLeft.classList.add('hidden');
+    if (els.devToolsNavLeft) els.devToolsNavLeft.classList.add('hidden');
+    
+    if (mode === 'web') {
+      if (els.webWorkbench) els.webWorkbench.classList.remove('hidden');
+      if (els.navWebToolsBtn) els.navWebToolsBtn.classList.add('active');
+      if (els.webToolsNavLeft) els.webToolsNavLeft.classList.remove('hidden');
+      if (els.mobileNavBar) els.mobileNavBar.classList.remove('hidden');
+    } else {
+      if (els.devWorkbench) els.devWorkbench.classList.remove('hidden');
+      if (els.navDevToolsBtn) els.navDevToolsBtn.classList.add('active');
+      if (els.devToolsNavLeft) els.devToolsNavLeft.classList.remove('hidden');
+      if (els.mobileNavBar) els.mobileNavBar.classList.add('hidden');
+      switchDevToolsTab(mode);
     }
   }
 
   function switchDevToolsTab(tabName) {
     if (tabName === 'cron') {
-      if (els.tabCronBtn) els.tabCronBtn.classList.add('active');
-      if (els.tabRegexBtn) els.tabRegexBtn.classList.remove('active');
+      if (els.navCronTabBtn) els.navCronTabBtn.classList.add('active');
+      if (els.navRegexTabBtn) els.navRegexTabBtn.classList.remove('active');
       if (els.cronPane) els.cronPane.classList.remove('hidden');
       if (els.regexPane) els.regexPane.classList.add('hidden');
       updateCronEvaluator();
       if (els.cronExpressionInput) setTimeout(() => els.cronExpressionInput.focus(), 50);
     } else {
-      if (els.tabRegexBtn) els.tabRegexBtn.classList.add('active');
-      if (els.tabCronBtn) els.tabCronBtn.classList.remove('active');
+      if (els.navRegexTabBtn) els.navRegexTabBtn.classList.add('active');
+      if (els.navCronTabBtn) els.navCronTabBtn.classList.remove('active');
       if (els.regexPane) els.regexPane.classList.remove('hidden');
       if (els.cronPane) els.cronPane.classList.add('hidden');
       updateRegexChecker();
@@ -3286,8 +3284,8 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     const hasHashTemplate = handleStartupTemplate();
     const hasExisting = !hasHashTemplate && loadState();
     if (!hasExisting && !hasHashTemplate) {
-      // Default to the Modular Kanban multi-file template
-      state.files = JSON.parse(JSON.stringify(TEMPLATES['multifile-kanban']));
+      // Default to the Blank Multi-File template
+      state.files = JSON.parse(JSON.stringify(TEMPLATES['blank-multifile']));
       state.activeFileId = state.files[0].id;
       state.openTabIds = state.files.map(f => f.id);
     }
@@ -3311,6 +3309,8 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     initDevToolsDefaults();
     updateInstallButtonUI();
     registerServiceWorker();
+
+    setAppMode('web');
 
     // Initial Execution
     setTimeout(runCode, 200);

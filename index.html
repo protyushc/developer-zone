@@ -42,10 +42,14 @@
           <span class="badge" id="modeBadge">Multi-File</span>
         </div>
 
-        <div class="templates-dropdown desktop-only">
-          <label for="templateSelect" class="sr-only">Choose Template</label>
-          <select id="templateSelect" title="Load Starter Template">
-            <option value="" disabled selected>📂 Load Template...</option>
+        <div class="devtools-tabs-header desktop-only" style="margin-left: 12px; height: 28px; background: var(--bg-tertiary); padding: 2px;">
+          <button id="navWebToolsBtn" class="devtools-tab active" style="height: 100%; font-size: 11px;">Web Tools</button>
+          <button id="navDevToolsBtn" class="devtools-tab" style="height: 100%; font-size: 11px;">Dev Tools</button>
+        </div>
+
+        <div class="templates-dropdown desktop-only" id="webToolsNavLeft">
+          <select id="templateSelect" title="Load Starter Template" class="modern-select">
+            <option value="" disabled selected>📂 Templates</option>
             <option value="single-canvas">⚡ Single-File: Particle Simulation (Canvas)</option>
             <option value="multifile-kanban">📦 Multi-File: Modular Kanban (ES Modules)</option>
             <option value="glass-card">🎨 UI Concept: 3D Tilt Glass Card</option>
@@ -53,24 +57,22 @@
             <option value="blank-single">📝 Blank Single File (index.html)</option>
           </select>
         </div>
-
-        <div class="dropdown-wrapper desktop-only">
-          <button id="devToolsMenuBtn" class="btn btn-secondary" title="Developer Tools (Regex & Cron)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15">
-              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+        
+        <div class="devtools-tabs-header desktop-only hidden" id="devToolsNavLeft" style="height: 28px; background: var(--bg-tertiary); padding: 2px;">
+          <button class="devtools-tab active" id="navRegexTabBtn" data-tab="regex" style="height: 100%; font-size: 11px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
-            <span class="btn-text">DevTools ▾</span>
+            <span>RegEx</span>
           </button>
-          <div id="devToolsDropdown" class="dropdown-menu hidden">
-            <button id="navOpenRegexBtn" class="dropdown-item">
-              <span class="item-title">🔍 Regular Expression Checker</span>
-              <span class="item-desc">Test patterns, flags, matches & replacement</span>
-            </button>
-            <button id="navOpenCronBtn" class="dropdown-item">
-              <span class="item-title">⏰ Cron Expression Evaluator</span>
-              <span class="item-desc">Human translation, field breakdown & next runs</span>
-            </button>
-          </div>
+          <button class="devtools-tab" id="navCronTabBtn" data-tab="cron" style="height: 100%; font-size: 11px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span>Cron</span>
+          </button>
         </div>
       </div>
 
@@ -190,7 +192,7 @@
     </header>
 
     <!-- Main Workspace Area -->
-    <main class="workbench">
+    <main class="workbench" id="webWorkbench">
       
       <!-- Left Panel: File Explorer & Project Tree -->
       <aside class="file-explorer" id="fileExplorer">
@@ -372,9 +374,8 @@
         
         <div class="drawer-content">
           <div class="drawer-section">
-            <label class="drawer-label" for="mobileTemplateSelect">Starter Template</label>
-            <select id="mobileTemplateSelect" class="drawer-select">
-              <option value="" disabled selected>📂 Load Template...</option>
+            <select id="mobileTemplateSelect" class="drawer-select modern-select">
+              <option value="" disabled selected>📂 Templates</option>
               <option value="single-canvas">⚡ Single-File: Particle Simulation (Canvas)</option>
               <option value="multifile-kanban">📦 Multi-File: Modular Kanban (ES Modules)</option>
               <option value="glass-card">🎨 UI Concept: 3D Tilt Glass Card</option>
@@ -394,6 +395,13 @@
           <div class="drawer-section">
             <span class="drawer-label">Developer Tools</span>
             <div class="drawer-btn-list">
+              <button id="mobileWebToolsBtn" class="drawer-action-btn">
+                <div class="action-btn-info">
+                  <span class="action-btn-title">💻 Web Tools</span>
+                  <span class="action-btn-sub">Code editor, files &amp; live preview</span>
+                </div>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
               <button id="mobileRegexBtn" class="drawer-action-btn">
                 <div class="action-btn-info">
                   <span class="action-btn-title">🔍 RegEx Checker</span>
@@ -549,30 +557,9 @@
       </div>
     </div>
 
-    <!-- Modal for Developer Tools (RegEx Checker & Cron Expression Evaluator) -->
-    <div id="devToolsModal" class="modal-backdrop hidden">
-      <div class="modal devtools-modal">
-        <div class="devtools-modal-header">
-          <div class="devtools-tabs-header">
-            <button class="devtools-tab active" id="tabRegexBtn" data-tab="regex">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-              </svg>
-              <span>RegEx Checker</span>
-            </button>
-            <button class="devtools-tab" id="tabCronBtn" data-tab="cron">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
-                <circle cx="12" cy="12" r="10"></circle>
-                <polyline points="12 6 12 12 16 14"></polyline>
-              </svg>
-              <span>Cron Evaluator</span>
-            </button>
-          </div>
-          <button id="closeDevToolsModalBtn" class="icon-btn" title="Close DevTools">&times;</button>
-        </div>
-
-        <div class="devtools-modal-body">
+    <!-- Developer Tools Workbench (RegEx Checker & Cron Expression Evaluator) -->
+    <main class="workbench hidden" id="devWorkbench" style="overflow-y: auto; background: var(--bg-dark); flex: 1;">
+      <div class="devtools-workbench-body" style="width: 100%; max-width: 1200px; margin: 0 auto; padding: 20px;">
           <!-- Pane 1: RegEx Checker -->
           <div id="regexPane" class="devtools-pane">
             <div class="devtools-toolbar-row">
@@ -800,9 +787,8 @@
               </details>
             </div>
           </div>
-        </div>
       </div>
-    </div>
+    </main>
 
     <!-- Notification Toast -->
     <div id="toast" class="toast hidden"></div>
