@@ -851,8 +851,6 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     mobileConsoleBadge: document.getElementById('mobileConsoleBadge'),
     accordionWebTools: document.getElementById('accordionWebTools'),
     accordionDevTools: document.getElementById('accordionDevTools'),
-    webToolsActiveBadge: document.getElementById('webToolsActiveBadge'),
-    devToolsActiveBadge: document.getElementById('devToolsActiveBadge'),
     webWorkbenchStatusTag: document.getElementById('webWorkbenchStatusTag'),
     regexStatusTag: document.getElementById('regexStatusTag'),
     cronStatusTag: document.getElementById('cronStatusTag'),
@@ -1919,8 +1917,6 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     if (currentAppMode === 'web') {
       if (els.accordionWebTools) els.accordionWebTools.open = true;
       if (els.accordionDevTools) els.accordionDevTools.open = false;
-      if (els.webToolsActiveBadge) els.webToolsActiveBadge.classList.remove('hidden');
-      if (els.devToolsActiveBadge) els.devToolsActiveBadge.classList.add('hidden');
       if (els.mobileWebToolsBtn) els.mobileWebToolsBtn.classList.add('active');
       if (els.webWorkbenchStatusTag) els.webWorkbenchStatusTag.classList.remove('hidden');
       if (els.mobileRegexBtn) els.mobileRegexBtn.classList.remove('active');
@@ -1931,8 +1927,6 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     } else {
       if (els.accordionWebTools) els.accordionWebTools.open = false;
       if (els.accordionDevTools) els.accordionDevTools.open = true;
-      if (els.webToolsActiveBadge) els.webToolsActiveBadge.classList.add('hidden');
-      if (els.devToolsActiveBadge) els.devToolsActiveBadge.classList.remove('hidden');
       if (els.mobileWebToolsBtn) els.mobileWebToolsBtn.classList.remove('active');
       if (els.webWorkbenchStatusTag) els.webWorkbenchStatusTag.classList.add('hidden');
       if (els.mobileWebToolUtils) els.mobileWebToolUtils.classList.add('hidden');
