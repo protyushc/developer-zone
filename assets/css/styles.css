@@ -111,6 +111,9 @@ html, body {
   padding-right: max(14px, env(safe-area-inset-right));
   z-index: 10;
   flex-shrink: 0;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .nav-left, .nav-center, .nav-right {
@@ -119,12 +122,27 @@ html, body {
   gap: 12px;
 }
 
+.nav-left {
+  flex-shrink: 1;
+  min-width: 0;
+}
+
+.nav-center {
+  flex-shrink: 0;
+}
+
+.nav-right {
+  flex-shrink: 0;
+}
+
 .brand {
   display: flex;
   align-items: center;
   gap: 8px;
   font-size: 14px;
   color: var(--text-bright);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .brand-icon {
@@ -217,16 +235,25 @@ html, body {
 }
 
 /* Template Select */
+.templates-dropdown {
+  min-width: 0;
+  flex-shrink: 1;
+}
+
 .templates-dropdown select {
   height: 30px;
   background-color: var(--bg-tertiary);
   color: var(--text-bright);
   border: 1px solid var(--border-color);
   border-radius: 5px;
-  padding: 0 10px;
+  padding: 0 8px;
   font-size: 12px;
   cursor: pointer;
   outline: none;
+  max-width: 220px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 .templates-dropdown select:focus {
   border-color: var(--border-focus);
@@ -291,6 +318,10 @@ html, body {
   padding: 5px 0;
   z-index: 100;
 }
+.nav-left .dropdown-menu {
+  left: 0;
+  right: auto;
+}
 .dropdown-item {
   background: none;
   border: none;
@@ -321,12 +352,14 @@ html, body {
   height: calc(100vh - 48px);
   overflow: hidden;
   position: relative;
+  width: 100%;
+  min-width: 0;
 }
 
 /* 1. File Explorer */
 .file-explorer {
   width: 220px;
-  min-width: 160px;
+  min-width: 140px;
   max-width: 360px;
   background-color: var(--bg-secondary);
   border-right: 1px solid var(--border-color);
@@ -334,6 +367,7 @@ html, body {
   flex-direction: column;
   user-select: none;
   transition: width 0.15s ease;
+  flex-shrink: 0;
 }
 
 .file-explorer.collapsed {
@@ -460,7 +494,7 @@ html, body {
   display: flex;
   flex-direction: column;
   background-color: var(--bg-editor);
-  min-width: 250px;
+  min-width: 0;
   min-height: 0;
   height: 100%;
   position: relative;
@@ -476,6 +510,7 @@ html, body {
   padding: 0 4px;
   user-select: none;
   flex-shrink: 0;
+  min-width: 0;
 }
 .tabs-bar {
   display: flex;
@@ -484,6 +519,7 @@ html, body {
   gap: 2px;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-x;
+  min-width: 0;
 }
 .tab {
   display: flex;
@@ -531,6 +567,7 @@ html, body {
   position: relative;
   overflow: hidden;
   min-height: 0;
+  min-width: 0;
   height: calc(100% - 36px);
   background-color: var(--bg-editor);
 }
@@ -697,8 +734,8 @@ html, body {
 
 /* 4. Output / Preview Pane */
 .output-pane {
-  flex: 1;
-  min-width: 250px;
+  flex: 1 1 0%;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   background-color: var(--bg-primary);
@@ -1650,7 +1687,7 @@ html, body {
   color: var(--text-muted);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 780px) {
   .devtools-modal {
     width: 95vw;
     max-height: 94dvh;
@@ -1943,10 +1980,90 @@ html, body {
 }
 
 /* ==========================================================================
+   Responsive Desktop & Intermediate Window States (Normal / Resized / Snapped)
+   ========================================================================== */
+
+/* Tier 1: Width <= 1200px (Slightly narrower desktop / 2/3 snap) */
+@media (max-width: 1200px) {
+  .shortcut-tag {
+    display: none !important;
+  }
+  .top-nav {
+    padding: 0 10px;
+  }
+  .nav-left, .nav-center, .nav-right {
+    gap: 8px;
+  }
+  .templates-dropdown select {
+    max-width: 180px;
+  }
+}
+
+/* Tier 2: Width <= 1060px (Typical Windows Snap half-screen 960px or normal restored window) */
+@media (max-width: 1060px) {
+  #modeBadge {
+    display: none !important;
+  }
+  .templates-dropdown select {
+    max-width: 145px;
+  }
+  .btn {
+    padding: 0 8px;
+    font-size: 11.5px;
+  }
+  #formatBtn .btn-text,
+  #exportMenuBtn .btn-text,
+  #installAppBtn .btn-text,
+  #installAppBtn .install-btn-text {
+    display: none !important;
+  }
+  .file-explorer {
+    width: 195px;
+    min-width: 140px;
+  }
+}
+
+/* Tier 3: Width <= 920px (Narrow restored window / compact state) */
+@media (max-width: 920px) {
+  .toggle-label {
+    display: none !important;
+  }
+  #devToolsMenuBtn .btn-text {
+    display: none !important;
+  }
+  .templates-dropdown select {
+    max-width: 125px;
+  }
+  .top-nav {
+    padding: 0 8px;
+  }
+  .nav-left, .nav-center, .nav-right {
+    gap: 6px;
+  }
+  .brand-title {
+    font-size: 13px;
+  }
+  .file-explorer {
+    width: 175px;
+    min-width: 130px;
+  }
+}
+
+/* Tier 4: Width <= 840px (Very narrow desktop window before mobile tab cutoff) */
+@media (max-width: 840px) {
+  .templates-dropdown select {
+    max-width: 110px;
+  }
+  .file-explorer {
+    width: 160px;
+  }
+}
+
+/* ==========================================================================
    Responsive Mobile Media Queries
    ========================================================================== */
 
-@media (max-width: 768px), (max-height: 550px) and (orientation: landscape), (max-height: 500px) {
+@media (max-width: 780px), (max-height: 550px) and (orientation: landscape), (max-height: 500px) {
   .desktop-only {
     display: none !important;
   }
@@ -2006,7 +2123,7 @@ html, body {
   .workbench {
     flex-direction: column;
     height: calc(100dvh - 48px - 52px - env(safe-area-inset-bottom, 0px));
-    width: 100vw;
+    width: 100%;
     overflow: hidden;
   }
 
@@ -2189,7 +2306,7 @@ html, body {
 
   /* Mobile Modals */
   .modal {
-    width: calc(100vw - 32px);
+    width: calc(100% - 32px);
     max-width: 380px;
     margin: 16px;
     border-radius: 12px;
@@ -2216,7 +2333,7 @@ html, body {
     bottom: calc(56px + env(safe-area-inset-bottom, 0px) + 12px);
     right: 16px;
     left: 16px;
-    max-width: calc(100vw - 32px);
+    max-width: calc(100% - 32px);
     text-align: center;
     border-radius: 8px;
     padding: 12px 16px;

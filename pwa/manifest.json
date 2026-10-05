@@ -3,8 +3,8 @@
   "name": "Developer Zone",
   "short_name": "Developer Zone",
   "description": "Interactive code workbench, live playground, Regular Expression checker, and Cron expression evaluator.",
-  "start_url": "./index.html",
-  "scope": "./",
+  "start_url": "../index.html",
+  "scope": "../",
   "display": "standalone",
   "display_override": [
     "standalone",
@@ -24,61 +24,61 @@
   "dir": "ltr",
   "icons": [
     {
-      "src": "assets/icons/icon-48.png",
+      "src": "../assets/icons/icon-48.png",
       "sizes": "48x48",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "assets/icons/icon-72.png",
+      "src": "../assets/icons/icon-72.png",
       "sizes": "72x72",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "assets/icons/icon-96.png",
+      "src": "../assets/icons/icon-96.png",
       "sizes": "96x96",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "assets/icons/icon-128.png",
+      "src": "../assets/icons/icon-128.png",
       "sizes": "128x128",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "assets/icons/icon-144.png",
+      "src": "../assets/icons/icon-144.png",
       "sizes": "144x144",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "assets/icons/icon-192.png",
+      "src": "../assets/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "assets/icons/icon-256.png",
+      "src": "../assets/icons/icon-256.png",
       "sizes": "256x256",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "assets/icons/icon-512.png",
+      "src": "../assets/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "assets/icons/icon-maskable-192.png",
+      "src": "../assets/icons/icon-maskable-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "assets/icons/icon-maskable-512.png",
+      "src": "../assets/icons/icon-maskable-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
@@ -89,10 +89,10 @@
       "name": "Modular Kanban Project",
       "short_name": "Kanban",
       "description": "Open with Modular Kanban starter template",
-      "url": "./index.html#template=multifile-kanban",
+      "url": "../index.html#template=multifile-kanban",
       "icons": [
         {
-          "src": "assets/icons/icon-192.png",
+          "src": "../assets/icons/icon-192.png",
           "sizes": "192x192"
         }
       ]
@@ -101,10 +101,10 @@
       "name": "Particle Simulation",
       "short_name": "Particles",
       "description": "Open with interactive Canvas Particle template",
-      "url": "./index.html#template=single-canvas",
+      "url": "../index.html#template=single-canvas",
       "icons": [
         {
-          "src": "assets/icons/icon-192.png",
+          "src": "../assets/icons/icon-192.png",
           "sizes": "192x192"
         }
       ]
@@ -113,14 +113,13 @@
       "name": "Blank Project",
       "short_name": "Blank",
       "description": "Start fresh with empty HTML, CSS, and JS files",
-      "url": "./index.html#template=blank-multifile",
+      "url": "../index.html#template=blank-multifile",
       "icons": [
         {
-          "src": "assets/icons/icon-192.png",
+          "src": "../assets/icons/icon-192.png",
           "sizes": "192x192"
         }
       ]
     }
   ]
 }
-

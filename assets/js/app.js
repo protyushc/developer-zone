@@ -764,11 +764,11 @@ document.getElementById('demoBtn').addEventListener('click', () => {
   let cmEditor = null;
 
   function isMobileViewport() {
-    const isSmallWidth = window.innerWidth <= 768;
-    const isLandscapePhone = window.innerHeight <= 550 && window.innerWidth > window.innerHeight;
-    const isUltraShort = window.innerHeight <= 500;
-    const isTouchUA = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-    return isSmallWidth || isLandscapePhone || isUltraShort || (isTouchUA && window.innerWidth <= 1024);
+    const isSmallWidth = window.innerWidth <= 780;
+    const isLandscapePhone = window.innerHeight <= 550 && window.innerWidth > window.innerHeight && window.innerWidth <= 920;
+    const isUltraShort = window.innerHeight <= 500 && window.innerWidth <= 920;
+    const isTouchPhone = /Android|iPhone|iPod/i.test(navigator.userAgent) && window.innerWidth <= 780;
+    return isSmallWidth || isLandscapePhone || isUltraShort || isTouchPhone;
   }
 
   function getCodeMirrorMode(fileType) {
@@ -1126,12 +1126,13 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     const theme = getCodeMirrorTheme(state.theme);
 
     const isMobile = isMobileViewport();
+    const shouldWrap = isMobile || window.innerWidth <= 1040;
 
     cmEditor = CodeMirror.fromTextArea(els.codeEditor, {
       mode: mode,
       theme: theme,
       lineNumbers: true,
-      lineWrapping: isMobile,
+      lineWrapping: shouldWrap,
       inputStyle: isMobile ? 'contenteditable' : 'textarea',
       tabSize: 2,
       indentUnit: 2,
@@ -1895,7 +1896,9 @@ document.getElementById('demoBtn').addEventListener('click', () => {
         const workbenchRect = document.querySelector('.workbench').getBoundingClientRect();
         const explorerWidth = els.fileExplorer.classList.contains('collapsed') ? 0 : els.fileExplorer.offsetWidth;
         const newEditorWidth = e.clientX - workbenchRect.left - explorerWidth;
-        if (newEditorWidth > 200 && newEditorWidth < workbenchRect.width - explorerWidth - 200) {
+        const minPaneWidth = 140;
+        const maxEditorWidth = workbenchRect.width - explorerWidth - minPaneWidth;
+        if (newEditorWidth >= minPaneWidth && newEditorWidth <= maxEditorWidth) {
           els.editorPane.style.flex = 'none';
           els.editorPane.style.width = `${newEditorWidth}px`;
           if (cmEditor) cmEditor.refresh();
@@ -2142,12 +2145,41 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     // Window Resize / Orientation Change Handling
     function handleViewportChange() {
       const isMobile = isMobileViewport();
-      if (isMobile && els.editorPane) {
-        els.editorPane.style.width = '';
-        els.editorPane.style.flex = '';
+      if (isMobile) {
+        if (els.editorPane) {
+          els.editorPane.style.width = '';
+          els.editorPane.style.flex = '';
+        }
+      } else {
+        // Desktop / Windowed Normal State
+        if (els.editorPane && els.editorPane.style.width) {
+          const workbenchRect = document.querySelector('.workbench')?.getBoundingClientRect();
+          if (workbenchRect) {
+            const explorerWidth = els.fileExplorer.classList.contains('collapsed') ? 0 : els.fileExplorer.offsetWidth;
+            const splitterWidth = els.mainSplitter?.offsetWidth || 6;
+            const availableForPanes = workbenchRect.width - explorerWidth - splitterWidth;
+            const currentEditorWidth = parseFloat(els.editorPane.style.width);
+
+            // Minimum required width per pane in desktop mode
+            const minPaneWidth = 150;
+
+            if (availableForPanes < minPaneWidth * 2) {
+              // Not enough room for custom split, restore equal flex ratio
+              els.editorPane.style.width = '';
+              els.editorPane.style.flex = '1 1 0%';
+            } else if (currentEditorWidth > (availableForPanes - minPaneWidth) || currentEditorWidth < minPaneWidth) {
+              // Clamp editor width so preview pane has at least minPaneWidth
+              const clamped = Math.max(minPaneWidth, Math.min(currentEditorWidth, availableForPanes - minPaneWidth));
+              els.editorPane.style.width = `${clamped}px`;
+              els.editorPane.style.flex = 'none';
+            }
+          }
+        }
       }
+
       if (cmEditor) {
-        cmEditor.setOption('lineWrapping', isMobile);
+        const shouldWrap = isMobile || window.innerWidth <= 1040;
+        cmEditor.setOption('lineWrapping', shouldWrap);
         cmEditor.refresh();
       }
     }

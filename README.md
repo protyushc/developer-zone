@@ -56,8 +56,8 @@ A lightweight, zero-dependency, self-contained web development workbench, live c
    - **Installable Native Window**: Built-in **Install App** button in the desktop top-bar and mobile options drawer triggering native app installation (`beforeinstallprompt`).
    - **Cross-Platform Install Guide**: Integrated install modal providing step-by-step guidance for Chrome, Edge, Safari iOS (Add to Home Screen), and Android.
    - **High-DPI App Icons & Favicon**: Complete raster PNG icon suite (`16x16` up to `512x512`) and `favicon.ico` for sharp rendering across Windows taskbar/desktop, Chrome, and Android.
-   - **Complete Offline Support**: Powered by a Service Worker (`sw.js`) that pre-caches all core assets and local vendor dependencies (CodeMirror, JSZip, fonts).
-   - **Web App Manifest**: Full `manifest.json` configured with `id: "developer-zone-app"`, `name: "Developer Zone"`, `short_name: "Developer Zone"`, standalone display mode, and quick launch shortcuts.
+   - **Complete Offline Support**: Powered by a root-scoped Service Worker bridge (`sw.js`) that imports `pwa/sw.js` to pre-cache all core assets and local vendor dependencies (CodeMirror, JSZip, fonts).
+   - **Web App Manifest**: Modular `pwa/manifest.json` configured with `id: "developer-zone-app"`, `name: "Developer Zone"`, `short_name: "Developer Zone"`, standalone display mode, and quick launch shortcuts.
 
 10. **Export & Sharing**:
     - **Single Standalone `.html`**: Inlines all virtual CSS and JavaScript files into one portable `.html` file that can be double-clicked and opened in any browser offline.
@@ -86,9 +86,12 @@ A lightweight, zero-dependency, self-contained web development workbench, live c
 ```text
 developer-zone/
 ├── index.html              # Main application shell, workbench UI & DevTools modals
-├── manifest.json           # PWA Web App Manifest (Developer Zone)
-├── sw.js                   # Root-scoped Service Worker for 100% offline cache
+├── sw.js                   # Root-scoped Service Worker bridge (loads pwa/sw.js)
 ├── favicon.ico             # Native browser & desktop favicon
+├── pwa/                    # Progressive Web App definitions & offline engine
+│   ├── manifest.json       # PWA Web App Manifest (Developer Zone)
+│   ├── sw.js               # Service Worker implementation & precache controller
+│   └── build-png-icons.ps1 # Offline icon generation utility
 ├── assets/                 # Application assets (styles, scripts, icons)
 │   ├── css/
 │   │   └── styles.css      # Core theme styles, DevTools layouts & components

@@ -180,7 +180,8 @@ function Render-AppIcon {
     Write-Output "Generated: $outputPath"
 }
 
-$iconsDir = Join-Path (Join-Path $PSScriptRoot "assets") "icons"
+$projectRoot = Split-Path -Parent $PSScriptRoot
+$iconsDir = Join-Path (Join-Path $projectRoot "assets") "icons"
 if (-not (Test-Path $iconsDir)) {
     New-Item -ItemType Directory -Force -Path $iconsDir | Out-Null
 }
@@ -203,7 +204,7 @@ $icoBmp = [System.Drawing.Bitmap]::FromFile((Join-Path $iconsDir "icon-32.png"))
 $hIcon = $icoBmp.GetHicon()
 $iconObj = [System.Drawing.Icon]::FromHandle($hIcon)
 
-$rootIco = Join-Path $PSScriptRoot "favicon.ico"
+$rootIco = Join-Path $projectRoot "favicon.ico"
 $assetsIco = Join-Path $iconsDir "favicon.ico"
 
 $fs1 = [System.IO.File]::Create($rootIco)
