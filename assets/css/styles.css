@@ -242,21 +242,43 @@ html, body {
 
 .templates-dropdown select {
   height: 30px;
-  background-color: var(--bg-tertiary);
-  color: var(--text-bright);
-  border: 1px solid var(--border-color);
-  border-radius: 5px;
-  padding: 0 8px;
-  font-size: 12px;
-  cursor: pointer;
-  outline: none;
   max-width: 220px;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
+  font-size: 12px;
 }
-.templates-dropdown select:focus {
+
+/* Modern Select */
+.modern-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: var(--bg-tertiary);
+  color: var(--text-bright);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 0 30px 0 12px;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='%23abb2bf' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 14px;
+}
+
+body.theme-light .modern-select {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='%2357606a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+}
+
+.modern-select:hover {
+  background-color: var(--bg-hover);
+  border-color: var(--text-muted);
+}
+
+.modern-select:focus {
   border-color: var(--border-focus);
+  box-shadow: 0 0 0 2px rgba(9, 105, 218, 0.2);
 }
 
 /* Toggle Switch */
@@ -1887,19 +1909,11 @@ html, body {
 
 .drawer-select {
   height: 44px;
-  background-color: var(--bg-tertiary);
-  color: var(--text-bright);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  padding: 0 12px;
   font-size: 14px;
-  outline: none;
-  cursor: pointer;
+  border-radius: 8px;
+  width: 100%;
 }
 
-.drawer-select:focus {
-  border-color: var(--border-focus);
-}
 
 .drawer-toggle-row {
   flex-direction: row;
