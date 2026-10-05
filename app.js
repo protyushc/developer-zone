@@ -763,6 +763,14 @@ document.getElementById('demoBtn').addEventListener('click', () => {
   let activeBlobUrls = [];
   let cmEditor = null;
 
+  function isMobileViewport() {
+    const isSmallWidth = window.innerWidth <= 768;
+    const isLandscapePhone = window.innerHeight <= 550 && window.innerWidth > window.innerHeight;
+    const isUltraShort = window.innerHeight <= 500;
+    const isTouchUA = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    return isSmallWidth || isLandscapePhone || isUltraShort || (isTouchUA && window.innerWidth <= 1024);
+  }
+
   function getCodeMirrorMode(fileType) {
     switch (fileType) {
       case 'html': return 'htmlmixed';
@@ -922,8 +930,8 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     syncEditorContent();
     saveState();
 
-    // On mobile, auto-switch to editor view upon opening file
-    if (window.innerWidth <= 768) {
+    // On mobile / landscape, auto-switch to editor view upon opening file
+    if (isMobileViewport()) {
       setMobileView('editor');
     }
   }
@@ -1060,7 +1068,7 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     const mode = activeFile ? getCodeMirrorMode(activeFile.type) : 'htmlmixed';
     const theme = getCodeMirrorTheme(state.theme);
 
-    const isMobile = window.innerWidth <= 768 || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const isMobile = isMobileViewport();
 
     cmEditor = CodeMirror.fromTextArea(els.codeEditor, {
       mode: mode,
@@ -1130,7 +1138,7 @@ document.getElementById('demoBtn').addEventListener('click', () => {
 
     function onPointerDown(e) {
       const isTouch = e.pointerType === 'touch' || e.pointerType === 'pen';
-      const isSmallScreen = window.innerWidth <= 768;
+      const isSmallScreen = isMobileViewport();
       if (!isTouch && !isSmallScreen) return;
 
       stopMomentum();
@@ -1606,30 +1614,76 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     const file = getActiveFile();
     if (!file) return;
 
-    let content = file.content;
     try {
       if (file.type === 'json') {
-        content = JSON.stringify(JSON.parse(content), null, 2);
-      } else {
-        // Lightweight standard indentation cleaning
-        const lines = content.split('\n');
-        let indentLevel = 0;
-        const formatted = lines.map(line => {
-          const trimmed = line.trim();
-          if (!trimmed) return '';
-          if (trimmed.startsWith('}') || trimmed.startsWith('</') || trimmed.startsWith(']')) {
-            indentLevel = Math.max(0, indentLevel - 1);
-          }
-          const res = '  '.repeat(indentLevel) + trimmed;
-          if (trimmed.endsWith('{') || (trimmed.startsWith('<') && !trimmed.startsWith('</') && !trimmed.endsWith('/>') && !trimmed.includes('</'))) {
-            if (!trimmed.startsWith('<!')) indentLevel++;
-          }
-          return res;
-        });
-        content = formatted.join('\n');
+        const raw = cmEditor ? cmEditor.getValue() : file.content;
+        const formatted = JSON.stringify(JSON.parse(raw), null, 2);
+        if (cmEditor) {
+          cmEditor.setValue(formatted);
+        }
+        file.content = formatted;
+        syncEditorContent();
+        saveState();
+        showToast(`Formatted ${file.name}`);
+        return;
       }
 
-      file.content = content;
+      if (cmEditor) {
+        // First sync file content with current editor value
+        file.content = cmEditor.getValue();
+
+        // Perform smart indentation across all lines using CodeMirror's mode grammar
+        cmEditor.operation(() => {
+          const totalLines = cmEditor.lineCount();
+          for (let i = 0; i < totalLines; i++) {
+            cmEditor.indentLine(i, 'smart');
+          }
+        });
+
+        file.content = cmEditor.getValue();
+        saveState();
+        showToast(`Formatted ${file.name}`);
+        return;
+      }
+
+      // Robust fallback for non-CodeMirror textarea
+      const voidTags = new Set([
+        'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input',
+        'link', 'meta', 'param', 'source', 'track', 'wbr'
+      ]);
+
+      const lines = file.content.split('\n');
+      let indentLevel = 0;
+      const formatted = lines.map(line => {
+        const trimmed = line.trim();
+        if (!trimmed) return '';
+
+        // Decrement indent for closing tags/braces
+        if (trimmed.startsWith('}') || trimmed.startsWith('</') || trimmed.startsWith(']')) {
+          indentLevel = Math.max(0, indentLevel - 1);
+        }
+
+        const res = '  '.repeat(indentLevel) + trimmed;
+
+        // Check if this line opens a new block
+        if (trimmed.endsWith('{')) {
+          indentLevel++;
+        } else if (trimmed.startsWith('<') && !trimmed.startsWith('</') && !trimmed.startsWith('<!') && !trimmed.startsWith('<?')) {
+          const tagMatch = trimmed.match(/^<([a-zA-Z0-9-]+)/);
+          const tagName = tagMatch ? tagMatch[1].toLowerCase() : null;
+          const isVoid = tagName && voidTags.has(tagName);
+          const isSelfClosing = trimmed.endsWith('/>');
+          const hasClosingTag = tagName && trimmed.includes(`</${tagName}>`);
+
+          if (!isVoid && !isSelfClosing && !hasClosingTag && !trimmed.endsWith('-->')) {
+            indentLevel++;
+          }
+        }
+
+        return res;
+      });
+
+      file.content = formatted.join('\n');
       syncEditorContent();
       saveState();
       showToast(`Formatted ${file.name}`);
@@ -1753,7 +1807,7 @@ document.getElementById('demoBtn').addEventListener('click', () => {
   function handleRun(isMobile = false) {
     runCode();
     showToast('Code executed!');
-    if (isMobile && state.mobileActiveView === 'editor') {
+    if ((isMobile || isMobileViewport()) && state.mobileActiveView === 'editor') {
       setMobileView('preview');
     }
   }
@@ -2029,8 +2083,8 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     });
 
     // Window Resize / Orientation Change Handling
-    window.addEventListener('resize', () => {
-      const isMobile = window.innerWidth <= 768;
+    function handleViewportChange() {
+      const isMobile = isMobileViewport();
       if (isMobile && els.editorPane) {
         els.editorPane.style.width = '';
         els.editorPane.style.flex = '';
@@ -2039,6 +2093,11 @@ document.getElementById('demoBtn').addEventListener('click', () => {
         cmEditor.setOption('lineWrapping', isMobile);
         cmEditor.refresh();
       }
+    }
+
+    window.addEventListener('resize', handleViewportChange);
+    window.addEventListener('orientationchange', () => {
+      setTimeout(handleViewportChange, 100);
     });
 
     setupEditorKeyHandlers();
