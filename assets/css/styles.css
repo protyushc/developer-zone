@@ -1891,6 +1891,8 @@ body.theme-light .modern-select {
   flex-direction: column;
   gap: 16px;
   -webkit-overflow-scrolling: touch;
+  flex: 1;
+  min-height: 0;
 }
 
 .drawer-section {
@@ -2126,7 +2128,8 @@ body.theme-light .modern-select {
   .modal-backdrop.hidden,
   .error-banner.hidden,
   .toast.hidden,
-  .dropdown-menu.hidden {
+  .dropdown-menu.hidden,
+  .mobile-nav-bar.hidden {
     display: none !important;
   }
 
@@ -2495,6 +2498,8 @@ body.theme-light .modern-select {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8px 14px;
+    flex: 1;
+    min-height: 0;
   }
 
   .drawer-section {
