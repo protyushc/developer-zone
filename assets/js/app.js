@@ -1439,10 +1439,46 @@ document.getElementById('demoBtn').addEventListener('click', () => {
       doc.head.insertBefore(mapScript, doc.head.firstChild);
     }
 
-    // 6. Inject Console Interceptor & Error Boundary into <head>
+    // 6. Inject Console Interceptor, Storage Isolation & Boundary into <head>
     const consoleInterceptor = doc.createElement('script');
     consoleInterceptor.textContent = `
       (function() {
+        var _hostParent = window.parent; // Capture host parent before shadowing
+
+        // Storage Isolation: Virtualize localStorage so user scripts cannot wipe app state
+        try {
+          var _rawLS = window.localStorage;
+          var _PREFIX = '__preview_store__';
+          var _virtualLS = {
+            getItem: function(k) { return _rawLS.getItem(_PREFIX + k); },
+            setItem: function(k, v) { _rawLS.setItem(_PREFIX + k, String(v)); },
+            removeItem: function(k) { _rawLS.removeItem(_PREFIX + k); },
+            clear: function() {
+              Object.keys(_rawLS).forEach(function(k) {
+                if (k.indexOf(_PREFIX) === 0) _rawLS.removeItem(k);
+              });
+            },
+            key: function(n) {
+              var keys = Object.keys(_rawLS).filter(function(k) { return k.indexOf(_PREFIX) === 0; });
+              return keys[n] ? keys[n].slice(_PREFIX.length) : null;
+            },
+            get length() {
+              return Object.keys(_rawLS).filter(function(k) { return k.indexOf(_PREFIX) === 0; }).length;
+            }
+          };
+          Object.defineProperty(window, 'localStorage', {
+            value: _virtualLS,
+            configurable: true,
+            writable: false
+          });
+        } catch(e) {}
+
+        // UI Decoupling: Shadow window.parent and window.top from mutating parent workbench DOM
+        try {
+          Object.defineProperty(window, 'parent', { get: function() { return window; }, configurable: true });
+          Object.defineProperty(window, 'top', { get: function() { return window; }, configurable: true });
+        } catch(e) {}
+
         function serialize(arg) {
           if (arg === null) return 'null';
           if (arg === undefined) return 'undefined';
@@ -1454,7 +1490,7 @@ document.getElementById('demoBtn').addEventListener('click', () => {
         function send(level, args) {
           try {
             const formatted = Array.from(args).map(serialize).join(' ');
-            window.parent.postMessage({
+            _hostParent.postMessage({
               type: 'AG_CONSOLE_EVENT',
               level: level,
               message: formatted,
@@ -1509,13 +1545,16 @@ document.getElementById('demoBtn').addEventListener('click', () => {
   // Console Panel Management
   // ---------------------------------------------------------------------------
   function addConsoleLog(level, message, timestamp) {
+    const validLevels = ['log', 'info', 'warn', 'error', 'debug'];
+    const safeLevel = validLevels.includes(level) ? level : 'log';
+
     state.logCount++;
     els.logCount.textContent = `${state.logCount} log${state.logCount === 1 ? '' : 's'}`;
 
     if (els.mobileConsoleBadge) {
       els.mobileConsoleBadge.textContent = state.logCount > 99 ? '99+' : state.logCount;
       els.mobileConsoleBadge.classList.remove('hidden');
-      if (level === 'error') {
+      if (safeLevel === 'error') {
         els.mobileConsoleBadge.classList.add('has-error');
       }
     }
@@ -1524,7 +1563,7 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     if (emptyPlaceholder) emptyPlaceholder.remove();
 
     const line = document.createElement('div');
-    line.className = `console-line ${level}`;
+    line.className = `console-line ${safeLevel}`;
     line.innerHTML = `
       <span class="timestamp">[${timestamp}]</span>
       <span class="msg">${escapeHtml(message)}</span>
@@ -1546,6 +1585,8 @@ document.getElementById('demoBtn').addEventListener('click', () => {
   }
 
   window.addEventListener('message', (event) => {
+    // Only accept console messages originating from the active preview iframe
+    if (els.previewFrame && event.source !== els.previewFrame.contentWindow) return;
     if (event.data && event.data.type === 'AG_CONSOLE_EVENT') {
       const { level, message, timestamp } = event.data;
       addConsoleLog(level, message, timestamp);
@@ -1946,7 +1987,13 @@ document.getElementById('demoBtn').addEventListener('click', () => {
   }
 
   function escapeHtml(str) {
-    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    if (str === null || str === undefined) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
   }
 
   function loadTemplate(key) {
@@ -2131,7 +2178,10 @@ document.getElementById('demoBtn').addEventListener('click', () => {
       const bundledHtml = bundleProject();
       const blob = new Blob([bundledHtml], { type: 'text/html' });
       const url = URL.createObjectURL(blob);
-      window.open(url, '_blank');
+      const newWin = window.open(url, '_blank');
+      if (newWin) {
+        newWin.opener = null;
+      }
     });
 
     // Console Actions
