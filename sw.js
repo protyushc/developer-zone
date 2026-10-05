@@ -1,9 +1,9 @@
 /**
- * Service Worker for Web Playground PWA
+ * Service Worker for Developer Zone PWA
  * Provides full offline support, asset pre-caching, and instant loading.
  */
 
-const CACHE_NAME = 'webplayground-cache-v4';
+const CACHE_NAME = 'developer-zone-cache-v1';
 
 const PRECACHE_ASSETS = [
   './',
