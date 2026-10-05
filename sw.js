@@ -3,21 +3,21 @@
  * Provides full offline support, asset pre-caching, and instant loading.
  */
 
-const CACHE_NAME = 'webplayground-cache-v1';
+const CACHE_NAME = 'webplayground-cache-v3';
 
 const PRECACHE_ASSETS = [
   './',
   './index.html',
-  './styles.css',
-  './app.js',
+  './assets/css/styles.css',
+  './assets/js/app.js',
   './manifest.json',
   // Icons
-  './icons/icon-192.png',
-  './icons/icon-512.png',
-  './icons/icon-maskable-192.png',
-  './icons/icon-maskable-512.png',
-  './icons/icon.svg',
-  './icons/icon-maskable.svg',
+  './assets/icons/icon-192.png',
+  './assets/icons/icon-512.png',
+  './assets/icons/icon-maskable-192.png',
+  './assets/icons/icon-maskable-512.png',
+  './assets/icons/icon.svg',
+  './assets/icons/icon-maskable.svg',
   // Vendor JS Libraries & CodeMirror
   './vendor/jszip/jszip.min.js',
   './vendor/codemirror/codemirror.min.css',

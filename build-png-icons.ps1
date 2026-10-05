@@ -180,9 +180,9 @@ function Render-AppIcon {
     Write-Output "Generated: $outputPath"
 }
 
-$iconsDir = Join-Path $PSScriptRoot "icons"
+$iconsDir = Join-Path (Join-Path $PSScriptRoot "assets") "icons"
 if (-not (Test-Path $iconsDir)) {
-    New-Item -ItemType Directory -Path $iconsDir | Out-Null
+    New-Item -ItemType Directory -Force -Path $iconsDir | Out-Null
 }
 
 Render-AppIcon -size 192 -outputPath (Join-Path $iconsDir "icon-192.png") -isMaskable $false

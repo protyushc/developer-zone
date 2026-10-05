@@ -61,3 +61,30 @@ A lightweight, zero-dependency, self-contained HTML, JavaScript, and CSS playgro
 | `Tab` | Indent (2 spaces) |
 | `Shift + Tab` | Unindent |
 | `Enter` | Auto-indent to current level |
+
+---
+
+## 📁 Project Structure
+
+```text
+web-playground/
+├── index.html              # Main application shell & workbench UI
+├── manifest.json           # PWA Web App Manifest
+├── sw.js                   # Root-scoped Service Worker for 100% offline support
+├── assets/                 # Application assets (styles, scripts, icons)
+│   ├── css/
+│   │   └── styles.css      # Core theme styles, layouts, and components
+│   ├── js/
+│   │   └── app.js          # Core application logic & PWA controller
+│   └── icons/              # Standard & maskable PWA app icons (192, 512, SVG)
+│       ├── icon-192.png
+│       ├── icon-512.png
+│       ├── icon-maskable-192.png
+│       ├── icon-maskable-512.png
+│       ├── icon.svg
+│       └── icon-maskable.svg
+└── vendor/                 # Self-contained local dependencies (zero CDN reliance)
+    ├── codemirror/         # Syntax highlighting engine, themes & modes
+    ├── fonts/              # Offline typography (.woff2)
+    └── jszip/              # Client-side zip generation
+```
