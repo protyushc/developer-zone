@@ -1,5 +1,5 @@
 /**
- * Web Playground - Core Application Logic
+ * Developer Zone - Core Application Logic
  * Supports Single-File & Multi-File (ES Modules, Virtual File System, In-browser Bundling)
  */
 
@@ -663,7 +663,7 @@ btn.addEventListener('click', (e) => {
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-  <h1>Hello from Web Playground!</h1>
+  <h1>Hello from Developer Zone!</h1>
   <p>Start editing this project to see live updates.</p>
   <button id="demoBtn">Click Me</button>
 
@@ -857,13 +857,61 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     closeInstallModalBtn: document.getElementById('closeInstallModalBtn'),
     cancelInstallModalBtn: document.getElementById('cancelInstallModalBtn'),
     modalNativeInstallBtn: document.getElementById('modalNativeInstallBtn'),
-    pwaInstructionsBox: document.getElementById('pwaInstructionsBox')
+    pwaInstructionsBox: document.getElementById('pwaInstructionsBox'),
+    // Developer Tools (Regex & Cron)
+    devToolsMenuBtn: document.getElementById('devToolsMenuBtn'),
+    devToolsDropdown: document.getElementById('devToolsDropdown'),
+    navOpenRegexBtn: document.getElementById('navOpenRegexBtn'),
+    navOpenCronBtn: document.getElementById('navOpenCronBtn'),
+    mobileRegexBtn: document.getElementById('mobileRegexBtn'),
+    mobileCronBtn: document.getElementById('mobileCronBtn'),
+    devToolsModal: document.getElementById('devToolsModal'),
+    closeDevToolsModalBtn: document.getElementById('closeDevToolsModalBtn'),
+    tabRegexBtn: document.getElementById('tabRegexBtn'),
+    tabCronBtn: document.getElementById('tabCronBtn'),
+    regexPane: document.getElementById('regexPane'),
+    cronPane: document.getElementById('cronPane'),
+    // RegEx Elements
+    regexPresetSelect: document.getElementById('regexPresetSelect'),
+    regexPatternInput: document.getElementById('regexPatternInput'),
+    regexFlagsBadge: document.getElementById('regexFlagsBadge'),
+    flagG: document.getElementById('flagG'),
+    flagI: document.getElementById('flagI'),
+    flagM: document.getElementById('flagM'),
+    flagS: document.getElementById('flagS'),
+    flagU: document.getElementById('flagU'),
+    regexErrorAlert: document.getElementById('regexErrorAlert'),
+    regexTestInput: document.getElementById('regexTestInput'),
+    regexHighlightBox: document.getElementById('regexHighlightBox'),
+    regexClearTestBtn: document.getElementById('regexClearTestBtn'),
+    regexMatchCountBadge: document.getElementById('regexMatchCountBadge'),
+    regexMatchTableBody: document.getElementById('regexMatchTableBody'),
+    regexReplaceInput: document.getElementById('regexReplaceInput'),
+    regexReplaceOutput: document.getElementById('regexReplaceOutput'),
+    regexCopyReplacedBtn: document.getElementById('regexCopyReplacedBtn'),
+    // Cron Elements
+    cronPresetSelect: document.getElementById('cronPresetSelect'),
+    cronExpressionInput: document.getElementById('cronExpressionInput'),
+    cronErrorAlert: document.getElementById('cronErrorAlert'),
+    cronHumanText: document.getElementById('cronHumanText'),
+    cronFieldMinute: document.getElementById('cronFieldMinute'),
+    cronFieldDescMinute: document.getElementById('cronFieldDescMinute'),
+    cronFieldHour: document.getElementById('cronFieldHour'),
+    cronFieldDescHour: document.getElementById('cronFieldDescHour'),
+    cronFieldDom: document.getElementById('cronFieldDom'),
+    cronFieldDescDom: document.getElementById('cronFieldDescDom'),
+    cronFieldMonth: document.getElementById('cronFieldMonth'),
+    cronFieldDescMonth: document.getElementById('cronFieldDescMonth'),
+    cronFieldDow: document.getElementById('cronFieldDow'),
+    cronFieldDescDow: document.getElementById('cronFieldDescDow'),
+    cronNextRunsList: document.getElementById('cronNextRunsList')
   };
 
   // ---------------------------------------------------------------------------
   // Persistence Helpers
   // ---------------------------------------------------------------------------
-  const STORAGE_KEY = 'ag_web_playground_state';
+  const STORAGE_KEY = 'ag_developer_zone_state';
+  const LEGACY_STORAGE_KEY = 'ag_web_playground_state';
 
   function saveState() {
     try {
@@ -881,7 +929,7 @@ document.getElementById('demoBtn').addEventListener('click', () => {
 
   function loadState() {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
+      const saved = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed.files && parsed.files.length > 0) {
@@ -1724,7 +1772,7 @@ document.getElementById('demoBtn').addEventListener('click', () => {
       const url = URL.createObjectURL(content);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'web_playground_project.zip';
+      a.download = 'developer_zone_project.zip';
       a.click();
       URL.revokeObjectURL(url);
       showToast('Downloaded project ZIP');
@@ -1900,7 +1948,7 @@ document.getElementById('demoBtn').addEventListener('click', () => {
 
   function loadTemplate(key) {
     if (!TEMPLATES[key]) return;
-    if (confirm(`Load template "${key}"? This will overwrite your current playground files.`)) {
+    if (confirm(`Load template "${key}"? This will overwrite your current Developer Zone files.`)) {
       state.files = JSON.parse(JSON.stringify(TEMPLATES[key]));
       state.activeFileId = state.files[0].id;
       state.openTabIds = state.files.map(f => f.id);
@@ -2139,6 +2187,131 @@ document.getElementById('demoBtn').addEventListener('click', () => {
       });
     }
 
+    // Developer Tools Dropdown & Modal Controls
+    if (els.devToolsMenuBtn && els.devToolsDropdown) {
+      els.devToolsMenuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        els.devToolsDropdown.classList.toggle('hidden');
+      });
+      window.addEventListener('click', () => {
+        els.devToolsDropdown.classList.add('hidden');
+      });
+    }
+
+    if (els.navOpenRegexBtn) {
+      els.navOpenRegexBtn.addEventListener('click', () => openDevToolsModal('regex'));
+    }
+    if (els.navOpenCronBtn) {
+      els.navOpenCronBtn.addEventListener('click', () => openDevToolsModal('cron'));
+    }
+
+    if (els.mobileRegexBtn) {
+      els.mobileRegexBtn.addEventListener('click', () => {
+        closeMobileDrawer();
+        openDevToolsModal('regex');
+      });
+    }
+    if (els.mobileCronBtn) {
+      els.mobileCronBtn.addEventListener('click', () => {
+        closeMobileDrawer();
+        openDevToolsModal('cron');
+      });
+    }
+
+    if (els.closeDevToolsModalBtn) {
+      els.closeDevToolsModalBtn.addEventListener('click', closeDevToolsModal);
+    }
+    if (els.devToolsModal) {
+      els.devToolsModal.addEventListener('click', (e) => {
+        if (e.target === els.devToolsModal) {
+          closeDevToolsModal();
+        }
+      });
+    }
+
+    if (els.tabRegexBtn) {
+      els.tabRegexBtn.addEventListener('click', () => switchDevToolsTab('regex'));
+    }
+    if (els.tabCronBtn) {
+      els.tabCronBtn.addEventListener('click', () => switchDevToolsTab('cron'));
+    }
+
+    // RegEx Listeners
+    if (els.regexPatternInput) {
+      els.regexPatternInput.addEventListener('input', updateRegexChecker);
+    }
+    if (els.regexTestInput) {
+      els.regexTestInput.addEventListener('input', updateRegexChecker);
+    }
+    if (els.regexReplaceInput) {
+      els.regexReplaceInput.addEventListener('input', updateRegexChecker);
+    }
+    [els.flagG, els.flagI, els.flagM, els.flagS, els.flagU].forEach(flagEl => {
+      if (flagEl) flagEl.addEventListener('change', updateRegexChecker);
+    });
+
+    if (els.regexPresetSelect) {
+      els.regexPresetSelect.addEventListener('change', (e) => {
+        const key = e.target.value;
+        if (key && REGEX_PRESETS[key]) {
+          const p = REGEX_PRESETS[key];
+          if (els.regexPatternInput) els.regexPatternInput.value = p.pattern;
+          setRegexFlags(p.flags);
+          if (els.regexTestInput) els.regexTestInput.value = p.sample;
+          updateRegexChecker();
+        }
+      });
+    }
+
+    if (els.regexClearTestBtn) {
+      els.regexClearTestBtn.addEventListener('click', () => {
+        if (els.regexTestInput) els.regexTestInput.value = '';
+        updateRegexChecker();
+      });
+    }
+
+    if (els.regexCopyReplacedBtn) {
+      els.regexCopyReplacedBtn.addEventListener('click', () => {
+        if (els.regexReplaceOutput) {
+          const text = els.regexReplaceOutput.textContent;
+          if (text && text !== 'No replacement text entered') {
+            navigator.clipboard.writeText(text).then(() => {
+              showToast('Copied replaced text to clipboard');
+            }).catch(() => {
+              showToast('Failed to copy to clipboard');
+            });
+          }
+        }
+      });
+    }
+
+    // Cron Listeners
+    if (els.cronExpressionInput) {
+      els.cronExpressionInput.addEventListener('input', updateCronEvaluator);
+    }
+    if (els.cronPresetSelect) {
+      els.cronPresetSelect.addEventListener('change', (e) => {
+        const val = e.target.value;
+        if (val && els.cronExpressionInput) {
+          els.cronExpressionInput.value = val;
+          updateCronEvaluator();
+        }
+      });
+    }
+
+    // Keyboard Shortcuts: Ctrl+Shift+R (Regex), Ctrl+Shift+C (Cron), Escape
+    window.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'R' || e.key === 'r')) {
+        e.preventDefault();
+        openDevToolsModal('regex');
+      } else if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'C' || e.key === 'c')) {
+        e.preventDefault();
+        openDevToolsModal('cron');
+      } else if (e.key === 'Escape' && els.devToolsModal && !els.devToolsModal.classList.contains('hidden')) {
+        closeDevToolsModal();
+      }
+    });
+
     // PWA Browser Install Prompt Event
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
@@ -2151,8 +2324,646 @@ document.getElementById('demoBtn').addEventListener('click', () => {
       deferredInstallPrompt = null;
       updateInstallButtonUI();
       closeInstallModal();
-      showToast('🎉 Web Playground installed successfully!');
+      showToast('🎉 Developer Zone installed successfully!');
     });
+  }
+
+  // ---------------------------------------------------------------------------
+  // Developer Tools Controller (RegEx Checker & Cron Expression Evaluator)
+  // ---------------------------------------------------------------------------
+  const REGEX_PRESETS = {
+    'email': {
+      pattern: '^[a-zA-Z0-9.!#$%&\'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$',
+      flags: { g: true, i: true, m: true, s: false, u: true },
+      sample: 'developer@example.com\nhello.world+test@subdomain.org\ninvalid-email@\ncontact@domain.co.uk'
+    },
+    'url': {
+      pattern: 'https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b(?:[-a-zA-Z0-9()@:%_\\+.~#?&\\/\\/=]*)',
+      flags: { g: true, i: true, m: true, s: false, u: true },
+      sample: 'Visit https://developerzone.dev/benchmarks for performance data.\nDocs at http://localhost:8080/api/v1?token=xyz#overview\nIgnore ftp://not-supported.org'
+    },
+    'ipv4': {
+      pattern: '\\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b',
+      flags: { g: true, i: false, m: true, s: false, u: true },
+      sample: 'Server 1: 192.168.1.1\nGateway: 10.0.0.254\nDNS: 8.8.8.8 and 1.1.1.1\nInvalid IP: 999.300.12.1'
+    },
+    'date-iso': {
+      pattern: '\\b\\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\\d|3[01])\\b',
+      flags: { g: true, i: false, m: true, s: false, u: true },
+      sample: 'Release Date: 2026-10-05\nTarget Deadline: 2026-12-31\nInvalid Date: 2026-13-45'
+    },
+    'phone-intl': {
+      pattern: '\\+?[1-9]\\d{1,14}(?:x.+)?',
+      flags: { g: true, i: false, m: true, s: false, u: true },
+      sample: 'US: +14155552671\nUK: +442071838750\nIndia: +919876543210'
+    },
+    'hex-color': {
+      pattern: '#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})\\b',
+      flags: { g: true, i: true, m: true, s: false, u: true },
+      sample: 'Accent: #38bdf8\nBackground: #181a1f\nLight: #fff and #09f\nBorder: #334155\nInvalid: #gggggg'
+    },
+    'uuid': {
+      pattern: '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}',
+      flags: { g: true, i: true, m: true, s: false, u: true },
+      sample: 'Session ID: c9bf9e57-1685-4c89-bafb-ff5af830be8a\nClient ID: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d'
+    },
+    'html-tag': {
+      pattern: '<([a-zA-Z][a-zA-Z0-9]*)\\b[^>]*>(.*?)<\\/\\1>',
+      flags: { g: true, i: true, m: true, s: true, u: true },
+      sample: '<h1 class="hero-title">Developer Zone</h1>\n<p>Interactive workbench with <strong>offline PWA</strong> power.</p>'
+    },
+    'slug': {
+      pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$',
+      flags: { g: false, i: false, m: true, s: false, u: true },
+      sample: 'developer-zone-workbench'
+    },
+    'password-strong': {
+      pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$',
+      flags: { g: false, i: false, m: true, s: false, u: true },
+      sample: 'DevZone2026!Secure'
+    },
+    'digits-only': {
+      pattern: '\\b\\d+\\b',
+      flags: { g: true, i: false, m: true, s: false, u: true },
+      sample: 'Processed 48102 records in 350ms across 4 clusters.'
+    }
+  };
+
+  function getRegexFlagsString() {
+    let flags = '';
+    if (els.flagG && els.flagG.checked) flags += 'g';
+    if (els.flagI && els.flagI.checked) flags += 'i';
+    if (els.flagM && els.flagM.checked) flags += 'm';
+    if (els.flagS && els.flagS.checked) flags += 's';
+    if (els.flagU && els.flagU.checked) flags += 'u';
+    return flags;
+  }
+
+  function setRegexFlags(flagsObj) {
+    if (els.flagG) els.flagG.checked = !!flagsObj.g;
+    if (els.flagI) els.flagI.checked = !!flagsObj.i;
+    if (els.flagM) els.flagM.checked = !!flagsObj.m;
+    if (els.flagS) els.flagS.checked = !!flagsObj.s;
+    if (els.flagU) els.flagU.checked = !!flagsObj.u;
+    updateRegexFlagsBadge();
+  }
+
+  function updateRegexFlagsBadge() {
+    if (els.regexFlagsBadge) {
+      els.regexFlagsBadge.textContent = getRegexFlagsString();
+    }
+  }
+
+  function updateRegexChecker() {
+    if (!els.regexPatternInput || !els.regexTestInput) return;
+
+    const pattern = els.regexPatternInput.value;
+    const flags = getRegexFlagsString();
+    updateRegexFlagsBadge();
+
+    const testText = els.regexTestInput.value;
+    const replacePattern = els.regexReplaceInput ? els.regexReplaceInput.value : '';
+
+    // Clear previous errors
+    if (els.regexErrorAlert) {
+      els.regexErrorAlert.textContent = '';
+      els.regexErrorAlert.classList.add('hidden');
+    }
+
+    if (!pattern) {
+      if (els.regexHighlightBox) els.regexHighlightBox.textContent = testText;
+      if (els.regexMatchCountBadge) {
+        els.regexMatchCountBadge.textContent = '0 matches';
+        els.regexMatchCountBadge.className = 'badge-pill';
+      }
+      if (els.regexMatchTableBody) {
+        els.regexMatchTableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">Enter a regular expression to see matches</td></tr>';
+      }
+      if (els.regexReplaceOutput) {
+        els.regexReplaceOutput.textContent = replacePattern ? testText : 'No replacement text entered';
+      }
+      return;
+    }
+
+    let regex;
+    try {
+      regex = new RegExp(pattern, flags);
+    } catch (err) {
+      if (els.regexErrorAlert) {
+        els.regexErrorAlert.textContent = '⚠️ ' + err.message;
+        els.regexErrorAlert.classList.remove('hidden');
+      }
+      if (els.regexHighlightBox) els.regexHighlightBox.textContent = testText;
+      if (els.regexMatchCountBadge) {
+        els.regexMatchCountBadge.textContent = 'Invalid RegExp';
+        els.regexMatchCountBadge.className = 'badge-pill warning';
+      }
+      if (els.regexMatchTableBody) {
+        els.regexMatchTableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--accent-danger);">RegExp Syntax Error</td></tr>';
+      }
+      return;
+    }
+
+    // Perform matching
+    const matches = [];
+    if (!regex.global) {
+      const match = regex.exec(testText);
+      if (match) {
+        matches.push({
+          index: match.index,
+          length: match[0].length,
+          text: match[0],
+          groups: match.slice(1)
+        });
+      }
+    } else {
+      let match;
+      let lastIndex = -1;
+      const MAX_MATCHES = 500;
+      while ((match = regex.exec(testText)) !== null) {
+        matches.push({
+          index: match.index,
+          length: match[0].length,
+          text: match[0],
+          groups: match.slice(1)
+        });
+        if (matches.length >= MAX_MATCHES) break;
+        if (regex.lastIndex === lastIndex) {
+          regex.lastIndex++;
+        }
+        lastIndex = regex.lastIndex;
+        if (regex.lastIndex > testText.length) break;
+      }
+    }
+
+    // Match count badge
+    if (els.regexMatchCountBadge) {
+      const count = matches.length;
+      els.regexMatchCountBadge.textContent = count === 0 ? 'No matches' : (count === 1 ? '1 match' : `${count} matches`);
+      els.regexMatchCountBadge.className = 'badge-pill';
+    }
+
+    // Highlight Box Rendering
+    if (els.regexHighlightBox) {
+      if (matches.length === 0 || !testText) {
+        els.regexHighlightBox.textContent = testText;
+      } else {
+        let html = '';
+        let cursor = 0;
+        matches.forEach((m, idx) => {
+          if (m.index > cursor) {
+            html += escapeHtml(testText.slice(cursor, m.index));
+          }
+          const markClass = (idx % 2 === 0) ? 'match-a' : 'match-b';
+          const matchContent = escapeHtml(m.text || ' ');
+          html += `<mark class="regex-match-mark ${markClass}" title="Match #${idx + 1} at index ${m.index}">${matchContent}</mark>`;
+          cursor = m.index + m.length;
+        });
+        if (cursor < testText.length) {
+          html += escapeHtml(testText.slice(cursor));
+        }
+        els.regexHighlightBox.innerHTML = html;
+      }
+    }
+
+    // Match Table Rendering
+    if (els.regexMatchTableBody) {
+      if (matches.length === 0) {
+        els.regexMatchTableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No matches found</td></tr>';
+      } else {
+        let rowsHtml = '';
+        matches.forEach((m, idx) => {
+          let groupsHtml = '<em>none</em>';
+          if (m.groups && m.groups.length > 0) {
+            groupsHtml = m.groups.map((g, gIdx) => {
+              const val = g !== undefined ? escapeHtml(g) : '<em style="color:var(--text-muted)">undefined</em>';
+              return `<span style="display:inline-block; margin-right:6px;"><strong style="color:var(--accent-primary);">$${gIdx + 1}:</strong> ${val}</span>`;
+            }).join(' ');
+          }
+          const textPreview = escapeHtml(m.text.length > 80 ? m.text.slice(0, 77) + '...' : m.text);
+          rowsHtml += `
+            <tr>
+              <td><strong>#${idx + 1}</strong></td>
+              <td>${m.index}..${m.index + m.length}</td>
+              <td style="font-family:var(--font-mono); color:var(--text-bright);">${textPreview || '<em>empty</em>'}</td>
+              <td>${groupsHtml}</td>
+            </tr>
+          `;
+        });
+        els.regexMatchTableBody.innerHTML = rowsHtml;
+      }
+    }
+
+    // Substitution Rendering
+    if (els.regexReplaceOutput) {
+      if (replacePattern === '') {
+        els.regexReplaceOutput.textContent = 'No replacement text entered';
+      } else {
+        try {
+          const replaced = testText.replace(regex, replacePattern);
+          els.regexReplaceOutput.textContent = replaced;
+        } catch (e) {
+          els.regexReplaceOutput.textContent = 'Replace error: ' + e.message;
+        }
+      }
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Cron Parser & Evaluator Logic
+  // ---------------------------------------------------------------------------
+  const CRON_MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+  const CRON_DAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+
+  function parseCronPart(partStr, minVal, maxVal, nameMap) {
+    let str = partStr.trim().toUpperCase();
+    if (!str) throw new Error('Field cannot be empty');
+
+    // Replace month/weekday names if present
+    if (nameMap) {
+      Object.keys(nameMap).forEach(k => {
+        str = str.replace(new RegExp('\\b' + k + '\\b', 'g'), nameMap[k]);
+      });
+    }
+
+    const values = new Set();
+    const subParts = str.split(',');
+
+    for (let sub of subParts) {
+      sub = sub.trim();
+      if (!sub) continue;
+
+      let step = 1;
+      let rangePart = sub;
+      if (sub.includes('/')) {
+        const slashTokens = sub.split('/');
+        if (slashTokens.length !== 2) throw new Error(`Invalid step syntax in "${sub}"`);
+        rangePart = slashTokens[0];
+        step = parseInt(slashTokens[1], 10);
+        if (isNaN(step) || step <= 0) throw new Error(`Invalid step size "${slashTokens[1]}"`);
+      }
+
+      let start = minVal;
+      let end = maxVal;
+
+      if (rangePart === '*' || rangePart === '?') {
+        start = minVal;
+        end = maxVal;
+      } else if (rangePart.includes('-')) {
+        const dashTokens = rangePart.split('-');
+        if (dashTokens.length !== 2) throw new Error(`Invalid range syntax in "${rangePart}"`);
+        start = parseInt(dashTokens[0], 10);
+        end = parseInt(dashTokens[1], 10);
+        if (isNaN(start) || isNaN(end)) throw new Error(`Invalid numeric range "${rangePart}"`);
+      } else {
+        const val = parseInt(rangePart, 10);
+        if (isNaN(val)) throw new Error(`Invalid token "${rangePart}"`);
+        if (sub.includes('/')) {
+          start = val;
+          end = maxVal;
+        } else {
+          start = val;
+          end = val;
+        }
+      }
+
+      if (start < minVal || start > maxVal) throw new Error(`Value ${start} out of range (${minVal}–${maxVal})`);
+      if (end < minVal || end > maxVal) throw new Error(`Value ${end} out of range (${minVal}–${maxVal})`);
+      if (start > end) throw new Error(`Range start ${start} cannot exceed end ${end}`);
+
+      for (let i = start; i <= end; i += step) {
+        values.add(i);
+      }
+    }
+
+    if (values.size === 0) throw new Error(`No valid values evaluated for field "${partStr}"`);
+    return Array.from(values).sort((a, b) => a - b);
+  }
+
+  function parseCronExpression(cronStr) {
+    const rawTokens = cronStr.trim().split(/\s+/);
+    if (rawTokens.length !== 5) {
+      throw new Error(`Cron expression requires exactly 5 fields (Minute, Hour, Day of Month, Month, Day of Week), found ${rawTokens.length}`);
+    }
+
+    const monthMap = {};
+    CRON_MONTHS.forEach((m, idx) => { monthMap[m] = idx + 1; });
+
+    const dowMap = {};
+    CRON_DAYS.forEach((d, idx) => { dowMap[d] = idx; });
+
+    const minutes = parseCronPart(rawTokens[0], 0, 59);
+    const hours = parseCronPart(rawTokens[1], 0, 23);
+    const dom = parseCronPart(rawTokens[2], 1, 31);
+    const months = parseCronPart(rawTokens[3], 1, 12, monthMap);
+
+    // DOW: 0-7, where 7 = Sunday (0)
+    let dows = parseCronPart(rawTokens[4], 0, 7, dowMap);
+    dows = Array.from(new Set(dows.map(d => d === 7 ? 0 : d))).sort((a, b) => a - b);
+
+    return {
+      tokens: rawTokens,
+      minutes,
+      hours,
+      dom,
+      months,
+      dows,
+      domIsAny: rawTokens[2] === '*' || rawTokens[2] === '?',
+      dowIsAny: rawTokens[4] === '*' || rawTokens[4] === '?'
+    };
+  }
+
+  function getHumanFieldDescription(fieldIndex, token) {
+    const t = token.trim();
+    if (t === '*' || t === '?') {
+      switch (fieldIndex) {
+        case 0: return 'Every minute';
+        case 1: return 'Every hour';
+        case 2: return 'Every day of month';
+        case 3: return 'Every month';
+        case 4: return 'Every day of week';
+      }
+    }
+    if (t.startsWith('*/')) {
+      const step = t.replace('*/', '');
+      switch (fieldIndex) {
+        case 0: return `Every ${step} minutes`;
+        case 1: return `Every ${step} hours`;
+        case 2: return `Every ${step} days`;
+        case 3: return `Every ${step} months`;
+        case 4: return `Every ${step} days of week`;
+      }
+    }
+    switch (fieldIndex) {
+      case 0: return `At minute ${t}`;
+      case 1: return `At hour ${t}:00`;
+      case 2: return `On day ${t} of month`;
+      case 3: return `In month ${t}`;
+      case 4: return `On day-of-week ${t}`;
+    }
+    return t;
+  }
+
+  function generateHumanExplanation(parsed) {
+    const [minT, hrT, domT, monT, dowT] = parsed.tokens;
+
+    // Special exact matches
+    if (minT === '*' && hrT === '*' && domT === '*' && monT === '*' && dowT === '*') {
+      return 'Runs every minute of every day';
+    }
+    if (minT.startsWith('*/') && hrT === '*' && domT === '*' && monT === '*' && dowT === '*') {
+      return `Runs every ${minT.replace('*/', '')} minutes`;
+    }
+    if (minT === '0' && hrT.startsWith('*/') && domT === '*' && monT === '*' && dowT === '*') {
+      return `Runs every ${hrT.replace('*/', '')} hours at minute 00`;
+    }
+    if (minT === '0' && hrT === '*' && domT === '*' && monT === '*' && dowT === '*') {
+      return 'Runs every hour on the hour (minute 00)';
+    }
+    if (minT === '0' && hrT === '0' && domT === '*' && monT === '*' && dowT === '*') {
+      return 'Runs every day at midnight (00:00)';
+    }
+
+    // General composition
+    let desc = '';
+    // Time component
+    if (minT === '0' && !isNaN(parseInt(hrT, 10)) && !hrT.includes(',') && !hrT.includes('-') && !hrT.includes('/')) {
+      const h = parseInt(hrT, 10);
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      const h12 = h % 12 === 0 ? 12 : h % 12;
+      desc = `Runs at ${String(h).padStart(2, '0')}:00 (${h12}:00 ${ampm})`;
+    } else if (!isNaN(parseInt(minT, 10)) && !isNaN(parseInt(hrT, 10)) && !minT.includes(',') && !hrT.includes(',')) {
+      const h = parseInt(hrT, 10);
+      const m = parseInt(minT, 10);
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      const h12 = h % 12 === 0 ? 12 : h % 12;
+      desc = `Runs at ${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')} (${h12}:${String(m).padStart(2, '0')} ${ampm})`;
+    } else {
+      desc = `Runs at minute ${minT}, hour ${hrT}`;
+    }
+
+    // Days / Weeks component
+    if (dowT === '1-5' || dowT === 'MON-FRI') {
+      desc += ', Monday through Friday';
+    } else if (dowT === '0,6' || dowT === '6,0' || dowT === 'SUN,SAT') {
+      desc += ', on weekends only';
+    } else if (dowT !== '*' && dowT !== '?') {
+      const dowNames = parsed.dows.map(d => CRON_DAYS[d]).join(', ');
+      desc += `, on ${dowNames}`;
+    }
+
+    if (domT !== '*' && domT !== '?') {
+      desc += `, on day ${domT} of the month`;
+    }
+
+    if (monT !== '*' && monT !== '?') {
+      const monNames = parsed.months.map(m => CRON_MONTHS[m - 1]).join(', ');
+      desc += `, in ${monNames}`;
+    }
+
+    return desc;
+  }
+
+  function calculateNextCronRuns(parsed, count = 5) {
+    const runs = [];
+    let current = new Date();
+    // Advance to next full minute
+    current.setSeconds(0, 0);
+    current = new Date(current.getTime() + 60000);
+
+    const minSet = new Set(parsed.minutes);
+    const hrSet = new Set(parsed.hours);
+    const domSet = new Set(parsed.dom);
+    const monSet = new Set(parsed.months);
+    const dowSet = new Set(parsed.dows);
+
+    // Search max 500,000 minutes (approx ~1 year)
+    let minutesChecked = 0;
+    const MAX_SEARCH = 525600;
+
+    while (runs.length < count && minutesChecked < MAX_SEARCH) {
+      const year = current.getFullYear();
+      const month = current.getMonth() + 1; // 1-12
+      const date = current.getDate();       // 1-31
+      const day = current.getDay();         // 0-6
+      const hour = current.getHours();      // 0-23
+      const minute = current.getMinutes();  // 0-59
+
+      if (!monSet.has(month)) {
+        current = new Date(year, month, 1, 0, 0, 0, 0);
+        minutesChecked += 60;
+        continue;
+      }
+
+      // POSIX Rule: If both DOM and DOW are restricted, match if EITHER matches.
+      let dayMatch = false;
+      if (!parsed.domIsAny && !parsed.dowIsAny) {
+        dayMatch = domSet.has(date) || dowSet.has(day);
+      } else {
+        dayMatch = domSet.has(date) && dowSet.has(day);
+      }
+
+      if (!dayMatch) {
+        current = new Date(year, month - 1, date + 1, 0, 0, 0, 0);
+        minutesChecked += 60;
+        continue;
+      }
+
+      if (!hrSet.has(hour)) {
+        current = new Date(year, month - 1, date, hour + 1, 0, 0, 0);
+        minutesChecked += 30;
+        continue;
+      }
+
+      if (minSet.has(minute)) {
+        runs.push(new Date(current.getTime()));
+      }
+
+      current = new Date(current.getTime() + 60000);
+      minutesChecked++;
+    }
+
+    return runs;
+  }
+
+  function formatRelativeTime(targetDate) {
+    const diffMs = targetDate.getTime() - Date.now();
+    const diffMins = Math.round(diffMs / 60000);
+    if (diffMins < 1) return 'in less than a minute';
+    if (diffMins === 1) return 'in 1 minute';
+    if (diffMins < 60) return `in ${diffMins} minutes`;
+    const diffHours = Math.floor(diffMins / 60);
+    const remMins = diffMins % 60;
+    if (diffHours < 24) {
+      return remMins > 0 ? `in ${diffHours}h ${remMins}m` : `in ${diffHours} hours`;
+    }
+    const diffDays = Math.floor(diffHours / 24);
+    return `in ${diffDays} day${diffDays > 1 ? 's' : ''}`;
+  }
+
+  function updateCronEvaluator() {
+    if (!els.cronExpressionInput) return;
+    const cronStr = els.cronExpressionInput.value.trim();
+
+    // Reset error
+    if (els.cronErrorAlert) {
+      els.cronErrorAlert.textContent = '';
+      els.cronErrorAlert.classList.add('hidden');
+    }
+
+    let parsed;
+    try {
+      parsed = parseCronExpression(cronStr);
+    } catch (err) {
+      if (els.cronErrorAlert) {
+        els.cronErrorAlert.textContent = '⚠️ ' + err.message;
+        els.cronErrorAlert.classList.remove('hidden');
+      }
+      if (els.cronHumanText) {
+        els.cronHumanText.textContent = 'Invalid expression';
+      }
+      if (els.cronNextRunsList) {
+        els.cronNextRunsList.innerHTML = '<div class="cron-run-item" style="color:var(--accent-danger); justify-content:center;">Please fix the cron expression above</div>';
+      }
+      return;
+    }
+
+    // 5-field breakdown cards
+    const [minT, hrT, domT, monT, dowT] = parsed.tokens;
+    if (els.cronFieldMinute) els.cronFieldMinute.textContent = minT;
+    if (els.cronFieldDescMinute) els.cronFieldDescMinute.textContent = getHumanFieldDescription(0, minT);
+    if (els.cronFieldHour) els.cronFieldHour.textContent = hrT;
+    if (els.cronFieldDescHour) els.cronFieldDescHour.textContent = getHumanFieldDescription(1, hrT);
+    if (els.cronFieldDom) els.cronFieldDom.textContent = domT;
+    if (els.cronFieldDescDom) els.cronFieldDescDom.textContent = getHumanFieldDescription(2, domT);
+    if (els.cronFieldMonth) els.cronFieldMonth.textContent = monT;
+    if (els.cronFieldDescMonth) els.cronFieldDescMonth.textContent = getHumanFieldDescription(3, monT);
+    if (els.cronFieldDow) els.cronFieldDow.textContent = dowT;
+    if (els.cronFieldDescDow) els.cronFieldDescDow.textContent = getHumanFieldDescription(4, dowT);
+
+    // Human Explanation
+    if (els.cronHumanText) {
+      els.cronHumanText.textContent = generateHumanExplanation(parsed);
+    }
+
+    // Calculate next runs
+    if (els.cronNextRunsList) {
+      const runs = calculateNextCronRuns(parsed, 5);
+      if (runs.length === 0) {
+        els.cronNextRunsList.innerHTML = '<div class="cron-run-item" style="justify-content:center; color:var(--text-muted);">No upcoming executions found within the next year.</div>';
+      } else {
+        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        let html = '';
+        runs.forEach((d, idx) => {
+          const y = d.getFullYear();
+          const m = String(d.getMonth() + 1).padStart(2, '0');
+          const day = String(d.getDate()).padStart(2, '0');
+          const hr = String(d.getHours()).padStart(2, '0');
+          const min = String(d.getMinutes()).padStart(2, '0');
+          const dayName = days[d.getDay()];
+          const formatted = `${y}-${m}-${day} ${hr}:${min} (${dayName})`;
+          const rel = formatRelativeTime(d);
+          html += `
+            <div class="cron-run-item">
+              <div class="cron-run-item-left">
+                <span class="cron-run-num">#${idx + 1}</span>
+                <span class="cron-run-date">${formatted}</span>
+              </div>
+              <span class="cron-run-rel">${rel}</span>
+            </div>
+          `;
+        });
+        els.cronNextRunsList.innerHTML = html;
+      }
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // DevTools Modal Controls & Tab Management
+  // ---------------------------------------------------------------------------
+  function openDevToolsModal(tab = 'regex') {
+    if (els.devToolsDropdown) els.devToolsDropdown.classList.add('hidden');
+    if (els.devToolsModal) {
+      els.devToolsModal.classList.remove('hidden');
+    }
+    switchDevToolsTab(tab);
+  }
+
+  function closeDevToolsModal() {
+    if (els.devToolsModal) {
+      els.devToolsModal.classList.add('hidden');
+    }
+  }
+
+  function switchDevToolsTab(tabName) {
+    if (tabName === 'cron') {
+      if (els.tabCronBtn) els.tabCronBtn.classList.add('active');
+      if (els.tabRegexBtn) els.tabRegexBtn.classList.remove('active');
+      if (els.cronPane) els.cronPane.classList.remove('hidden');
+      if (els.regexPane) els.regexPane.classList.add('hidden');
+      updateCronEvaluator();
+      if (els.cronExpressionInput) setTimeout(() => els.cronExpressionInput.focus(), 50);
+    } else {
+      if (els.tabRegexBtn) els.tabRegexBtn.classList.add('active');
+      if (els.tabCronBtn) els.tabCronBtn.classList.remove('active');
+      if (els.regexPane) els.regexPane.classList.remove('hidden');
+      if (els.cronPane) els.cronPane.classList.add('hidden');
+      updateRegexChecker();
+      if (els.regexPatternInput) setTimeout(() => els.regexPatternInput.focus(), 50);
+    }
+  }
+
+  function initDevToolsDefaults() {
+    // Populate default demo state for RegEx Checker
+    if (els.regexPatternInput && !els.regexPatternInput.value) {
+      const emailPreset = REGEX_PRESETS['email'];
+      els.regexPatternInput.value = emailPreset.pattern;
+      setRegexFlags(emailPreset.flags);
+      if (els.regexTestInput) els.regexTestInput.value = emailPreset.sample;
+      if (els.regexReplaceInput) els.regexReplaceInput.value = 'developer@domain.com';
+    }
+    updateRegexChecker();
+    updateCronEvaluator();
   }
 
   // ---------------------------------------------------------------------------
@@ -2221,7 +3032,7 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     if (deferredInstallPrompt) {
       els.pwaInstructionsBox.innerHTML = `
         <div class="pwa-highlight-note">
-          🎉 Web Playground is ready to install directly from your browser!
+          🎉 Developer Zone is ready to install directly from your browser!
         </div>
         <div class="pwa-step-card">
           <div class="pwa-step-num">1</div>
@@ -2232,7 +3043,7 @@ document.getElementById('demoBtn').addEventListener('click', () => {
         <div class="pwa-step-card">
           <div class="pwa-step-num">2</div>
           <div class="pwa-step-content">
-            Confirm the browser prompt to install Web Playground as a standalone native app.
+            Confirm the browser prompt to install Developer Zone as a standalone native app.
           </div>
         </div>
       `;
@@ -2282,7 +3093,7 @@ document.getElementById('demoBtn').addEventListener('click', () => {
         <div class="pwa-step-card">
           <div class="pwa-step-num">3</div>
           <div class="pwa-step-content">
-            Follow the prompt to add Web Playground to your home screen and app launcher.
+            Follow the prompt to add Developer Zone to your home screen and app launcher.
           </div>
         </div>
       `;
@@ -2297,7 +3108,7 @@ document.getElementById('demoBtn').addEventListener('click', () => {
         <div class="pwa-step-card">
           <div class="pwa-step-num">2</div>
           <div class="pwa-step-content">
-            Or open the browser menu <span class="pwa-inline-kbd">⋮</span> &rarr; select <strong>"Save and share"</strong> or <strong>"Apps"</strong> &rarr; <strong>"Install Web Playground"</strong>.
+            Or open the browser menu <span class="pwa-inline-kbd">⋮</span> &rarr; select <strong>"Save and share"</strong> or <strong>"Apps"</strong> &rarr; <strong>"Install Developer Zone"</strong>.
           </div>
         </div>
         <div class="pwa-step-card">
@@ -2333,7 +3144,7 @@ document.getElementById('demoBtn').addEventListener('click', () => {
         deferredInstallPrompt.prompt();
         const choice = await deferredInstallPrompt.userChoice;
         if (choice && choice.outcome === 'accepted') {
-          showToast('Installing Web Playground...');
+          showToast('Installing Developer Zone...');
         }
       } catch (err) {
         console.warn('Install prompt error:', err);
@@ -2361,7 +3172,7 @@ document.getElementById('demoBtn').addEventListener('click', () => {
               if (newWorker) {
                 newWorker.addEventListener('statechange', () => {
                   if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                    showToast('⚡ Web Playground updated! Refresh to use the latest version.');
+                    showToast('⚡ Developer Zone updated! Refresh to use the latest version.');
                   }
                 });
               }
@@ -2415,6 +3226,7 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     syncEditorContent();
     updateModeBadge();
     initEventListeners();
+    initDevToolsDefaults();
     updateInstallButtonUI();
     registerServiceWorker();
 

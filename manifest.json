@@ -1,8 +1,8 @@
 {
-  "id": "web-playground-app-v2",
-  "name": "Web Playground",
-  "short_name": "Web Playground",
-  "description": "Interactive code editor and live preview workbench for HTML, CSS, and JavaScript with in-browser bundling and virtual file system.",
+  "id": "developer-zone-app",
+  "name": "Developer Zone",
+  "short_name": "Developer Zone",
+  "description": "Interactive code workbench, live playground, Regular Expression checker, and Cron expression evaluator.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

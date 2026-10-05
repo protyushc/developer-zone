@@ -4,12 +4,12 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover"/>
   <meta name="theme-color" content="#181a1f" id="themeColorMeta"/>
-  <title>Web Playground - HTML, JS and CSS workbench</title>
-  <meta name="description" content="Interactive code editor and live preview workbench for HTML, CSS, and JavaScript with in-browser bundling and virtual file system."/>
+  <title>Developer Zone - Web Workbench &amp; Developer Tools</title>
+  <meta name="description" content="Developer Zone - Interactive code workbench, live playground, Regular Expression checker, and Cron expression evaluator with offline PWA support."/>
   <meta name="mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-  <meta name="apple-mobile-web-app-title" content="Web Playground"/>
+  <meta name="apple-mobile-web-app-title" content="Developer Zone"/>
   <link rel="manifest" href="manifest.json?v=2"/>
   <link rel="icon" type="image/x-icon" href="favicon.ico"/>
   <link rel="shortcut icon" href="favicon.ico"/>
@@ -38,7 +38,7 @@
             <polyline points="2 17 12 22 22 17"></polyline>
             <polyline points="2 12 12 17 22 12"></polyline>
           </svg>
-          <span class="brand-title">Web<strong>Playground</strong></span>
+          <span class="brand-title">Developer<strong>Zone</strong></span>
           <span class="badge" id="modeBadge">Multi-File</span>
         </div>
 
@@ -52,6 +52,25 @@
             <option value="blank-multifile">📄 Blank Multi-File (HTML + CSS + JS)</option>
             <option value="blank-single">📝 Blank Single File (index.html)</option>
           </select>
+        </div>
+
+        <div class="dropdown-wrapper desktop-only">
+          <button id="devToolsMenuBtn" class="btn btn-secondary" title="Developer Tools (Regex & Cron)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15">
+              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+            </svg>
+            <span>DevTools ▾</span>
+          </button>
+          <div id="devToolsDropdown" class="dropdown-menu hidden">
+            <button id="navOpenRegexBtn" class="dropdown-item">
+              <span class="item-title">🔍 Regular Expression Checker</span>
+              <span class="item-desc">Test patterns, flags, matches & replacement</span>
+            </button>
+            <button id="navOpenCronBtn" class="dropdown-item">
+              <span class="item-title">⏰ Cron Expression Evaluator</span>
+              <span class="item-desc">Human translation, field breakdown & next runs</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -107,7 +126,7 @@
           </div>
         </div>
 
-        <button id="installAppBtn" class="btn btn-secondary install-app-btn" title="Install Web Playground as App">
+        <button id="installAppBtn" class="btn btn-secondary install-app-btn" title="Install Developer Zone as App">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15">
             <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
             <polyline points="9 11 12 14 15 11"></polyline>
@@ -346,7 +365,7 @@
               <polyline points="2 17 12 22 22 17"></polyline>
               <polyline points="2 12 12 17 22 12"></polyline>
             </svg>
-            <span>Playground Options</span>
+            <span>Developer Zone Options</span>
           </div>
           <button id="closeMobileDrawerBtn" class="icon-btn" title="Close Menu">&times;</button>
         </div>
@@ -370,6 +389,26 @@
               <input type="checkbox" id="mobileAutoRunCheckbox" checked />
               <span class="toggle-slider"></span>
             </label>
+          </div>
+
+          <div class="drawer-section">
+            <span class="drawer-label">Developer Tools</span>
+            <div class="drawer-btn-list">
+              <button id="mobileRegexBtn" class="drawer-action-btn">
+                <div class="action-btn-info">
+                  <span class="action-btn-title">🔍 RegEx Checker</span>
+                  <span class="action-btn-sub">Test regex patterns, capture groups &amp; replace</span>
+                </div>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+              <button id="mobileCronBtn" class="drawer-action-btn">
+                <div class="action-btn-info">
+                  <span class="action-btn-title">⏰ Cron Evaluator</span>
+                  <span class="action-btn-sub">Parse schedule, 5 fields &amp; next executions</span>
+                </div>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+            </div>
           </div>
 
           <div class="drawer-section">
@@ -426,7 +465,7 @@
             <div class="drawer-btn-list">
               <button id="mobileInstallAppBtn" class="drawer-action-btn install-app-btn">
                 <div class="action-btn-info">
-                  <span class="action-btn-title">Install Web Playground</span>
+                  <span class="action-btn-title">Install Developer Zone</span>
                   <span class="action-btn-sub">Add to Home Screen or Desktop</span>
                 </div>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
@@ -482,15 +521,15 @@
               <line x1="12" y1="7" x2="12" y2="14"></line>
               <line x1="10" y1="18" x2="14" y2="18"></line>
             </svg>
-            <h3>Install Web Playground</h3>
+            <h3>Install Developer Zone</h3>
           </div>
           <button id="closeInstallModalBtn" class="icon-btn">&times;</button>
         </div>
         <div class="modal-body">
           <div class="pwa-hero">
-            <img src="assets/icons/icon-192.png" alt="Web Playground" class="pwa-hero-icon" width="56" height="56" />
+            <img src="assets/icons/icon-192.png" alt="Developer Zone" class="pwa-hero-icon" width="56" height="56" />
             <div class="pwa-hero-text">
-              <h4>Web Playground</h4>
+              <h4>Developer Zone</h4>
               <p>Install as standalone application for fast, offline coding</p>
               <div class="pwa-badges">
                 <span class="pwa-pill">⚡ Works 100% Offline</span>
@@ -506,6 +545,261 @@
         <div class="modal-footer">
           <button id="cancelInstallModalBtn" class="btn btn-secondary">Close</button>
           <button id="modalNativeInstallBtn" class="btn btn-primary hidden">Install Now</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal for Developer Tools (RegEx Checker & Cron Expression Evaluator) -->
+    <div id="devToolsModal" class="modal-backdrop hidden">
+      <div class="modal devtools-modal">
+        <div class="devtools-modal-header">
+          <div class="devtools-tabs-header">
+            <button class="devtools-tab active" id="tabRegexBtn" data-tab="regex">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <span>RegEx Checker</span>
+            </button>
+            <button class="devtools-tab" id="tabCronBtn" data-tab="cron">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span>Cron Evaluator</span>
+            </button>
+          </div>
+          <button id="closeDevToolsModalBtn" class="icon-btn" title="Close DevTools">&times;</button>
+        </div>
+
+        <div class="devtools-modal-body">
+          <!-- Pane 1: RegEx Checker -->
+          <div id="regexPane" class="devtools-pane">
+            <div class="devtools-toolbar-row">
+              <div class="devtools-field-group">
+                <label for="regexPresetSelect">Pattern Preset:</label>
+                <select id="regexPresetSelect" class="devtools-select">
+                  <option value="">⚡ Custom Pattern</option>
+                  <option value="email">Email Address</option>
+                  <option value="url">Web URL (HTTP / HTTPS)</option>
+                  <option value="ipv4">IPv4 Address</option>
+                  <option value="date-iso">Date (YYYY-MM-DD)</option>
+                  <option value="phone-intl">Phone Number (International)</option>
+                  <option value="hex-color">HEX Color Code</option>
+                  <option value="uuid">UUID (v4)</option>
+                  <option value="html-tag">HTML Tag</option>
+                  <option value="slug">URL Slug</option>
+                  <option value="password-strong">Strong Password</option>
+                  <option value="digits-only">Digits Only</option>
+                </select>
+              </div>
+
+              <div class="regex-flags-container">
+                <label class="flag-toggle" title="Global: Find all matches rather than stopping after the first">
+                  <input type="checkbox" id="flagG" checked />
+                  <span>g</span>
+                </label>
+                <label class="flag-toggle" title="Case Insensitive: Match uppercase and lowercase">
+                  <input type="checkbox" id="flagI" />
+                  <span>i</span>
+                </label>
+                <label class="flag-toggle" title="Multiline: ^ and $ match start/end of line">
+                  <input type="checkbox" id="flagM" checked />
+                  <span>m</span>
+                </label>
+                <label class="flag-toggle" title="DotAll: dot (.) matches newlines">
+                  <input type="checkbox" id="flagS" />
+                  <span>s</span>
+                </label>
+                <label class="flag-toggle" title="Unicode: Match full Unicode code points">
+                  <input type="checkbox" id="flagU" checked />
+                  <span>u</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Regex Pattern Input Bar -->
+            <div class="regex-pattern-bar">
+              <span class="regex-delimiter">/</span>
+              <input type="text" id="regexPatternInput" class="regex-pattern-input" placeholder="Type regular expression here... (e.g. [a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})" spellcheck="false" autocomplete="off" />
+              <span class="regex-delimiter">/</span>
+              <span class="active-flags-badge" id="regexFlagsBadge">gmu</span>
+            </div>
+
+            <!-- Error alert box (hidden when valid) -->
+            <div id="regexErrorAlert" class="regex-error-alert hidden"></div>
+
+            <!-- Test string & live highlight preview -->
+            <div class="devtools-split-grid">
+              <div class="devtools-column">
+                <div class="column-header">
+                  <span>TEST STRING</span>
+                  <button id="regexClearTestBtn" class="link-btn">Clear</button>
+                </div>
+                <textarea id="regexTestInput" class="devtools-textarea" spellcheck="false" placeholder="Paste or type test text here to see real-time matches..."></textarea>
+              </div>
+              <div class="devtools-column">
+                <div class="column-header">
+                  <span>MATCH PREVIEW</span>
+                  <span id="regexMatchCountBadge" class="badge-pill">0 matches</span>
+                </div>
+                <div id="regexHighlightBox" class="regex-highlight-box" aria-label="Highlighted matches output"></div>
+              </div>
+            </div>
+
+            <!-- Match & Capture Groups Table -->
+            <div class="devtools-column">
+              <div class="column-header">
+                <span>CAPTURE GROUPS &amp; MATCHES</span>
+              </div>
+              <div class="regex-match-table-wrapper">
+                <table class="regex-match-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 60px;">Match #</th>
+                      <th style="width: 100px;">Index</th>
+                      <th>Matched Text</th>
+                      <th>Groups</th>
+                    </tr>
+                  </thead>
+                  <tbody id="regexMatchTableBody">
+                    <tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No matches yet</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Substitution / Replace Feature -->
+            <div class="devtools-column">
+              <div class="column-header">
+                <span>SUBSTITUTION / REPLACE</span>
+                <button id="regexCopyReplacedBtn" class="link-btn">Copy Output</button>
+              </div>
+              <div class="replace-bar">
+                <input type="text" id="regexReplaceInput" class="devtools-input" placeholder="Replacement text (supports $1, $2, $&amp;)..." spellcheck="false" />
+              </div>
+              <div id="regexReplaceOutput" class="replace-output-preview" title="Replaced string preview">No replacement text entered</div>
+            </div>
+          </div>
+
+          <!-- Pane 2: Cron Evaluator -->
+          <div id="cronPane" class="devtools-pane hidden">
+            <div class="devtools-toolbar-row">
+              <div class="devtools-field-group">
+                <label for="cronPresetSelect">Schedule Preset:</label>
+                <select id="cronPresetSelect" class="devtools-select">
+                  <option value="">⚡ Custom Expression</option>
+                  <option value="* * * * *">Every minute (* * * * *)</option>
+                  <option value="*/5 * * * *">Every 5 minutes (*/5 * * * *)</option>
+                  <option value="*/15 * * * *">Every 15 minutes (*/15 * * * *)</option>
+                  <option value="0 * * * *">Every hour at minute 0 (0 * * * *)</option>
+                  <option value="0 */2 * * *">Every 2 hours (0 */2 * * *)</option>
+                  <option value="0 0 * * *">Every day at midnight (0 0 * * *)</option>
+                  <option value="0 9 * * 1-5">Every weekday at 9:00 AM (0 9 * * 1-5)</option>
+                  <option value="0 0 * * 0">Every Sunday at midnight (0 0 * * 0)</option>
+                  <option value="0 0 1 * *">First day of every month (0 0 1 * *)</option>
+                  <option value="0 0 1 1 *">Every year on Jan 1st (0 0 1 1 *)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Cron Expression Input -->
+            <div class="cron-input-bar">
+              <input type="text" id="cronExpressionInput" class="cron-expression-input" value="*/15 * * * *" placeholder="* * * * * (minute hour day-of-month month day-of-week)" spellcheck="false" autocomplete="off" />
+            </div>
+
+            <!-- Error alert box for Cron -->
+            <div id="cronErrorAlert" class="regex-error-alert hidden"></div>
+
+            <!-- Human Readable Schedule Explanation -->
+            <div class="cron-explanation-banner">
+              <div class="cron-explanation-icon">⏰</div>
+              <div class="cron-explanation-content">
+                <span class="cron-explanation-label">HUMAN-READABLE SCHEDULE</span>
+                <div class="cron-readable-text" id="cronHumanText">Every 15 minutes</div>
+              </div>
+            </div>
+
+            <!-- 5-Field Breakdown Grid -->
+            <div>
+              <div class="section-sub-header">EXPRESSION BREAKDOWN</div>
+              <div class="cron-fields-grid">
+                <div class="cron-field-card">
+                  <div class="card-name">Minute</div>
+                  <div class="card-val" id="cronFieldMinute">*/15</div>
+                  <div class="card-desc" id="cronFieldDescMinute">0–59</div>
+                </div>
+                <div class="cron-field-card">
+                  <div class="card-name">Hour</div>
+                  <div class="card-val" id="cronFieldHour">*</div>
+                  <div class="card-desc" id="cronFieldDescHour">0–23</div>
+                </div>
+                <div class="cron-field-card">
+                  <div class="card-name">Day of Month</div>
+                  <div class="card-val" id="cronFieldDom">*</div>
+                  <div class="card-desc" id="cronFieldDescDom">1–31</div>
+                </div>
+                <div class="cron-field-card">
+                  <div class="card-name">Month</div>
+                  <div class="card-val" id="cronFieldMonth">*</div>
+                  <div class="card-desc" id="cronFieldDescMonth">1–12 / JAN–DEC</div>
+                </div>
+                <div class="cron-field-card">
+                  <div class="card-name">Day of Week</div>
+                  <div class="card-val" id="cronFieldDow">*</div>
+                  <div class="card-desc" id="cronFieldDescDow">0–7 (0=Sun) / SUN–SAT</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Next Scheduled Executions -->
+            <div>
+              <div class="section-sub-header">NEXT 5 UPCOMING EXECUTIONS (LOCAL TIME)</div>
+              <div class="cron-runs-list" id="cronNextRunsList">
+                <!-- Dynamically populated runs -->
+              </div>
+            </div>
+
+            <!-- Quick Syntax Reference -->
+            <div class="cron-syntax-ref">
+              <details>
+                <summary>Cron Syntax Cheat Sheet &amp; Special Characters</summary>
+                <div class="cron-ref-table-wrapper">
+                  <table class="cron-ref-table">
+                    <thead>
+                      <tr>
+                        <th>Symbol</th>
+                        <th>Meaning</th>
+                        <th>Example</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><code>*</code></td>
+                        <td>Any / every value</td>
+                        <td><code>*</code> in hour = every hour</td>
+                      </tr>
+                      <tr>
+                        <td><code>,</code></td>
+                        <td>Value list separator</td>
+                        <td><code>1,15,30</code> = at 1, 15, and 30</td>
+                      </tr>
+                      <tr>
+                        <td><code>-</code></td>
+                        <td>Range of values</td>
+                        <td><code>1-5</code> = Monday through Friday</td>
+                      </tr>
+                      <tr>
+                        <td><code>/</code></td>
+                        <td>Step values</td>
+                        <td><code>*/10</code> = every 10 units</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </details>
+            </div>
+          </div>
         </div>
       </div>
     </div>
