@@ -1948,6 +1948,17 @@ document.getElementById('demoBtn').addEventListener('click', () => {
   function openMobileDrawer() {
     if (els.mobileDrawerBackdrop) {
       els.mobileDrawerBackdrop.classList.remove('hidden');
+      if (els.mobileMenuBtn) {
+        els.mobileMenuBtn.classList.add('active');
+        els.mobileMenuBtn.setAttribute('aria-expanded', 'true');
+        els.mobileMenuBtn.setAttribute('title', 'Close Menu');
+        els.mobileMenuBtn.innerHTML = `
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="22" height="22">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        `;
+      }
       if (els.mobileAutoRunCheckbox) {
         els.mobileAutoRunCheckbox.checked = state.autoRun;
       }
@@ -1961,6 +1972,18 @@ document.getElementById('demoBtn').addEventListener('click', () => {
   function closeMobileDrawer(skipHistory = false) {
     if (els.mobileDrawerBackdrop && !els.mobileDrawerBackdrop.classList.contains('hidden')) {
       els.mobileDrawerBackdrop.classList.add('hidden');
+      if (els.mobileMenuBtn) {
+        els.mobileMenuBtn.classList.remove('active');
+        els.mobileMenuBtn.setAttribute('aria-expanded', 'false');
+        els.mobileMenuBtn.setAttribute('title', 'Menu & Options');
+        els.mobileMenuBtn.innerHTML = `
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        `;
+      }
       if (!skipHistory && history.state && history.state.drawer === 'open') {
         history.back();
       }
