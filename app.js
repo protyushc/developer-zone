@@ -18,8 +18,8 @@
         content: `<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Interactive Particle Network</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -197,18 +197,18 @@
         content: `<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Modular Kanban App</title>
   <!-- Multi-file virtual CSS link -->
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
   <div class="app-shell">
     <header class="header">
       <div class="logo">⚡ TaskFlow <span>(ES Modules)</span></div>
       <div class="new-task-bar">
-        <input type="text" id="taskInput" placeholder="What needs to be done?">
+        <input type="text" id="taskInput" placeholder="What needs to be done?"/>
         <button id="addBtn">Add Task</button>
       </div>
     </header>
@@ -475,10 +475,10 @@ store.subscribe(() => {
         content: `<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>3D Glass Card</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
   <div class="scene">
@@ -657,10 +657,10 @@ btn.addEventListener('click', (e) => {
         content: `<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>My Concept</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
   <h1>Hello from Web Playground!</h1>
@@ -712,8 +712,8 @@ document.getElementById('demoBtn').addEventListener('click', () => {
         content: `<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Single-File Concept</title>
   <style>
     body {
@@ -962,7 +962,7 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     const id = 'f-' + Date.now();
     const type = getFileType(name);
     let defaultContent = '';
-    if (type === 'html') defaultContent = '<!DOCTYPE html>\n<html>\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>New Page</title>\n</head>\n<body>\n  \n</body>\n</html>';
+    if (type === 'html') defaultContent = '<!DOCTYPE html>\n<html>\n<head>\n  <meta charset="UTF-8"/>\n  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>\n  <title>New Page</title>\n</head>\n<body>\n  \n</body>\n</html>';
     else if (type === 'css') defaultContent = '/* New Styles */\n';
     else if (type === 'js') defaultContent = '// New Module\n';
 
