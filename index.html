@@ -76,7 +76,7 @@
         </div>
       </div>
 
-      <div class="nav-center desktop-only">
+      <div class="nav-center desktop-only" id="desktopWebToolCenter">
         <button id="runBtn" class="btn btn-primary" title="Execute Code (Ctrl + Enter)">
           <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
             <polygon points="5 3 19 12 5 21 5 3"></polygon>
@@ -94,38 +94,47 @@
 
       <div class="nav-right desktop-only">
         <!-- Layout & View Controls -->
-        <button id="formatBtn" class="btn btn-icon" title="Format Active File">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-            <polyline points="4 7 4 4 20 4 20 7"></polyline>
-            <line x1="9" y1="20" x2="15" y2="20"></line>
-            <line x1="12" y1="4" x2="12" y2="20"></line>
-          </svg>
-          <span class="btn-text">Format</span>
-        </button>
-
-        <div class="dropdown-wrapper">
-          <button id="exportMenuBtn" class="btn btn-secondary">
+        <div id="desktopWebToolRight" style="display: flex; gap: 12px; align-items: center;">
+          <button id="formatBtn" class="btn btn-icon" title="Format Active File">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-              <polyline points="7 10 12 15 17 10"></polyline>
-              <line x1="12" y1="15" x2="12" y2="3"></line>
+              <polyline points="4 7 4 4 20 4 20 7"></polyline>
+              <line x1="9" y1="20" x2="15" y2="20"></line>
+              <line x1="12" y1="4" x2="12" y2="20"></line>
             </svg>
-            <span class="btn-text">Export ▾</span>
+            <span class="btn-text">Format</span>
           </button>
-          <div id="exportDropdown" class="dropdown-menu hidden">
-            <button id="exportSingleHtmlBtn" class="dropdown-item">
-              <span class="item-title">Single Standalone .HTML</span>
-              <span class="item-desc">Inlines all CSS & JS into one file</span>
+
+          <div class="dropdown-wrapper">
+            <button id="exportMenuBtn" class="btn btn-secondary">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              <span class="btn-text">Export ▾</span>
             </button>
-            <button id="exportZipBtn" class="dropdown-item">
-              <span class="item-title">Full Project (.ZIP)</span>
-              <span class="item-desc">Original multi-file directory structure</span>
-            </button>
-            <button id="copyBundleBtn" class="dropdown-item">
-              <span class="item-title">Copy HTML to Clipboard</span>
-              <span class="item-desc">Ready to paste anywhere</span>
-            </button>
+            <div id="exportDropdown" class="dropdown-menu hidden">
+              <button id="exportSingleHtmlBtn" class="dropdown-item">
+                <span class="item-title">Single Standalone .HTML</span>
+                <span class="item-desc">Inlines all CSS & JS into one file</span>
+              </button>
+              <button id="exportZipBtn" class="dropdown-item">
+                <span class="item-title">Full Project (.ZIP)</span>
+                <span class="item-desc">Original multi-file directory structure</span>
+              </button>
+              <button id="copyBundleBtn" class="dropdown-item">
+                <span class="item-title">Copy HTML to Clipboard</span>
+                <span class="item-desc">Ready to paste anywhere</span>
+              </button>
+            </div>
           </div>
+
+          <button id="resetBtn" class="btn btn-icon" title="Reset to Defaults">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+              <path d="M3 3v5h5"></path>
+            </svg>
+          </button>
         </div>
 
         <button id="installAppBtn" class="btn btn-secondary install-app-btn" title="Install Developer Zone as App">
@@ -136,13 +145,6 @@
             <line x1="10" y1="18" x2="14" y2="18"></line>
           </svg>
           <span class="install-btn-text btn-text">Install App</span>
-        </button>
-
-        <button id="resetBtn" class="btn btn-icon" title="Reset to Defaults">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
-            <path d="M3 3v5h5"></path>
-          </svg>
         </button>
 
         <button id="themeToggleBtn" class="btn btn-icon" title="Toggle Light/Dark Theme">
@@ -373,35 +375,46 @@
         </div>
         
         <div class="drawer-content">
-          <div class="drawer-section">
-            <select id="mobileTemplateSelect" class="drawer-select modern-select">
-              <option value="" disabled selected>📂 Templates</option>
-              <option value="single-canvas">⚡ Single-File: Particle Simulation (Canvas)</option>
-              <option value="multifile-kanban">📦 Multi-File: Modular Kanban (ES Modules)</option>
-              <option value="glass-card">🎨 UI Concept: 3D Tilt Glass Card</option>
-              <option value="blank-multifile">📄 Blank Multi-File (HTML + CSS + JS)</option>
-              <option value="blank-single">📝 Blank Single File (index.html)</option>
-            </select>
-          </div>
-
-          <div class="drawer-section drawer-toggle-row">
-            <span class="drawer-label">Auto-Run Live Preview</span>
-            <label class="toggle-control">
-              <input type="checkbox" id="mobileAutoRunCheckbox" checked />
-              <span class="toggle-slider"></span>
-            </label>
-          </div>
-
-          <div class="drawer-section">
-            <span class="drawer-label">Developer Tools</span>
-            <div class="drawer-btn-list">
-              <button id="mobileWebToolsBtn" class="drawer-action-btn">
+          <details class="drawer-section drawer-details" open>
+            <summary class="drawer-label drawer-summary">Web Tools</summary>
+            <div class="drawer-btn-list" id="mobileTemplateList">
+              <button id="mobileWebToolsBtn" class="drawer-action-btn" style="background-color: var(--bg-hover);">
                 <div class="action-btn-info">
-                  <span class="action-btn-title">💻 Web Tools</span>
-                  <span class="action-btn-sub">Code editor, files &amp; live preview</span>
+                  <span class="action-btn-title">💻 Switch to Web Tools</span>
+                  <span class="action-btn-sub">Open code editor, files &amp; live preview</span>
                 </div>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"></polyline></svg>
               </button>
+              <button class="drawer-action-btn mobile-template-btn" data-value="single-canvas">
+                <div class="action-btn-info">
+                  <span class="action-btn-title">⚡ Single-File: Particle Simulation (Canvas)</span>
+                </div>
+              </button>
+              <button class="drawer-action-btn mobile-template-btn" data-value="multifile-kanban">
+                <div class="action-btn-info">
+                  <span class="action-btn-title">📦 Multi-File: Modular Kanban (ES Modules)</span>
+                </div>
+              </button>
+              <button class="drawer-action-btn mobile-template-btn" data-value="glass-card">
+                <div class="action-btn-info">
+                  <span class="action-btn-title">🎨 UI Concept: 3D Tilt Glass Card</span>
+                </div>
+              </button>
+              <button class="drawer-action-btn mobile-template-btn" data-value="blank-multifile">
+                <div class="action-btn-info">
+                  <span class="action-btn-title">📄 Blank Multi-File (HTML + CSS + JS)</span>
+                </div>
+              </button>
+              <button class="drawer-action-btn mobile-template-btn" data-value="blank-single">
+                <div class="action-btn-info">
+                  <span class="action-btn-title">📝 Blank Single File (index.html)</span>
+                </div>
+              </button>
+            </div>
+          </details>
+
+          <details class="drawer-section drawer-details">
+            <summary class="drawer-label drawer-summary">Dev Tools</summary>
+            <div class="drawer-btn-list">
               <button id="mobileRegexBtn" class="drawer-action-btn">
                 <div class="action-btn-info">
                   <span class="action-btn-title">🔍 RegEx Checker</span>
@@ -417,54 +430,64 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"></polyline></svg>
               </button>
             </div>
-          </div>
+          </details>
 
-          <div class="drawer-section">
-            <span class="drawer-label">Quick Actions</span>
-            <div class="drawer-btn-grid">
-              <button id="mobileFormatBtn" class="btn btn-secondary">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
-                  <polyline points="4 7 4 4 20 4 20 7"></polyline>
-                  <line x1="9" y1="20" x2="15" y2="20"></line>
-                  <line x1="12" y1="4" x2="12" y2="20"></line>
-                </svg>
-                <span>Format Code</span>
-              </button>
-              <button id="mobileNewTabBtn" class="btn btn-secondary">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
-                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                  <polyline points="15 3 21 3 21 9"></polyline>
-                  <line x1="10" y1="14" x2="21" y2="3"></line>
-                </svg>
-                <span>Open in Tab</span>
-              </button>
+          <div id="mobileWebToolUtils">
+            <div class="drawer-section drawer-toggle-row">
+              <span class="drawer-label">Auto-Run Live Preview</span>
+              <label class="toggle-control">
+                <input type="checkbox" id="mobileAutoRunCheckbox" checked />
+                <span class="toggle-slider"></span>
+              </label>
             </div>
-          </div>
 
-          <div class="drawer-section">
-            <span class="drawer-label">Export Project</span>
-            <div class="drawer-btn-list">
-              <button id="mobileExportSingleHtmlBtn" class="drawer-action-btn">
-                <div class="action-btn-info">
-                  <span class="action-btn-title">Standalone .HTML</span>
-                  <span class="action-btn-sub">All CSS & JS inlined into single file</span>
-                </div>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"></polyline></svg>
-              </button>
-              <button id="mobileExportZipBtn" class="drawer-action-btn">
-                <div class="action-btn-info">
-                  <span class="action-btn-title">Full Project (.ZIP)</span>
-                  <span class="action-btn-sub">Original directory structure</span>
-                </div>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"></polyline></svg>
-              </button>
-              <button id="mobileCopyBundleBtn" class="drawer-action-btn">
-                <div class="action-btn-info">
-                  <span class="action-btn-title">Copy Code to Clipboard</span>
-                  <span class="action-btn-sub">Ready to paste anywhere</span>
-                </div>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"></polyline></svg>
-              </button>
+            <div class="drawer-section">
+              <span class="drawer-label">Quick Actions</span>
+              <div class="drawer-btn-grid">
+                <button id="mobileFormatBtn" class="btn btn-secondary">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                    <polyline points="4 7 4 4 20 4 20 7"></polyline>
+                    <line x1="9" y1="20" x2="15" y2="20"></line>
+                    <line x1="12" y1="4" x2="12" y2="20"></line>
+                  </svg>
+                  <span>Format Code</span>
+                </button>
+                <button id="mobileNewTabBtn" class="btn btn-secondary">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                    <polyline points="15 3 21 3 21 9"></polyline>
+                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                  </svg>
+                  <span>Open in Tab</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="drawer-section">
+              <span class="drawer-label">Export Project</span>
+              <div class="drawer-btn-list">
+                <button id="mobileExportSingleHtmlBtn" class="drawer-action-btn">
+                  <div class="action-btn-info">
+                    <span class="action-btn-title">Standalone .HTML</span>
+                    <span class="action-btn-sub">All CSS & JS inlined into single file</span>
+                  </div>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+                <button id="mobileExportZipBtn" class="drawer-action-btn">
+                  <div class="action-btn-info">
+                    <span class="action-btn-title">Full Project (.ZIP)</span>
+                    <span class="action-btn-sub">Original directory structure</span>
+                  </div>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+                <button id="mobileCopyBundleBtn" class="drawer-action-btn">
+                  <div class="action-btn-info">
+                    <span class="action-btn-title">Copy Code to Clipboard</span>
+                    <span class="action-btn-sub">Ready to paste anywhere</span>
+                  </div>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+              </div>
             </div>
           </div>
 
