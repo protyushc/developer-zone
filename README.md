@@ -9,8 +9,7 @@ A lightweight, zero-dependency, self-contained HTML, JavaScript, and CSS playgro
 1. **Syntax Color Coding & Code Intelligence**:
    - Integrated CodeMirror engine with automatic language mode switching (`htmlmixed`, `javascript`, `css`, `json`).
    - Theme-adaptive color schemes (**Dracula** for dark theme, **Eclipse** for light theme).
-   - Auto-closing brackets and HTML tags, active-line highlighting, and gutter line numbering.
-   - Graceful fallback for offline usage.
+   - 100% self-contained and offline-ready with all vendor libraries (CodeMirror, JSZip, and typography) vendored locally.
 
 2. **Single-File & Multi-File Architecture**:
    - **Single-File Mode**: Edit self-contained HTML with embedded `<style>` and `<script>` blocks (e.g., quick prototypes, canvas animations).
