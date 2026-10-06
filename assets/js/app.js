@@ -649,6 +649,34 @@ btn.addEventListener('click', (e) => {
       }
     ],
 
+    'simple-json': [
+      {
+        id: 'f-json',
+        name: 'data.json',
+        type: 'json',
+        content: `{
+  "name": "Developer Zone Project",
+  "version": "1.0.0",
+  "description": "Lightweight client-side data configuration and schema playground.",
+  "author": {
+    "name": "Protyush",
+    "role": "Developer"
+  },
+  "features": [
+    "100% Client-Side",
+    "Offline PWA Support",
+    "Zero Telemetry",
+    "Multi-file Workbench"
+  ],
+  "settings": {
+    "theme": "dark",
+    "autoSave": true,
+    "livePreview": true
+  }
+}`
+      }
+    ],
+
     'blank-multifile': [
       {
         id: 'f-index',
@@ -800,6 +828,9 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     runBtn: document.getElementById('runBtn'),
     autoRunCheckbox: document.getElementById('autoRunCheckbox'),
     formatBtn: document.getElementById('formatBtn'),
+    editorMenuBtn: document.getElementById('editorMenuBtn'),
+    editorDropdown: document.getElementById('editorDropdown'),
+    livePreviewDropdownItem: document.getElementById('livePreviewDropdownItem'),
     resetBtn: document.getElementById('resetBtn'),
     themeToggleBtn: document.getElementById('themeToggleBtn'),
     templateSelect: document.getElementById('templateSelect'),
@@ -834,16 +865,12 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     // Mobile Navigation & Drawer Elements
     mobileNavBar: document.getElementById('mobileNavBar'),
     mobileNavBtns: document.querySelectorAll('.mobile-nav-btn'),
-    mobileRunNavBtn: document.getElementById('mobileRunNavBtn'),
     mobileThemeNavBtn: document.getElementById('mobileThemeNavBtn'),
     mobileMenuBtn: document.getElementById('mobileMenuBtn'),
     mobileDrawerBackdrop: document.getElementById('mobileDrawerBackdrop'),
     mobileDrawer: document.getElementById('mobileDrawer'),
     closeMobileDrawerBtn: document.getElementById('closeMobileDrawerBtn'),
 
-    mobileAutoRunCheckbox: document.getElementById('mobileAutoRunCheckbox'),
-    mobileFormatBtn: document.getElementById('mobileFormatBtn'),
-    mobileNewTabBtn: document.getElementById('mobileNewTabBtn'),
     mobileExportSingleHtmlBtn: document.getElementById('mobileExportSingleHtmlBtn'),
     mobileExportZipBtn: document.getElementById('mobileExportZipBtn'),
     mobileCopyBundleBtn: document.getElementById('mobileCopyBundleBtn'),
@@ -879,7 +906,6 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     devToolsNavLeft: document.getElementById('devToolsNavLeft'),
     navRegexTabBtn: document.getElementById('navRegexTabBtn'),
     navCronTabBtn: document.getElementById('navCronTabBtn'),
-    desktopWebToolCenter: document.getElementById('desktopWebToolCenter'),
     desktopWebToolRight: document.getElementById('desktopWebToolRight'),
     mobileWebToolUtils: document.getElementById('mobileWebToolUtils'),
     mobileWebToolsBtn: document.getElementById('mobileWebToolsBtn'),
@@ -1038,6 +1064,7 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     if (type === 'html') defaultContent = '<!DOCTYPE html>\n<html>\n<head>\n  <meta charset="UTF-8"/>\n  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>\n  <title>New Page</title>\n</head>\n<body>\n  \n</body>\n</html>';
     else if (type === 'css') defaultContent = '/* New Styles */\n';
     else if (type === 'js') defaultContent = '// New Module\n';
+    else if (type === 'json') defaultContent = '{\n  \n}\n';
 
     const newFile = { id, name, type, content: defaultContent };
     state.files.push(newFile);
@@ -1193,6 +1220,10 @@ document.getElementById('demoBtn').addEventListener('click', () => {
       const cursor = cmEditor.getCursor();
       els.cursorPos.textContent = `Ln ${cursor.line + 1}, Col ${cursor.ch + 1}`;
     });
+
+    // Ensure gutters & line numbers are accurately measured across all device viewports
+    setTimeout(() => { if (cmEditor) cmEditor.refresh(); }, 50);
+    setTimeout(() => { if (cmEditor) cmEditor.refresh(); }, 250);
   }
 
   function setupMobileTouchScroll(cm) {
@@ -1382,8 +1413,133 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     if (entryHtmlFile) {
       htmlContent = entryHtmlFile.content;
     } else {
-      // If user has no HTML file (e.g. only JS and CSS), synthesize entry
-      htmlContent = `<!DOCTYPE html><html><head><title>Preview</title></head><body><div id="root"></div></body></html>`;
+      // Check if project has a JSON file as its primary document
+      const activeFile = getActiveFile();
+      const jsonFile = (activeFile && activeFile.type === 'json')
+        ? activeFile
+        : state.files.find(f => f.type === 'json');
+
+      if (jsonFile) {
+        let parsedJson = null;
+        let parseError = null;
+        try {
+          parsedJson = JSON.parse(jsonFile.content);
+        } catch (err) {
+          parseError = err.message;
+        }
+
+        const isDark = state.theme !== 'theme-light';
+        const bgColor = isDark ? '#181a1f' : '#f8fafc';
+        const textColor = isDark ? '#abb2bf' : '#1e293b';
+        const cardBg = isDark ? '#21252b' : '#ffffff';
+        const borderColor = isDark ? '#333842' : '#e2e8f0';
+        const headerColor = isDark ? '#61afef' : '#0284c7';
+        const subColor = isDark ? '#5c6370' : '#64748b';
+
+        const formattedJson = parseError 
+          ? escapeHtml(jsonFile.content) 
+          : escapeHtml(JSON.stringify(parsedJson, null, 2));
+
+        htmlContent = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>${escapeHtml(jsonFile.name)} - JSON Viewer</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: ${bgColor};
+      color: ${textColor};
+      min-height: 100vh;
+    }
+    .json-card {
+      background: ${cardBg};
+      border: 1px solid ${borderColor};
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .json-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-bottom: 1px solid ${borderColor};
+      background: ${isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)'};
+    }
+    .json-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: ${headerColor};
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .json-status {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 12px;
+      background: ${parseError ? 'rgba(224,108,117,0.15)' : 'rgba(152,195,121,0.15)'};
+      color: ${parseError ? '#e06c75' : '#98c379'};
+    }
+    .json-error {
+      padding: 10px 14px;
+      background: rgba(224, 108, 117, 0.1);
+      color: #e06c75;
+      font-size: 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      border-bottom: 1px solid ${borderColor};
+    }
+    pre {
+      margin: 0;
+      padding: 14px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 12.5px;
+      line-height: 1.5;
+      overflow: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .json-footer {
+      padding: 8px 14px;
+      font-size: 11px;
+      color: ${subColor};
+      border-top: 1px solid ${borderColor};
+      background: ${isDark ? 'rgba(255,255,255,0.015)' : 'rgba(0,0,0,0.01)'};
+    }
+  </style>
+</head>
+<body>
+  <div class="json-card">
+    <div class="json-header">
+      <div class="json-title">📋 ${escapeHtml(jsonFile.name)}</div>
+      <div class="json-status">${parseError ? '⚠️ Invalid JSON' : '✓ Valid JSON'}</div>
+    </div>
+    ${parseError ? `<div class="json-error">⚠️ ${escapeHtml(parseError)}</div>` : ''}
+    <pre><code>${formattedJson}</code></pre>
+    <div class="json-footer">${parseError ? 'Fix JSON syntax to re-evaluate' : 'Parsed successfully & logged to Developer Console'}</div>
+  </div>
+  <script>
+    try {
+      var _data = ${parseError ? 'null' : JSON.stringify(parsedJson)};
+      if (_data) {
+        console.log("JSON parsed successfully (" + ${JSON.stringify(jsonFile.name)} + "):", _data);
+      } else {
+        console.error("JSON Syntax Error in " + ${JSON.stringify(jsonFile.name)} + ": " + ${JSON.stringify(parseError || 'Invalid format')});
+      }
+    } catch(e) {}
+  </script>
+</body>
+</html>`;
+      } else {
+        // If user has no HTML or JSON file (e.g. only JS and CSS), synthesize entry
+        htmlContent = `<!DOCTYPE html><html><head><title>Preview</title></head><body><div id="root"></div></body></html>`;
+      }
     }
 
     const parser = new DOMParser();
@@ -2029,6 +2185,16 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     }
   }
 
+  function updateRunButtonVisibility() {
+    if (els.runBtn) {
+      if (state.autoRun) {
+        els.runBtn.classList.add('hidden');
+      } else {
+        els.runBtn.classList.remove('hidden');
+      }
+    }
+  }
+
   function setupResizers() {
     let isDraggingMain = false;
     let isDraggingConsole = false;
@@ -2136,20 +2302,58 @@ document.getElementById('demoBtn').addEventListener('click', () => {
   // Event Listeners & Initialization
   // ---------------------------------------------------------------------------
   function initEventListeners() {
-    // Top Bar Actions (Desktop)
-    els.runBtn.addEventListener('click', () => handleRun(false));
+    // Code Workspace Actions (Run, Live Preview, Format) inside 3-Dot Dropdown
+    if (els.editorMenuBtn && els.editorDropdown) {
+      els.editorMenuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (els.exportDropdown) els.exportDropdown.classList.add('hidden');
+        els.editorDropdown.classList.toggle('hidden');
+        const isOpen = !els.editorDropdown.classList.contains('hidden');
+        els.editorMenuBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      });
 
-    els.autoRunCheckbox.addEventListener('change', (e) => {
-      state.autoRun = e.target.checked;
-      if (els.mobileAutoRunCheckbox) els.mobileAutoRunCheckbox.checked = state.autoRun;
-      saveState();
-      if (state.autoRun) runCode();
-    });
+      window.addEventListener('click', (e) => {
+        if (els.editorDropdown && !els.editorDropdown.contains(e.target)) {
+          els.editorDropdown.classList.add('hidden');
+          if (els.editorMenuBtn) els.editorMenuBtn.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
 
-    els.formatBtn.addEventListener('click', formatActiveFile);
+    if (els.runBtn) {
+      els.runBtn.addEventListener('click', () => {
+        if (els.editorDropdown) els.editorDropdown.classList.add('hidden');
+        handleRun();
+      });
+    }
+
+    if (els.autoRunCheckbox) {
+      els.autoRunCheckbox.addEventListener('change', (e) => {
+        state.autoRun = e.target.checked;
+        saveState();
+        updateRunButtonVisibility();
+        if (state.autoRun) runCode();
+      });
+    }
+
+    if (els.livePreviewDropdownItem) {
+      els.livePreviewDropdownItem.addEventListener('click', (e) => {
+        if (e.target !== els.autoRunCheckbox && !e.target.closest('.toggle-control')) {
+          els.autoRunCheckbox.checked = !els.autoRunCheckbox.checked;
+          els.autoRunCheckbox.dispatchEvent(new Event('change'));
+        }
+      });
+    }
+
+    if (els.formatBtn) {
+      els.formatBtn.addEventListener('click', () => {
+        if (els.editorDropdown) els.editorDropdown.classList.add('hidden');
+        formatActiveFile();
+      });
+    }
 
     els.resetBtn.addEventListener('click', () => {
-      loadTemplate('blank-multifile');
+      loadTemplate('simple-json');
     });
 
     els.themeToggleBtn.addEventListener('click', toggleTheme);
@@ -2160,9 +2364,6 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     });
 
     // Mobile Top Bar Controls
-    if (els.mobileRunNavBtn) {
-      els.mobileRunNavBtn.addEventListener('click', () => handleRun(true));
-    }
     if (els.mobileThemeNavBtn) {
       els.mobileThemeNavBtn.addEventListener('click', toggleTheme);
     }
@@ -2208,26 +2409,6 @@ document.getElementById('demoBtn').addEventListener('click', () => {
         }
       });
     });
-    if (els.mobileAutoRunCheckbox) {
-      els.mobileAutoRunCheckbox.addEventListener('change', (e) => {
-        state.autoRun = e.target.checked;
-        els.autoRunCheckbox.checked = state.autoRun;
-        saveState();
-        if (state.autoRun) runCode();
-      });
-    }
-    if (els.mobileFormatBtn) {
-      els.mobileFormatBtn.addEventListener('click', () => {
-        closeMobileDrawer();
-        formatActiveFile();
-      });
-    }
-    if (els.mobileNewTabBtn) {
-      els.mobileNewTabBtn.addEventListener('click', () => {
-        closeMobileDrawer();
-        els.openNewTabBtn.click();
-      });
-    }
     if (els.mobileExportSingleHtmlBtn) {
       els.mobileExportSingleHtmlBtn.addEventListener('click', () => {
         closeMobileDrawer();
@@ -2249,7 +2430,7 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     if (els.mobileResetBtn) {
       els.mobileResetBtn.addEventListener('click', () => {
         closeMobileDrawer();
-        loadTemplate('blank-multifile');
+        loadTemplate('simple-json');
       });
     }
 
@@ -3179,9 +3360,7 @@ document.getElementById('demoBtn').addEventListener('click', () => {
       if (els.navWebToolsBtn) els.navWebToolsBtn.classList.add('active');
       if (els.webToolsNavLeft) els.webToolsNavLeft.classList.remove('hidden');
       if (els.mobileNavBar) els.mobileNavBar.classList.remove('hidden');
-      if (els.desktopWebToolCenter) els.desktopWebToolCenter.classList.remove('hidden');
       if (els.desktopWebToolRight) els.desktopWebToolRight.classList.remove('hidden');
-      if (els.mobileRunNavBtn) els.mobileRunNavBtn.classList.remove('hidden');
       if (els.mobileWebToolUtils) els.mobileWebToolUtils.classList.remove('hidden');
       updateModeBadge();
       syncDrawerState();
@@ -3190,9 +3369,7 @@ document.getElementById('demoBtn').addEventListener('click', () => {
       if (els.navDevToolsBtn) els.navDevToolsBtn.classList.add('active');
       if (els.devToolsNavLeft) els.devToolsNavLeft.classList.remove('hidden');
       if (els.mobileNavBar) els.mobileNavBar.classList.add('hidden');
-      if (els.desktopWebToolCenter) els.desktopWebToolCenter.classList.add('hidden');
       if (els.desktopWebToolRight) els.desktopWebToolRight.classList.add('hidden');
-      if (els.mobileRunNavBtn) els.mobileRunNavBtn.classList.add('hidden');
       if (els.mobileWebToolUtils) els.mobileWebToolUtils.classList.add('hidden');
       updateModeBadge();
       switchDevToolsTab(mode);
@@ -3636,11 +3813,21 @@ document.getElementById('demoBtn').addEventListener('click', () => {
   function init() {
     const hasHashTemplate = handleStartupTemplate();
     const hasExisting = !hasHashTemplate && loadState();
-    if (!hasExisting && !hasHashTemplate) {
-      // Default to the Blank Multi-File template
-      state.files = JSON.parse(JSON.stringify(TEMPLATES['blank-multifile']));
+
+    // Migrate from the old default multi-file starter template if untouched
+    const isOldDefaultMulti = hasExisting &&
+      state.files.length === 3 &&
+      state.files[0]?.name === 'index.html' &&
+      state.files[0]?.content?.includes('Hello from Developer Zone!') &&
+      state.files[1]?.name === 'style.css' &&
+      state.files[2]?.name === 'script.js';
+
+    if ((!hasExisting || isOldDefaultMulti) && !hasHashTemplate) {
+      // Default landing template: Simple JSON (one file)
+      state.files = JSON.parse(JSON.stringify(TEMPLATES['simple-json']));
       state.activeFileId = state.files[0].id;
       state.openTabIds = state.files.map(f => f.id);
+      saveState();
     }
 
     document.body.className = state.theme;
@@ -3648,9 +3835,7 @@ document.getElementById('demoBtn').addEventListener('click', () => {
       els.themeColorMeta.setAttribute('content', state.theme === 'theme-light' ? '#ffffff' : '#181a1f');
     }
     els.autoRunCheckbox.checked = state.autoRun;
-    if (els.mobileAutoRunCheckbox) {
-      els.mobileAutoRunCheckbox.checked = state.autoRun;
-    }
+    updateRunButtonVisibility();
 
     setMobileView('editor');
     renderFileTree();
