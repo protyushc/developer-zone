@@ -864,6 +864,12 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     cancelInstallModalBtn: document.getElementById('cancelInstallModalBtn'),
     modalNativeInstallBtn: document.getElementById('modalNativeInstallBtn'),
     pwaInstructionsBox: document.getElementById('pwaInstructionsBox'),
+    // About Modal Elements
+    aboutBtn: document.getElementById('aboutBtn'),
+    mobileAboutBtn: document.getElementById('mobileAboutBtn'),
+    aboutModal: document.getElementById('aboutModal'),
+    closeAboutModalBtn: document.getElementById('closeAboutModalBtn'),
+    aboutBuildDate: document.getElementById('aboutBuildDate'),
     // Developer Tools (Regex & Cron)
     webWorkbench: document.getElementById('webWorkbench'),
     devWorkbench: document.getElementById('devWorkbench'),
@@ -2361,7 +2367,7 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     }
     if (els.mobileInstallAppBtn) {
       els.mobileInstallAppBtn.addEventListener('click', () => {
-        closeMobileDrawer();
+        closeMobileDrawer(true);
         triggerInstallFlow();
       });
     }
@@ -2378,6 +2384,27 @@ document.getElementById('demoBtn').addEventListener('click', () => {
       els.installModal.addEventListener('click', (e) => {
         if (e.target === els.installModal) {
           closeInstallModal();
+        }
+      });
+    }
+
+    // About Modal Listeners
+    if (els.aboutBtn) {
+      els.aboutBtn.addEventListener('click', () => openAboutModal());
+    }
+    if (els.mobileAboutBtn) {
+      els.mobileAboutBtn.addEventListener('click', () => {
+        closeMobileDrawer(true);
+        openAboutModal();
+      });
+    }
+    if (els.closeAboutModalBtn) {
+      els.closeAboutModalBtn.addEventListener('click', () => closeAboutModal());
+    }
+    if (els.aboutModal) {
+      els.aboutModal.addEventListener('click', (e) => {
+        if (e.target === els.aboutModal) {
+          closeAboutModal();
         }
       });
     }
@@ -2486,8 +2513,35 @@ document.getElementById('demoBtn').addEventListener('click', () => {
       } else if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'C' || e.key === 'c')) {
         e.preventDefault();
         openDevToolsModal('cron');
-      } else if (e.key === 'Escape' && els.devToolsModal && !els.devToolsModal.classList.contains('hidden')) {
-        closeDevToolsModal();
+      } else if (e.key === 'Escape') {
+        if (els.aboutModal && !els.aboutModal.classList.contains('hidden')) {
+          closeAboutModal();
+        } else if (els.installModal && !els.installModal.classList.contains('hidden')) {
+          closeInstallModal();
+        } else if (els.fileModal && !els.fileModal.classList.contains('hidden')) {
+          els.fileModal.classList.add('hidden');
+        } else if (els.devToolsModal && !els.devToolsModal.classList.contains('hidden')) {
+          closeDevToolsModal();
+        }
+      }
+    });
+
+    // Dismiss active modals on browser / hardware back button navigation
+    window.addEventListener('popstate', (e) => {
+      if (els.aboutModal && !els.aboutModal.classList.contains('hidden')) {
+        if (!e.state || e.state.modal !== 'about') {
+          closeAboutModal(true);
+        }
+      } else if (e.state && e.state.modal === 'about') {
+        openAboutModal(true);
+      }
+
+      if (els.installModal && !els.installModal.classList.contains('hidden')) {
+        if (!e.state || e.state.modal !== 'install') {
+          closeInstallModal(true);
+        }
+      } else if (e.state && e.state.modal === 'install') {
+        openInstallModal(true);
       }
     });
 
@@ -3327,16 +3381,65 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     }
   }
 
-  function openInstallModal() {
-    renderInstallInstructions();
-    if (els.installModal) {
-      els.installModal.classList.remove('hidden');
+  const APP_METADATA = {
+    version: '2.4.0',
+    developer: 'Protyush',
+    buildDate: 'October 6, 2026, 09:55 AM IST'
+  };
+
+  function openAboutModal(fromHistory = false) {
+    if (els.aboutBuildDate) {
+      els.aboutBuildDate.textContent = APP_METADATA.buildDate;
+    }
+    if (els.aboutModal) {
+      els.aboutModal.classList.remove('hidden');
+      if (fromHistory !== true) {
+        try {
+          if (history.state && history.state.drawer === 'open') {
+            history.replaceState({ modal: 'about' }, '');
+          } else if (!history.state || history.state.modal !== 'about') {
+            history.pushState({ modal: 'about' }, '');
+          }
+        } catch (_) {}
+      }
     }
   }
 
-  function closeInstallModal() {
+  function closeAboutModal(fromPopState = false) {
+    if (els.aboutModal && !els.aboutModal.classList.contains('hidden')) {
+      els.aboutModal.classList.add('hidden');
+      if (!fromPopState && history.state && history.state.modal === 'about') {
+        try {
+          history.back();
+        } catch (_) {}
+      }
+    }
+  }
+
+  function openInstallModal(fromHistory = false) {
+    renderInstallInstructions();
     if (els.installModal) {
+      els.installModal.classList.remove('hidden');
+      if (fromHistory !== true) {
+        try {
+          if (history.state && history.state.drawer === 'open') {
+            history.replaceState({ modal: 'install' }, '');
+          } else if (!history.state || history.state.modal !== 'install') {
+            history.pushState({ modal: 'install' }, '');
+          }
+        } catch (_) {}
+      }
+    }
+  }
+
+  function closeInstallModal(fromPopState = false) {
+    if (els.installModal && !els.installModal.classList.contains('hidden')) {
       els.installModal.classList.add('hidden');
+      if (!fromPopState && history.state && history.state.modal === 'install') {
+        try {
+          history.back();
+        } catch (_) {}
+      }
     }
   }
 

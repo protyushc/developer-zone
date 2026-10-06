@@ -117,3 +117,10 @@ developer-zone/
     ├── fonts/              # Offline typography (.woff2)
     └── jszip/              # Client-side zip generation
 ```
+
+---
+
+## 👨‍💻 Developer
+
+Developed by **Protyush**.
+
