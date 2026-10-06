@@ -1077,8 +1077,15 @@ document.getElementById('demoBtn').addEventListener('click', () => {
   }
 
   function updateModeBadge() {
-    const isSingle = state.files.length === 1;
-    els.modeBadge.textContent = isSingle ? 'Single-File' : 'Multi-File';
+    if (!els.modeBadge) return;
+    if (typeof currentAppMode !== 'undefined' && currentAppMode === 'regex') {
+      els.modeBadge.textContent = 'RegEx';
+    } else if (typeof currentAppMode !== 'undefined' && currentAppMode === 'cron') {
+      els.modeBadge.textContent = 'Cron';
+    } else {
+      const isSingle = state.files.length === 1;
+      els.modeBadge.textContent = isSingle ? 'Single-File' : 'Multi-File';
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -2509,10 +2516,10 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     window.addEventListener('keydown', (e) => {
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'R' || e.key === 'r')) {
         e.preventDefault();
-        openDevToolsModal('regex');
+        setAppMode('regex');
       } else if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'C' || e.key === 'c')) {
         e.preventDefault();
-        openDevToolsModal('cron');
+        setAppMode('cron');
       } else if (e.key === 'Escape') {
         if (els.aboutModal && !els.aboutModal.classList.contains('hidden')) {
           closeAboutModal();
@@ -2520,8 +2527,8 @@ document.getElementById('demoBtn').addEventListener('click', () => {
           closeInstallModal();
         } else if (els.fileModal && !els.fileModal.classList.contains('hidden')) {
           els.fileModal.classList.add('hidden');
-        } else if (els.devToolsModal && !els.devToolsModal.classList.contains('hidden')) {
-          closeDevToolsModal();
+        } else if (typeof currentAppMode !== 'undefined' && currentAppMode !== 'web') {
+          setAppMode('web');
         }
       }
     });
@@ -3176,6 +3183,7 @@ document.getElementById('demoBtn').addEventListener('click', () => {
       if (els.desktopWebToolRight) els.desktopWebToolRight.classList.remove('hidden');
       if (els.mobileRunNavBtn) els.mobileRunNavBtn.classList.remove('hidden');
       if (els.mobileWebToolUtils) els.mobileWebToolUtils.classList.remove('hidden');
+      updateModeBadge();
       syncDrawerState();
     } else {
       if (els.devWorkbench) els.devWorkbench.classList.remove('hidden');
@@ -3186,6 +3194,7 @@ document.getElementById('demoBtn').addEventListener('click', () => {
       if (els.desktopWebToolRight) els.desktopWebToolRight.classList.add('hidden');
       if (els.mobileRunNavBtn) els.mobileRunNavBtn.classList.add('hidden');
       if (els.mobileWebToolUtils) els.mobileWebToolUtils.classList.add('hidden');
+      updateModeBadge();
       switchDevToolsTab(mode);
     }
   }
@@ -3383,14 +3392,16 @@ document.getElementById('demoBtn').addEventListener('click', () => {
 
   const APP_METADATA = {
     version: '2.4.0',
-    developer: 'Protyush'
+    developer: 'Protyush',
+    fallbackBuildDate: 'October 6, 2026, 10:39:47 AM'
   };
 
+  let isResolvingDeploymentTime = false;
   let liveBuildDateFormatted = (() => {
     try {
-      return localStorage.getItem('devzone_last_live_time') || null;
+      return localStorage.getItem('devzone_last_live_time') || APP_METADATA.fallbackBuildDate;
     } catch (_) {
-      return null;
+      return APP_METADATA.fallbackBuildDate;
     }
   })();
 
@@ -3418,78 +3429,93 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     liveBuildDateFormatted = formatted;
     try {
       localStorage.setItem('devzone_last_live_time', formatted);
+      localStorage.setItem('devzone_last_live_time_ts', Date.now().toString());
     } catch (_) {}
     if (els.aboutBuildDate) {
       els.aboutBuildDate.textContent = formatted;
     }
   }
 
-  async function resolveLiveDeploymentTime() {
-    // 1. Query GitHub Deployments API for live release timestamp
+  async function resolveLiveDeploymentTime(force = false) {
+    if (isResolvingDeploymentTime) return;
+
+    // Check localStorage cache freshness (30-minute TTL) to preserve rate limits
+    if (!force) {
+      try {
+        const lastTs = parseInt(localStorage.getItem('devzone_last_live_time_ts') || '0', 10);
+        const cachedFormatted = localStorage.getItem('devzone_last_live_time');
+        if (cachedFormatted && lastTs && (Date.now() - lastTs < 30 * 60 * 1000)) {
+          updateLiveBuildDateUI(cachedFormatted);
+          return;
+        }
+      } catch (_) {}
+    }
+
+    isResolvingDeploymentTime = true;
+
     try {
-      const res = await fetch('https://api.github.com/repos/protyushc/developer-zone/deployments?per_page=1', {
-        headers: { 'Accept': 'application/vnd.github.v3+json' },
-        cache: 'no-cache'
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (Array.isArray(data) && data[0] && (data[0].updated_at || data[0].created_at)) {
-          const formatted = formatLiveDate(data[0].updated_at || data[0].created_at);
+      // 1. Query HTTP Last-Modified header from live server
+      // Zero API rate-limit cost, fast, and directly reflects deployed GitHub Pages static build
+      try {
+        const targetUrl = window.location.protocol.startsWith('http')
+          ? window.location.href
+          : 'https://protyushc.github.io/developer-zone/';
+        const head = await fetch(targetUrl, {
+          method: 'HEAD',
+          cache: 'no-cache',
+          referrerPolicy: 'no-referrer'
+        });
+        const lastMod = head.headers.get('last-modified');
+        if (lastMod) {
+          const formatted = formatLiveDate(lastMod);
           if (formatted) {
             updateLiveBuildDateUI(formatted);
             return;
           }
         }
-      }
-    } catch (_) {}
+      } catch (_) {}
 
-    // 2. Query HTTP Last-Modified header from live server
-    try {
-      const targetUrl = window.location.protocol.startsWith('http')
-        ? window.location.href
-        : 'https://protyushc.github.io/developer-zone/';
-      const head = await fetch(targetUrl, { method: 'HEAD', cache: 'no-cache' });
-      const lastMod = head.headers.get('last-modified');
-      if (lastMod) {
-        const formatted = formatLiveDate(lastMod);
+      // 2. Query GitHub Commits API for latest repository push (unauthenticated rate limit: 60/hr)
+      try {
+        const res = await fetch('https://api.github.com/repos/protyushc/developer-zone/commits?per_page=1', {
+          headers: { 'Accept': 'application/vnd.github.v3+json' },
+          cache: 'no-cache',
+          referrerPolicy: 'no-referrer'
+        });
+        if (res.ok) {
+          const data = await res.json();
+          const dateStr = data[0]?.commit?.committer?.date || data[0]?.commit?.author?.date;
+          if (dateStr) {
+            const formatted = formatLiveDate(dateStr);
+            if (formatted) {
+              updateLiveBuildDateUI(formatted);
+              return;
+            }
+          }
+        }
+      } catch (_) {}
+
+      // 3. Fallback to document.lastModified if available
+      if (document.lastModified) {
+        const formatted = formatLiveDate(document.lastModified);
         if (formatted) {
           updateLiveBuildDateUI(formatted);
           return;
         }
       }
-    } catch (_) {}
 
-    // 3. Query GitHub Commits API for latest repository push
-    try {
-      const res = await fetch('https://api.github.com/repos/protyushc/developer-zone/commits?per_page=1', {
-        headers: { 'Accept': 'application/vnd.github.v3+json' },
-        cache: 'no-cache'
-      });
-      if (res.ok) {
-        const data = await res.json();
-        const dateStr = data[0]?.commit?.committer?.date || data[0]?.commit?.author?.date;
-        if (dateStr) {
-          const formatted = formatLiveDate(dateStr);
-          if (formatted) {
-            updateLiveBuildDateUI(formatted);
-            return;
-          }
-        }
+      // 4. Ultimate offline fallback to known build metadata
+      if (APP_METADATA.fallbackBuildDate) {
+        updateLiveBuildDateUI(APP_METADATA.fallbackBuildDate);
       }
-    } catch (_) {}
-
-    // 4. Fallback to document.lastModified if available
-    if (document.lastModified) {
-      const formatted = formatLiveDate(document.lastModified);
-      if (formatted) {
-        updateLiveBuildDateUI(formatted);
-      }
+    } finally {
+      isResolvingDeploymentTime = false;
     }
   }
 
   function openAboutModal(fromHistory = false) {
     if (els.aboutBuildDate) {
-      els.aboutBuildDate.textContent = liveBuildDateFormatted || 'Detecting live build time...';
+      els.aboutBuildDate.textContent = liveBuildDateFormatted || APP_METADATA.fallbackBuildDate;
     }
     resolveLiveDeploymentTime();
 

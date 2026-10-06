@@ -3,7 +3,7 @@
  * Provides full offline support, asset pre-caching, and instant loading.
  */
 
-const CACHE_NAME = 'developer-zone-cache-v3';
+const CACHE_NAME = 'developer-zone-cache-v4';
 
 const PRECACHE_ASSETS = [
   './',
@@ -164,6 +164,11 @@ self.addEventListener('fetch', (event) => {
         })
         .catch(() => caches.match(request).then((cached) => cached || caches.match('./pwa/manifest.json')))
     );
+    return;
+  }
+
+  // For external requests (cross-origin, e.g. api.github.com or sandbox user requests), bypass cache
+  if (!request.url.startsWith(self.location.origin)) {
     return;
   }
 

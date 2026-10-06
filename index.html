@@ -601,11 +601,11 @@
     </div>
 
     <!-- Modal for New File Creation -->
-    <div id="fileModal" class="modal-backdrop hidden">
+    <div id="fileModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="fileModalTitle">
       <div class="modal">
         <div class="modal-header">
-          <h3>Create New File</h3>
-          <button id="closeModalBtn" class="icon-btn">&times;</button>
+          <h3 id="fileModalTitle">Create New File</h3>
+          <button id="closeModalBtn" class="icon-btn" aria-label="Close modal">&times;</button>
         </div>
         <div class="modal-body">
           <label for="newFileName">File Name with Extension:</label>
@@ -620,7 +620,7 @@
     </div>
 
     <!-- Modal for PWA Installation Instructions & Fallback -->
-    <div id="installModal" class="modal-backdrop hidden">
+    <div id="installModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="installModalTitle">
       <div class="modal pwa-modal">
         <div class="modal-header">
           <div class="pwa-modal-header-title">
@@ -630,9 +630,9 @@
               <line x1="12" y1="7" x2="12" y2="14"></line>
               <line x1="10" y1="18" x2="14" y2="18"></line>
             </svg>
-            <h3>Install Developer Zone</h3>
+            <h3 id="installModalTitle">Install Developer Zone</h3>
           </div>
-          <button id="closeInstallModalBtn" class="icon-btn">&times;</button>
+          <button id="closeInstallModalBtn" class="icon-btn" aria-label="Close modal">&times;</button>
         </div>
         <div class="modal-body">
           <div class="pwa-hero">
@@ -659,7 +659,7 @@
     </div>
 
     <!-- Modal for About Developer Zone -->
-    <div id="aboutModal" class="modal-backdrop hidden">
+    <div id="aboutModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="aboutModalTitle">
       <div class="modal about-modal">
         <div class="modal-header">
           <div class="about-modal-header-title">
@@ -668,7 +668,7 @@
               <line x1="12" y1="16" x2="12" y2="12"></line>
               <line x1="12" y1="8" x2="12.01" y2="8"></line>
             </svg>
-            <h3>About Developer Zone</h3>
+            <h3 id="aboutModalTitle">About Developer Zone</h3>
           </div>
           <button id="closeAboutModalBtn" class="icon-btn" aria-label="Close modal">&times;</button>
         </div>
