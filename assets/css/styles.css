@@ -1392,7 +1392,7 @@ body.theme-light .about-developer-highlight {
   color: #0284c7;
 }
 
-@media (max-width: 520px) {
+@media (max-width: 600px) {
   .about-modal {
     width: calc(100vw - 20px);
     max-width: calc(100vw - 20px);
@@ -1404,6 +1404,10 @@ body.theme-light .about-developer-highlight {
   .about-features-grid,
   .about-meta-grid {
     grid-template-columns: minmax(0, 1fr);
+  }
+  .about-feature-card .feature-text strong,
+  .about-feature-card .feature-text span {
+    white-space: normal;
   }
   .about-hero {
     padding: 10px 12px;
@@ -1995,6 +1999,18 @@ body.theme-light .about-developer-highlight {
   }
   .cron-fields-grid {
     grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 540px) {
+  .cron-fields-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 360px) {
+  .cron-fields-grid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -2715,6 +2731,16 @@ body.theme-light .drawer-content::-webkit-scrollbar-thumb:hover {
     overflow: hidden;
   }
 
+  /* DevTools workbench uses full remaining height when bottom nav is hidden */
+  .workbench#devWorkbench {
+    height: calc(100dvh - 48px - env(safe-area-inset-bottom, 0px)) !important;
+    overflow-y: auto !important;
+  }
+
+  .devtools-workbench-body {
+    padding: 12px 14px !important;
+  }
+
   /* Splitters are hidden on mobile view */
   .splitter,
   .console-splitter {
@@ -2898,6 +2924,16 @@ body.theme-light .drawer-content::-webkit-scrollbar-thumb:hover {
     max-width: 380px;
     margin: 16px;
     border-radius: 12px;
+  }
+
+  .modal.about-modal {
+    max-width: min(540px, calc(100vw - 24px));
+    width: calc(100% - 24px);
+  }
+
+  .modal.pwa-modal {
+    max-width: min(480px, calc(100vw - 24px));
+    width: calc(100% - 24px);
   }
 
   .modal-body input {
