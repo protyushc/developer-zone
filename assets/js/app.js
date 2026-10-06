@@ -3383,14 +3383,116 @@ document.getElementById('demoBtn').addEventListener('click', () => {
 
   const APP_METADATA = {
     version: '2.4.0',
-    developer: 'Protyush',
-    buildDate: 'October 6, 2026, 09:55 AM IST'
+    developer: 'Protyush'
   };
+
+  let liveBuildDateFormatted = (() => {
+    try {
+      return localStorage.getItem('devzone_last_live_time') || null;
+    } catch (_) {
+      return null;
+    }
+  })();
+
+  function formatLiveDate(rawDate) {
+    if (!rawDate) return null;
+    const d = rawDate instanceof Date ? rawDate : new Date(rawDate);
+    if (isNaN(d.getTime())) return null;
+    try {
+      return d.toLocaleString(undefined, {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+      });
+    } catch (_) {
+      return d.toLocaleString();
+    }
+  }
+
+  function updateLiveBuildDateUI(formatted) {
+    if (!formatted) return;
+    liveBuildDateFormatted = formatted;
+    try {
+      localStorage.setItem('devzone_last_live_time', formatted);
+    } catch (_) {}
+    if (els.aboutBuildDate) {
+      els.aboutBuildDate.textContent = formatted;
+    }
+  }
+
+  async function resolveLiveDeploymentTime() {
+    // 1. Query GitHub Deployments API for live release timestamp
+    try {
+      const res = await fetch('https://api.github.com/repos/protyushc/developer-zone/deployments?per_page=1', {
+        headers: { 'Accept': 'application/vnd.github.v3+json' },
+        cache: 'no-cache'
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data) && data[0] && (data[0].updated_at || data[0].created_at)) {
+          const formatted = formatLiveDate(data[0].updated_at || data[0].created_at);
+          if (formatted) {
+            updateLiveBuildDateUI(formatted);
+            return;
+          }
+        }
+      }
+    } catch (_) {}
+
+    // 2. Query HTTP Last-Modified header from live server
+    try {
+      const targetUrl = window.location.protocol.startsWith('http')
+        ? window.location.href
+        : 'https://protyushc.github.io/developer-zone/';
+      const head = await fetch(targetUrl, { method: 'HEAD', cache: 'no-cache' });
+      const lastMod = head.headers.get('last-modified');
+      if (lastMod) {
+        const formatted = formatLiveDate(lastMod);
+        if (formatted) {
+          updateLiveBuildDateUI(formatted);
+          return;
+        }
+      }
+    } catch (_) {}
+
+    // 3. Query GitHub Commits API for latest repository push
+    try {
+      const res = await fetch('https://api.github.com/repos/protyushc/developer-zone/commits?per_page=1', {
+        headers: { 'Accept': 'application/vnd.github.v3+json' },
+        cache: 'no-cache'
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const dateStr = data[0]?.commit?.committer?.date || data[0]?.commit?.author?.date;
+        if (dateStr) {
+          const formatted = formatLiveDate(dateStr);
+          if (formatted) {
+            updateLiveBuildDateUI(formatted);
+            return;
+          }
+        }
+      }
+    } catch (_) {}
+
+    // 4. Fallback to document.lastModified if available
+    if (document.lastModified) {
+      const formatted = formatLiveDate(document.lastModified);
+      if (formatted) {
+        updateLiveBuildDateUI(formatted);
+      }
+    }
+  }
 
   function openAboutModal(fromHistory = false) {
     if (els.aboutBuildDate) {
-      els.aboutBuildDate.textContent = APP_METADATA.buildDate;
+      els.aboutBuildDate.textContent = liveBuildDateFormatted || 'Detecting live build time...';
     }
+    resolveLiveDeploymentTime();
+
     if (els.aboutModal) {
       els.aboutModal.classList.remove('hidden');
       if (fromHistory !== true) {
@@ -3534,6 +3636,7 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     initDevToolsDefaults();
     updateInstallButtonUI();
     registerServiceWorker();
+    resolveLiveDeploymentTime();
 
     setAppMode('web');
 
