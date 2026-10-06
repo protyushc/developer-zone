@@ -110,6 +110,18 @@
       ]
     },
     {
+      "name": "Simple JSON Document",
+      "short_name": "JSON",
+      "description": "Start fresh with clean JSON configuration template",
+      "url": "../index.html#template=simple-json",
+      "icons": [
+        {
+          "src": "../assets/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
       "name": "Blank Project",
       "short_name": "Blank",
       "description": "Start fresh with empty HTML, CSS, and JS files",

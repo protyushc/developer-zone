@@ -582,6 +582,248 @@ body.theme-light .modern-select {
   padding: 0 10px;
 }
 
+/* Editor Workspace Actions (Line Numbers & 3-Dot Menu) */
+.editor-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  margin-left: auto;
+  padding: 0 4px 0 6px;
+  height: 100%;
+}
+
+.editor-actions .editor-quick-info {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  padding: 0 6px;
+  white-space: nowrap;
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  line-height: 1;
+  transform: translateY(-2px);
+}
+
+#cursorPos {
+  display: inline-block;
+  line-height: 1;
+}
+
+.editor-dropdown-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.editor-menu-btn {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background-color: var(--bg-tertiary);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.editor-menu-btn:hover,
+.editor-menu-btn:focus-visible {
+  background-color: var(--bg-hover);
+  color: var(--text-bright);
+  border-color: var(--text-muted);
+}
+
+.editor-menu-btn[aria-expanded="true"] {
+  background-color: var(--bg-hover);
+  color: var(--accent-primary-hover);
+  border-color: var(--accent-primary);
+}
+
+/* Beautiful, Full-Width, Single-Line, Left-Justified 3-Dot Menu */
+.editor-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  width: max-content;
+  min-width: 210px;
+  max-width: calc(100vw - 24px);
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.2);
+  padding: 6px;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  white-space: nowrap !important;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.editor-dropdown-menu.hidden {
+  display: none !important;
+}
+
+/* All items: one line, left justified, never break line */
+.editor-dropdown-menu .dropdown-item {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  text-align: left !important;
+  gap: 8px !important;
+  width: 100% !important;
+  height: 38px !important;
+  min-height: 38px !important;
+  padding: 0 10px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: var(--text-bright) !important;
+  background: transparent;
+  border: none !important;
+  border-radius: 6px !important;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+  box-sizing: border-box !important;
+  white-space: nowrap !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.editor-dropdown-menu .dropdown-item:hover,
+.editor-dropdown-menu .dropdown-item:focus-visible {
+  background-color: var(--bg-hover) !important;
+  color: #ffffff !important;
+  outline: none;
+}
+
+.editor-dropdown-menu .dropdown-item.hidden {
+  display: none !important;
+}
+
+.editor-dropdown-menu .dropdown-item-icon {
+  width: 18px !important;
+  height: 18px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.editor-dropdown-menu .icon-run {
+  color: var(--accent-primary);
+}
+
+.editor-dropdown-menu .dropdown-item:hover .icon-run {
+  color: var(--accent-primary-hover);
+}
+
+.editor-dropdown-menu .icon-format {
+  color: #38bdf8;
+}
+
+.editor-dropdown-menu .icon-live {
+  color: #a855f7;
+}
+
+.editor-dropdown-menu .item-title {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  text-align: left !important;
+  white-space: nowrap !important;
+  color: inherit !important;
+  flex-shrink: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: normal !important;
+}
+
+.editor-dropdown-menu .shortcut-tag {
+  background: var(--bg-tertiary) !important;
+  border: 1px solid var(--border-color) !important;
+  padding: 2px 6px !important;
+  border-radius: 4px !important;
+  font-size: 11px !important;
+  font-family: var(--font-mono) !important;
+  color: var(--text-muted) !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  margin: 0 !important;
+  line-height: normal !important;
+}
+
+.editor-dropdown-menu .dropdown-toggle-item {
+  cursor: pointer;
+}
+
+.editor-dropdown-menu .toggle-control {
+  margin: 0 !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  flex-direction: row !important;
+  cursor: pointer !important;
+  user-select: none !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  border: none !important;
+  gap: 0 !important;
+}
+
+.editor-dropdown-menu .toggle-slider {
+  width: 32px !important;
+  height: 18px !important;
+  min-width: 32px !important;
+  min-height: 18px !important;
+  flex-shrink: 0 !important;
+  border-radius: 18px !important;
+  position: relative !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  display: inline-block !important;
+}
+
+.editor-dropdown-menu .toggle-slider::after {
+  content: "" !important;
+  position: absolute !important;
+  width: 12px !important;
+  height: 12px !important;
+  border-radius: 50% !important;
+  background: var(--text-muted) !important;
+  top: 2px !important;
+  left: 2px !important;
+  transition: 0.2s !important;
+}
+
+.editor-dropdown-menu .toggle-control input:checked + .toggle-slider {
+  background-color: var(--accent-primary) !important;
+  border-color: var(--accent-primary) !important;
+}
+
+.editor-dropdown-menu .toggle-control input:checked + .toggle-slider::after {
+  left: 16px !important;
+  background: #ffffff !important;
+}
+
+.editor-dropdown-menu .dropdown-divider {
+  height: 1px;
+  background-color: var(--border-color);
+  margin: 4px 2px;
+  opacity: 0.6;
+}
+
 /* Textarea & Line Numbers Editor */
 .editor-wrapper {
   flex: 1 1 0%;
@@ -679,6 +921,40 @@ body.theme-light .modern-select {
   touch-action: pan-x pan-y !important;
   user-select: none !important;
   -webkit-user-select: none !important;
+  min-width: 34px !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 3 !important;
+  position: absolute !important;
+  left: 0 !important;
+  top: 0 !important;
+  min-height: 100% !important;
+}
+
+.CodeMirror-gutter-wrapper {
+  position: absolute !important;
+  z-index: 4 !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.CodeMirror-gutter-elt {
+  position: absolute !important;
+  z-index: 4 !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.CodeMirror-linenumber {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  min-width: 20px !important;
+  box-sizing: content-box !important;
+  z-index: 4 !important;
 }
 
 /* Dracula theme tweaks for dark mode */
@@ -2614,7 +2890,6 @@ body.theme-light .drawer-content::-webkit-scrollbar-thumb:hover {
     padding: 0 8px;
     font-size: 11.5px;
   }
-  #formatBtn .btn-text,
   #exportMenuBtn .btn-text,
   #aboutBtn .btn-text,
   #installAppBtn .btn-text,
@@ -2629,7 +2904,7 @@ body.theme-light .drawer-content::-webkit-scrollbar-thumb:hover {
 
 /* Tier 3: Width <= 920px (Narrow restored window / compact state) */
 @media (max-width: 920px) {
-  .toggle-label {
+  .top-nav .toggle-label {
     display: none !important;
   }
   #devToolsMenuBtn .btn-text {
@@ -2674,7 +2949,6 @@ body.theme-light .drawer-content::-webkit-scrollbar-thumb:hover {
   .toast.hidden,
   .dropdown-menu.hidden,
   .mobile-nav-bar.hidden,
-  #mobileRunNavBtn.hidden,
   .tool-active-badge.hidden,
   .subtool-status-tag.hidden {
     display: none !important;
@@ -2708,14 +2982,20 @@ body.theme-light .drawer-content::-webkit-scrollbar-thumb:hover {
     gap: 8px;
   }
 
-  #mobileRunNavBtn {
-    height: 32px;
-    padding: 0 12px;
-    font-size: 12px;
-    font-weight: 700;
-    gap: 5px;
-    border-radius: 6px;
-    -webkit-tap-highlight-color: transparent;
+  .editor-actions {
+    gap: 4px;
+    padding: 0 2px 0 4px;
+  }
+
+  .editor-actions .editor-quick-info {
+    display: inline-flex !important;
+    font-size: 11px;
+    padding: 0 4px;
+  }
+
+  .editor-menu-btn {
+    width: 28px;
+    height: 28px;
   }
 
   .btn-icon {
@@ -2995,10 +3275,14 @@ body.theme-light .drawer-content::-webkit-scrollbar-thumb:hover {
     height: 18px;
   }
 
-  #mobileRunNavBtn {
-    height: 28px;
-    padding: 0 10px;
-    font-size: 11px;
+  .editor-actions {
+    gap: 4px;
+    padding: 0 2px;
+  }
+
+  .editor-menu-btn {
+    width: 24px;
+    height: 24px;
   }
 
   .btn-icon {
@@ -3109,3 +3393,31 @@ body.theme-light .drawer-content::-webkit-scrollbar-thumb:hover {
     height: 36px;
   }
 }
+
+/* Compact Mobile Optimization for Editor Workspace Actions */
+@media (max-width: 480px) {
+  .editor-actions {
+    gap: 4px;
+    padding: 0 2px 0 4px;
+  }
+  .editor-actions .editor-quick-info {
+    font-size: 10.5px;
+    padding: 0 3px;
+  }
+  .editor-menu-btn {
+    width: 26px;
+    height: 26px;
+  }
+}
+
+@media (max-width: 360px) {
+  .editor-actions {
+    gap: 2px;
+    padding: 0 2px;
+  }
+  .editor-actions .editor-quick-info {
+    font-size: 10px;
+    padding: 0 2px;
+  }
+}
+
