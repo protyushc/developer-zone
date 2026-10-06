@@ -2074,7 +2074,9 @@ document.getElementById('demoBtn').addEventListener('click', () => {
         }, 50);
       }
     } else if (viewName === 'preview') {
-      runCode();
+      if (state.autoRun) {
+        runCode();
+      }
     } else if (viewName === 'console') {
       if (els.mobileConsoleBadge) {
         els.mobileConsoleBadge.classList.remove('has-error');
