@@ -26,25 +26,30 @@ A lightweight, zero-dependency, self-contained web development workbench, live c
    - 100% self-contained and offline-ready with all vendor libraries (CodeMirror, JSZip, and typography) vendored locally.
 
 4. **Single-File & Multi-File Architecture**:
-   - **Single-File Mode**: Edit self-contained HTML with embedded `<style>` and `<script>` blocks (e.g., quick prototypes, canvas animations).
-   - **Multi-File Mode**: Create and organize multiple virtual files (e.g. `index.html`, `style.css`, `store.js`, `utils.js`).
-   - **Native ES Modules**: Resolves `import { foo } from './helper.js'` out-of-the-box using dynamic in-browser `<script type="importmap">` generation without needing Webpack or Vite.
+   - **Single-File Mode**: Edit self-contained HTML, JavaScript, CSS, or JSON files.
+   - **Multi-File Mode**: Create and organize multiple virtual files (e.g. `index.html`, `style.css`, `script.js`, `data.json`).
+   - **Native ES Modules & JSON Imports**: Resolves `import { foo } from './helper.js'` and `import data from './data.json'` out-of-the-box using dynamic in-browser `<script type="importmap">` generation without needing Webpack or Vite.
    - **Virtual CSS Linking**: Automatically resolves `<link rel="stylesheet" href="style.css">` against virtual files.
 
-5. **Sandboxed Live Preview**:
+5. **Sandboxed Live Preview & Output Panel Rendering**:
    - Debounced live reloading as you type, with an instant **Run** button (`Ctrl + Enter`).
+   - **Conditional Output Rendering**:
+     - **HTML Present**: If the project contains an HTML file or if HTML is generated/rendered dynamically via a JavaScript file, renders the resulting webpage normally in the Output panel.
+     - **No HTML Present**: If the project only contains JSON, CSS, or a JS file (without HTML generation), does not render a webpage and displays `"There is no html to render"`.
    - Isolated `iframe` environment with an error boundary catching uncaught exceptions and rejected promises.
    - Expand preview to a new browser window anytime.
 
 6. **Integrated Developer Console**:
-   - Bridges `console.log`, `console.info`, `console.warn`, and `console.error` directly from the running preview into an interactive drawer below the canvas.
-   - Collapsible and resizable with live log counter and error highlights.
+   - **Direct JS Execution**: Run JavaScript files directly in the console when there is no HTML to render, streaming `console.log`, warnings, and errors into the drawer.
+   - **JSON Import Support**: JavaScript files can import JSON files (`import data from './data.json'`) within the execution environment.
+   - Resizable drawer with live log counter and error highlights.
+   - Physically preserved in the UI layout at all times as a blank, empty panel when not required to prevent structural shifts.
 
-7. **Built-in Starter Templates**:
-   - **⚡ Particle Network**: Single-file HTML5 Canvas + physics simulation (with touch support).
-   - **📦 Modular Kanban**: Multi-file ES Module architecture with separate state store and components.
-   - **🎨 3D Tilt Glass Card**: CSS 3D perspective projection + interactive touch & mouse specular highlights.
-   - **📄 Blank Multi-File & Single-File** starters.
+7. **Starter Templates (Web Tools)**:
+   - **Template 1: JSON**: A single `data.json` file containing a simple object with exactly one property (`{"greeting": "hello"}`).
+   - **Template 2: HTML**: A single `index.html` file containing `"Hello World"` text, inline CSS styling, and a button with inline JavaScript triggering an alert on click.
+   - **Template 3: JS**: A single `script.js` file that dynamically creates and appends HTML to the DOM, rendering a button that triggers an alert on click.
+   - **Template 4: Multi-file**: A project containing 3 separate files (`index.html`, `style.css`, and `script.js`) linked together.
 
 8. **Mobile-Ready & Touch-Optimized**:
    - **Responsive View Switching**: Intuitive bottom navigation bar on mobile to switch between **Files**, **Code**, **Preview**, and **Console**.

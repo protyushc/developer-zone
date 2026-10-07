@@ -10,674 +10,16 @@
   // Starter Templates
   // ---------------------------------------------------------------------------
   const TEMPLATES = {
-    'single-canvas': [
-      {
-        id: 'f-index',
-        name: 'index.html',
-        type: 'html',
-        content: `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Interactive Particle Network</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      background: radial-gradient(circle at center, #f8fafc 0%, #e2e8f0 100%);
-      height: 100vh;
-      overflow: hidden;
-      font-family: system-ui, sans-serif;
-      color: #334155;
-    }
-    canvas { display: block; width: 100%; height: 100%; cursor: crosshair; }
-    .hud {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      pointer-events: none;
-      background: rgba(255, 255, 255, 0.85);
-      padding: 12px 18px;
-      border-radius: 8px;
-      border: 1px solid rgba(0, 0, 0, 0.1);
-      backdrop-filter: blur(8px);
-    }
-    .hud h1 { font-size: 15px; color: #0284c7; margin-bottom: 4px; }
-    .hud p { font-size: 12px; }
-  </style>
-</head>
-<body>
-  <div class="hud">
-    <h1>Single-File Concept: Particle Network</h1>
-    <p>Move mouse or touch to attract particles. Click or tap to burst.</p>
-  </div>
-  <canvas id="canvas"></canvas>
-
-  <script>
-    console.log("Initializing Canvas Particle Simulation...");
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-    let width, height;
-    const particles = [];
-    const mouse = { x: null, y: null, radius: 120 };
-
-    function resize() {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resize);
-    resize();
-
-    window.addEventListener('mousemove', (e) => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
-    });
-
-    window.addEventListener('mouseleave', () => {
-      mouse.x = null;
-      mouse.y = null;
-    });
-
-    window.addEventListener('touchmove', (e) => {
-      if (e.touches.length > 0) {
-        mouse.x = e.touches[0].clientX;
-        mouse.y = e.touches[0].clientY;
-      }
-    }, { passive: true });
-
-    window.addEventListener('touchstart', (e) => {
-      if (e.touches.length > 0) {
-        mouse.x = e.touches[0].clientX;
-        mouse.y = e.touches[0].clientY;
-        for (let i = 0; i < 25; i++) {
-          particles.push(new Particle(mouse.x, mouse.y, true));
-        }
-      }
-    }, { passive: true });
-
-    window.addEventListener('touchend', () => {
-      mouse.x = null;
-      mouse.y = null;
-    });
-
-    window.addEventListener('click', () => {
-      console.log("Particle shockwave triggered at:", mouse.x, mouse.y);
-      for (let i = 0; i < 25; i++) {
-        particles.push(new Particle(mouse.x, mouse.y, true));
-      }
-    });
-
-    class Particle {
-      constructor(x, y, burst = false) {
-        this.x = x ?? Math.random() * width;
-        this.y = y ?? Math.random() * height;
-        const speed = burst ? Math.random() * 6 + 2 : Math.random() * 1.5 + 0.3;
-        const angle = Math.random() * Math.PI * 2;
-        this.vx = Math.cos(angle) * speed;
-        this.vy = Math.sin(angle) * speed;
-        this.size = burst ? Math.random() * 3 + 1 : Math.random() * 2 + 1.2;
-        this.life = burst ? 80 : Infinity;
-        this.color = burst ? '#e11d48' : '#0284c7';
-      }
-
-      update() {
-        this.x += this.vx;
-        this.y += this.vy;
-
-        if (this.life !== Infinity) this.life--;
-
-        // Bounce
-        if (this.x < 0 || this.x > width) this.vx *= -1;
-        if (this.y < 0 || this.y > height) this.vy *= -1;
-
-        // Mouse attraction
-        if (mouse.x !== null) {
-          const dx = mouse.x - this.x;
-          const dy = mouse.y - this.y;
-          const dist = Math.hypot(dx, dy);
-          if (dist < mouse.radius) {
-            this.x += dx * 0.02;
-            this.y += dy * 0.02;
-          }
-        }
-      }
-
-      draw() {
-        ctx.fillStyle = this.color;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-
-    // Initialize 80 particles
-    for (let i = 0; i < 80; i++) particles.push(new Particle());
-
-    function connect() {
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dist = Math.hypot(particles[i].x - particles[j].x, particles[i].y - particles[j].y);
-          if (dist < 90) {
-            ctx.strokeStyle = \`rgba(56, 189, 248, \${1 - dist / 90})\`;
-            ctx.lineWidth = 0.5;
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.stroke();
-          }
-        }
-      }
-    }
-
-    function animate() {
-      ctx.clearRect(0, 0, width, height);
-      for (let i = particles.length - 1; i >= 0; i--) {
-        const p = particles[i];
-        p.update();
-        p.draw();
-        if (p.life <= 0) particles.splice(i, 1);
-      }
-      connect();
-      requestAnimationFrame(animate);
-    }
-
-    animate();
-    console.log("Particle animation running with 80 nodes.");
-  </script>
-</body>
-</html>`
-      }
-    ],
-
-    'multifile-kanban': [
-      {
-        id: 'f-index',
-        name: 'index.html',
-        type: 'html',
-        content: `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Modular Kanban App</title>
-  <!-- Multi-file virtual CSS link -->
-  <link rel="stylesheet" href="style.css"/>
-</head>
-<body>
-  <div class="app-shell">
-    <header class="header">
-      <div class="logo">⚡ TaskFlow <span>(ES Modules)</span></div>
-      <div class="new-task-bar">
-        <input type="text" id="taskInput" placeholder="What needs to be done?"/>
-        <button id="addBtn">Add Task</button>
-      </div>
-    </header>
-
-    <main class="board">
-      <div class="column" id="col-todo">
-        <div class="column-header">To Do <span class="counter" id="count-todo">0</span></div>
-        <div class="task-list" data-status="todo"></div>
-      </div>
-      <div class="column" id="col-progress">
-        <div class="column-header">In Progress <span class="counter" id="count-progress">0</span></div>
-        <div class="task-list" data-status="progress"></div>
-      </div>
-      <div class="column" id="col-done">
-        <div class="column-header">Completed <span class="counter" id="count-done">0</span></div>
-        <div class="task-list" data-status="done"></div>
-      </div>
-    </main>
-  </div>
-
-  <!-- Multi-file ES Module entry point -->
-  <script type="module" src="app.js"></script>
-</body>
-</html>`
-      },
-      {
-        id: 'f-css',
-        name: 'style.css',
-        type: 'css',
-        content: `* { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-body {
-  background: #f8fafc;
-  color: #1e293b;
-  min-height: 100vh;
-  padding: 24px;
-}
-.app-shell { max-width: 900px; margin: 0 auto; }
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
-  gap: 16px;
-}
-.logo { font-size: 20px; font-weight: 700; color: #0284c7; }
-.logo span { font-size: 13px; color: #475569; font-weight: normal; }
-.new-task-bar { display: flex; gap: 8px; }
-.new-task-bar input {
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
-  color: #334155;
-  padding: 8px 14px;
-  border-radius: 6px;
-  outline: none;
-  width: 260px;
-}
-.new-task-bar input:focus { border-color: #0284c7; }
-.new-task-bar button {
-  background: #0284c7;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-}
-.board {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 16px;
-}
-.column {
-  background: #1e293b;
-  border-radius: 8px;
-  padding: 16px;
-  min-height: 400px;
-  display: flex;
-  flex-direction: column;
-}
-.column-header {
-  font-weight: 600;
-  font-size: 14px;
-  color: #475569;
-  margin-bottom: 12px;
-  display: flex;
-  justify-content: space-between;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-.counter {
-  background: #e2e8f0;
-  color: #0f172a;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 11px;
-}
-.task-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  flex: 1;
-}
-.task-card {
-  background: #0f172a;
-  border: 1px solid #334155;
-  padding: 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  transition: transform 0.15s ease, border-color 0.15s ease;
-}
-.task-card:hover { transform: translateY(-2px); border-color: #0284c7; }
-.task-title { font-size: 13px; color: #0f172a; word-break: break-word; }
-.task-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 11px;
-}
-.move-btn {
-  background: #334155;
-  color: #475569;
-  border: none;
-  padding: 3px 8px;
-  border-radius: 4px;
-  cursor: pointer;
-}
-.move-btn:hover { background: #cbd5e1; color: #0f172a; }`
-      },
-      {
-        id: 'f-store',
-        name: 'store.js',
-        type: 'js',
-        content: `/**
- * Modular State Store for Kanban
- */
-export class TaskStore {
-  constructor() {
-    this.tasks = [
-      { id: 1, text: "Design UI Architecture", status: "done" },
-      { id: 2, text: "Implement ES Module virtual import maps", status: "progress" },
-      { id: 3, text: "Write unit tests for state persistence", status: "todo" }
-    ];
-    this.listeners = [];
-  }
-
-  getTasksByStatus(status) {
-    return this.tasks.filter(t => t.status === status);
-  }
-
-  addTask(text) {
-    if (!text.trim()) return;
-    const newTask = {
-      id: Date.now(),
-      text,
-      status: "todo"
-    };
-    this.tasks.push(newTask);
-    this.notify();
-    return newTask;
-  }
-
-  nextStatus(id) {
-    const task = this.tasks.find(t => t.id === id);
-    if (!task) return;
-    if (task.status === "todo") task.status = "progress";
-    else if (task.status === "progress") task.status = "done";
-    else if (task.status === "done") {
-      this.tasks = this.tasks.filter(t => t.id !== id);
-    }
-    this.notify();
-  }
-
-  subscribe(callback) {
-    this.listeners.push(callback);
-    callback(this.tasks);
-  }
-
-  notify() {
-    this.listeners.forEach(cb => cb(this.tasks));
-  }
-}`
-      },
-      {
-        id: 'f-app',
-        name: 'app.js',
-        type: 'js',
-        content: `// Import from virtual store.js module
-import { TaskStore } from './store.js';
-
-console.log("Starting Kanban application with ES Modules...");
-
-const store = new TaskStore();
-const input = document.getElementById('taskInput');
-const addBtn = document.getElementById('addBtn');
-
-function render() {
-  ['todo', 'progress', 'done'].forEach(status => {
-    const listEl = document.querySelector(\`.task-list[data-status="\${status}"]\`);
-    const countEl = document.getElementById(\`count-\${status}\`);
-    const tasks = store.getTasksByStatus(status);
-
-    countEl.textContent = tasks.length;
-    listEl.innerHTML = '';
-
-    tasks.forEach(task => {
-      const card = document.createElement('div');
-      card.className = 'task-card';
-
-      const nextAction = status === 'todo' ? 'Start' : (status === 'progress' ? 'Complete' : 'Archive');
-
-      card.innerHTML = \`
-        <div class="task-title">\${escapeHtml(task.text)}</div>
-        <div class="task-footer">
-          <span style="color:#64748b">#\${task.id.toString().slice(-4)}</span>
-          <button class="move-btn" data-id="\${task.id}">\${nextAction} →</button>
-        </div>
-      \`;
-
-      card.querySelector('button').addEventListener('click', () => {
-        console.log(\`Transitioning task \${task.id} from status "\${status}"\`);
-        store.nextStatus(task.id);
-      });
-
-      listEl.appendChild(card);
-    });
-  });
-}
-
-function escapeHtml(str) {
-  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-}
-
-function handleAdd() {
-  const text = input.value.trim();
-  if (text) {
-    console.log("New task created:", text);
-    store.addTask(text);
-    input.value = '';
-    input.focus();
-  }
-}
-
-addBtn.addEventListener('click', handleAdd);
-input.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') handleAdd();
-});
-
-store.subscribe(() => {
-  render();
-});
-`
-      }
-    ],
-
-    'glass-card': [
-      {
-        id: 'f-index',
-        name: 'index.html',
-        type: 'html',
-        content: `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>3D Glass Card</title>
-  <link rel="stylesheet" href="style.css"/>
-</head>
-<body>
-  <div class="scene">
-    <div class="card" id="tiltCard">
-      <div class="card-glow"></div>
-      <div class="card-content">
-        <span class="chip">DEV TOOLS</span>
-        <h2>Developer Zone</h2>
-        <p>Interactive code workbench, live playground, and essential developer utilities.</p>
-        <div class="stats">
-          <div><label>MODE</label><strong>Multi-File</strong></div>
-          <div><label>STATUS</label><strong>Active</strong></div>
-        </div>
-        <button class="btn" id="pingBtn">Run Build</button>
-      </div>
-    </div>
-  </div>
-
-  <script src="tilt.js"></script>
-</body>
-</html>`
-      },
-      {
-        id: 'f-css',
-        name: 'style.css',
-        type: 'css',
-        content: `* { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
-body {
-  background: #f1f5f9;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  perspective: 1000px;
-  overflow: hidden;
-}
-.scene {
-  transform-style: preserve-3d;
-}
-.card {
-  width: 320px;
-  background: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.9);
-  border-radius: 20px;
-  padding: 30px;
-  position: relative;
-  overflow: hidden;
-  backdrop-filter: blur(16px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-  transform-style: preserve-3d;
-  transition: transform 0.1s ease-out;
-  cursor: pointer;
-}
-.card-glow {
-  position: absolute;
-  width: 250px;
-  height: 250px;
-  background: radial-gradient(circle, rgba(2, 132, 199, 0.15) 0%, transparent 70%);
-  top: 0;
-  left: 0;
-  pointer-events: none;
-  transform: translate(-50%, -50%);
-  transition: opacity 0.3s;
-}
-.chip {
-  background: rgba(56, 189, 248, 0.15);
-  color: #38bdf8;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  padding: 4px 10px;
-  border-radius: 20px;
-  border: 1px solid rgba(2, 132, 199, 0.3);
-}
-.card-content h2 {
-  color: #fff;
-  margin: 18px 0 8px;
-  font-size: 22px;
-}
-.card-content p {
-  color: #94a3b8;
-  font-size: 13px;
-  line-height: 1.6;
-  margin-bottom: 24px;
-}
-.stats {
-  display: flex;
-  justify-content: space-between;
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
-  padding-top: 16px;
-  margin-bottom: 20px;
-}
-.stats label {
-  display: block;
-  font-size: 10px;
-  color: #64748b;
-  margin-bottom: 4px;
-}
-.stats strong {
-  color: #0f172a;
-  font-size: 14px;
-}
-.btn {
-  width: 100%;
-  padding: 10px;
-  background: #0ea5e9;
-  color: #ffffff;
-  border: none;
-  border-radius: 8px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.btn:hover { background: #0284c7; }`
-      },
-      {
-        id: 'f-js',
-        name: 'tilt.js',
-        type: 'js',
-        content: `const card = document.getElementById('tiltCard');
-const glow = document.querySelector('.card-glow');
-const btn = document.getElementById('pingBtn');
-
-console.log("3D Tilt Card interactive initialized.");
-
-function handleMove(clientX, clientY) {
-  const rect = card.getBoundingClientRect();
-  const cardCenterX = rect.left + rect.width / 2;
-  const cardCenterY = rect.top + rect.height / 2;
-
-  const mouseX = clientX - cardCenterX;
-  const mouseY = clientY - cardCenterY;
-
-  const rotateX = (-mouseY / (rect.height / 2)) * 18;
-  const rotateY = (mouseX / (rect.width / 2)) * 18;
-
-  card.style.transform = \`rotateX(\${rotateX}deg) rotateY(\${rotateY}deg)\`;
-
-  // Glow position relative to card
-  glow.style.left = \`\${clientX - rect.left}px\`;
-  glow.style.top = \`\${clientY - rect.top}px\`;
-}
-
-window.addEventListener('mousemove', (e) => handleMove(e.clientX, e.clientY));
-
-window.addEventListener('touchmove', (e) => {
-  if (e.touches.length > 0) {
-    handleMove(e.touches[0].clientX, e.touches[0].clientY);
-  }
-}, { passive: true });
-
-window.addEventListener('mouseleave', () => {
-  card.style.transform = 'rotateX(0deg) rotateY(0deg)';
-});
-
-window.addEventListener('touchend', () => {
-  card.style.transform = 'rotateX(0deg) rotateY(0deg)';
-});
-
-btn.addEventListener('click', (e) => {
-  e.stopPropagation();
-  console.log("Build process started!");
-  card.style.borderColor = '#0ea5e9';
-  setTimeout(() => {
-    card.style.borderColor = 'rgba(255, 255, 255, 0.9)';
-  }, 400);
-});`
-      }
-    ],
-
-    'simple-json': [
+    'template-json': [
       {
         id: 'f-json',
         name: 'data.json',
         type: 'json',
-        content: `{
-  "name": "Developer Zone Project",
-  "version": "1.0.0",
-  "description": "Lightweight client-side data configuration and schema playground.",
-  "author": {
-    "name": "Protyush",
-    "role": "Developer"
-  },
-  "features": [
-    "100% Client-Side",
-    "Offline PWA Support",
-    "Zero Telemetry",
-    "Multi-file Workbench"
-  ],
-  "settings": {
-    "theme": "dark",
-    "autoSave": true,
-    "livePreview": true
-  }
-}`
+        content: `{\n  "greeting": "hello"\n}`
       }
     ],
 
-    'blank-multifile': [
+    'template-html': [
       {
         id: 'f-index',
         name: 'index.html',
@@ -687,13 +29,95 @@ btn.addEventListener('click', (e) => {
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>My Concept</title>
+  <title>Hello World</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      background: #f8fafc;
+      color: #1e293b;
+    }
+    h1 {
+      color: #0284c7;
+      margin-bottom: 16px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #ffffff;
+      background: #0284c7;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: #0369a1;
+    }
+  </style>
+</head>
+<body>
+  <h1>Hello World</h1>
+  <button onclick="alert('Hello from inline JavaScript!')">Click Me</button>
+</body>
+</html>`
+      }
+    ],
+
+    'template-js': [
+      {
+        id: 'f-script',
+        name: 'script.js',
+        type: 'js',
+        content: `// Dynamically create and append HTML to the DOM
+const container = document.createElement('div');
+container.style.cssText = 'display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; font-family: system-ui, sans-serif; background: #f8fafc; margin: 0;';
+
+const heading = document.createElement('h1');
+heading.textContent = 'Hello World';
+heading.style.color = '#0284c7';
+heading.style.marginBottom = '16px';
+
+const button = document.createElement('button');
+button.textContent = 'Click Me';
+button.style.cssText = 'padding: 10px 20px; font-size: 15px; font-weight: 600; color: #ffffff; background: #0284c7; border: none; border-radius: 6px; cursor: pointer;';
+
+button.addEventListener('click', () => {
+  alert('Button clicked! Triggered from dynamic JS.');
+});
+
+container.appendChild(heading);
+container.appendChild(button);
+document.body.appendChild(container);
+`
+      }
+    ],
+
+    'template-multifile': [
+      {
+        id: 'f-index',
+        name: 'index.html',
+        type: 'html',
+        content: `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Multi-File Project</title>
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-  <h1>Hello from Developer Zone!</h1>
-  <p>Start editing this project to see live updates.</p>
-  <button id="demoBtn">Click Me</button>
+  <div class="card">
+    <h1>Multi-File Project</h1>
+    <p>HTML, CSS, and JavaScript working together.</p>
+    <button id="alertBtn">Click Me</button>
+  </div>
 
   <script src="script.js"></script>
 </body>
@@ -704,75 +128,72 @@ btn.addEventListener('click', (e) => {
         name: 'style.css',
         type: 'css',
         content: `body {
-  font-family: system-ui, sans-serif;
-  padding: 30px;
+  font-family: system-ui, -apple-system, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  margin: 0;
   background-color: #f8fafc;
   color: #1e293b;
 }
-h1 { color: #0284c7; }
+
+.card {
+  text-align: center;
+  background: #ffffff;
+  padding: 32px 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+}
+
+h1 {
+  color: #0284c7;
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+p {
+  color: #64748b;
+  margin-bottom: 24px;
+}
+
 button {
-  margin-top: 15px;
-  padding: 8px 16px;
+  padding: 10px 20px;
+  font-size: 15px;
+  font-weight: 600;
   background: #0284c7;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
+  transition: background 0.2s;
+}
+
+button:hover {
+  background: #0369a1;
 }`
       },
       {
         id: 'f-js',
         name: 'script.js',
         type: 'js',
-        content: `console.log("Concept loaded!");
-document.getElementById('demoBtn').addEventListener('click', () => {
-  console.log("Button clicked at:", new Date().toLocaleTimeString());
-  alert("Hello from script.js!");
-});`
-      }
-    ],
+        content: `console.log("Multi-file project loaded successfully.");
 
-    'blank-single': [
-      {
-        id: 'f-index',
-        name: 'index.html',
-        type: 'html',
-        content: `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Single-File Concept</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      padding: 40px;
-      text-align: center;
-      background: #f8fafc;
-      color: #1e293b;
-    }
-    .box {
-      display: inline-block;
-      padding: 20px 40px;
-      border: 2px solid #0ea5e9;
-      border-radius: 8px;
-    }
-  </style>
-</head>
-<body>
-  <div class="box">
-    <h2>Single File Concept</h2>
-    <p>Everything in one file: HTML, &lt;style&gt;, and &lt;script&gt;.</p>
-  </div>
-
-  <script>
-    console.log("Single file concept running!");
-  </script>
-</body>
-</html>`
+const alertBtn = document.getElementById('alertBtn');
+if (alertBtn) {
+  alertBtn.addEventListener('click', () => {
+    alert("Hello from script.js in multi-file project!");
+  });
+}`
       }
     ]
   };
+
+  TEMPLATES['json'] = TEMPLATES['template-json'];
+  TEMPLATES['html'] = TEMPLATES['template-html'];
+  TEMPLATES['js'] = TEMPLATES['template-js'];
+  TEMPLATES['multifile'] = TEMPLATES['template-multifile'];
 
   // ---------------------------------------------------------------------------
   // State
@@ -825,6 +246,7 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     lineNumbers: document.getElementById('lineNumbers'),
     cursorPos: document.getElementById('cursorPos'),
     previewFrame: document.getElementById('previewFrame'),
+    noHtmlPlaceholder: document.getElementById('noHtmlPlaceholder'),
     runBtn: document.getElementById('runBtn'),
     autoRunCheckbox: document.getElementById('autoRunCheckbox'),
     formatBtn: document.getElementById('formatBtn'),
@@ -1398,154 +820,121 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     activeBlobUrls = [];
   }
 
+  // Helper to escape strings in generated JS code
+  function escapeJsString(str) {
+    return (str || '').replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n');
+  }
+
+  // Detect whether JS code contains dynamic HTML creation / DOM manipulation
+  function checkJsGeneratesHtml(code) {
+    if (!code || typeof code !== 'string') return false;
+    const patterns = [
+      /document\s*\.\s*(?:createElement|createElementNS|write|writeln|createRange|createDocumentFragment)/i,
+      /document\s*\.\s*(?:body|documentElement|head)\s*\.\s*(?:append|appendChild|prepend|insertAdjacentHTML|insertAdjacentElement)/i,
+      /(?:\.innerHTML|\.outerHTML)\s*=/i,
+      /\.insertAdjacentHTML\s*\(/i,
+      /\.insertAdjacentElement\s*\(/i,
+      /\.appendChild\s*\(/i,
+      /\.append\s*\(/i,
+      /\.prepend\s*\(/i,
+      /document\s*\.\s*body\s*=/i,
+      /document\s*\.\s*title\s*=/i,
+      /customElements\s*\.\s*define/i
+    ];
+    return patterns.some(p => p.test(code));
+  }
+
+  // Normalize JSON imports to ensure broad cross-browser compatibility
+  function normalizeJsonImports(code) {
+    if (!code || typeof code !== 'string') return '';
+    let cleaned = code.replace(
+      /\bimport\s+([\s\S]*?)\s+from\s+(['"][^'"]+['"])\s*(?:with|assert)\s*\{[^}]*type\s*:\s*['"]json['"][^}]*\}/g,
+      'import $1 from $2'
+    );
+    cleaned = cleaned.replace(
+      /\bimport\s*\(\s*(['"][^'"]+['"])\s*,\s*\{[^}]*type\s*:\s*['"]json['"][^}]*\}\s*\)/g,
+      'import($1)'
+    );
+    return cleaned;
+  }
+
+  // Update Output panel UI based on whether HTML is present to render
+  function updateOutputPanelState(hasHtml) {
+    if (hasHtml) {
+      if (els.noHtmlPlaceholder) {
+        els.noHtmlPlaceholder.classList.add('hidden');
+      }
+    } else {
+      if (els.noHtmlPlaceholder) {
+        els.noHtmlPlaceholder.textContent = 'There is no html to render';
+        els.noHtmlPlaceholder.classList.remove('hidden');
+      }
+    }
+  }
+
   /**
    * Bundles virtual files into a single self-contained HTML document.
-   * Resolves <link href="xxx.css"> and generates an ES Module importmap for JS files.
+   * Resolves <link href="xxx.css">, generates an ES Module importmap for JS and JSON files,
+   * injects console interceptor and isolates storage.
    */
   function bundleProject() {
     cleanActiveBlobs();
 
-    // 1. Identify Entry Point: Default to index.html, or first HTML file, or create minimal wrapper
-    let entryHtmlFile = state.files.find(f => f.name.toLowerCase() === 'index.html') 
-      || state.files.find(f => f.type === 'html');
+    const entryHtmlFile = state.files.find(f => f.name.toLowerCase() === 'index.html') 
+      || state.files.find(f => f.type === 'html' || f.name.toLowerCase().endsWith('.html'));
+
+    const jsFiles = state.files.filter(f => f.type === 'js' || f.name.toLowerCase().endsWith('.js'));
+    const jsonFiles = state.files.filter(f => f.type === 'json' || f.name.toLowerCase().endsWith('.json'));
+    const cssFiles = state.files.filter(f => f.type === 'css' || f.name.toLowerCase().endsWith('.css'));
 
     let htmlContent = '';
     if (entryHtmlFile) {
       htmlContent = entryHtmlFile.content;
-    } else {
-      // Check if project has a JSON file as its primary document
-      const activeFile = getActiveFile();
-      const jsonFile = (activeFile && activeFile.type === 'json')
-        ? activeFile
-        : state.files.find(f => f.type === 'json');
-
-      if (jsonFile) {
-        let parsedJson = null;
-        let parseError = null;
-        try {
-          parsedJson = JSON.parse(jsonFile.content);
-        } catch (err) {
-          parseError = err.message;
-        }
-
-        const isDark = state.theme !== 'theme-light';
-        const bgColor = isDark ? '#181a1f' : '#f8fafc';
-        const textColor = isDark ? '#abb2bf' : '#1e293b';
-        const cardBg = isDark ? '#21252b' : '#ffffff';
-        const borderColor = isDark ? '#333842' : '#e2e8f0';
-        const headerColor = isDark ? '#61afef' : '#0284c7';
-        const subColor = isDark ? '#5c6370' : '#64748b';
-
-        const formattedJson = parseError 
-          ? escapeHtml(jsonFile.content) 
-          : escapeHtml(JSON.stringify(parsedJson, null, 2));
-
-        htmlContent = `<!DOCTYPE html>
+    } else if (jsFiles.length > 0) {
+      // Execution shell for running JS files directly in console & rendering dynamic DOM if generated
+      htmlContent = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>${escapeHtml(jsonFile.name)} - JSON Viewer</title>
+  <title>Developer Zone Sandbox</title>
+</head>
+<body>
+</body>
+</html>`;
+    } else {
+      // No HTML and no JS to run (e.g. JSON or CSS only)
+      return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Developer Zone</title>
   <style>
-    * { box-sizing: border-box; }
     body {
       margin: 0;
-      padding: 16px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: ${bgColor};
-      color: ${textColor};
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       min-height: 100vh;
-    }
-    .json-card {
-      background: ${cardBg};
-      border: 1px solid ${borderColor};
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    .json-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 14px;
-      border-bottom: 1px solid ${borderColor};
-      background: ${isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)'};
-    }
-    .json-title {
-      font-size: 13px;
-      font-weight: 600;
-      color: ${headerColor};
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .json-status {
-      font-size: 11px;
-      font-weight: 600;
-      padding: 2px 8px;
-      border-radius: 12px;
-      background: ${parseError ? 'rgba(224,108,117,0.15)' : 'rgba(152,195,121,0.15)'};
-      color: ${parseError ? '#e06c75' : '#98c379'};
-    }
-    .json-error {
-      padding: 10px 14px;
-      background: rgba(224, 108, 117, 0.1);
-      color: #e06c75;
-      font-size: 12px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      border-bottom: 1px solid ${borderColor};
-    }
-    pre {
-      margin: 0;
-      padding: 14px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 12.5px;
-      line-height: 1.5;
-      overflow: auto;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-    .json-footer {
-      padding: 8px 14px;
-      font-size: 11px;
-      color: ${subColor};
-      border-top: 1px solid ${borderColor};
-      background: ${isDark ? 'rgba(255,255,255,0.015)' : 'rgba(0,0,0,0.01)'};
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 14px;
+      color: #64748b;
+      background-color: #f8fafc;
     }
   </style>
 </head>
 <body>
-  <div class="json-card">
-    <div class="json-header">
-      <div class="json-title">📋 ${escapeHtml(jsonFile.name)}</div>
-      <div class="json-status">${parseError ? '⚠️ Invalid JSON' : '✓ Valid JSON'}</div>
-    </div>
-    ${parseError ? `<div class="json-error">⚠️ ${escapeHtml(parseError)}</div>` : ''}
-    <pre><code>${formattedJson}</code></pre>
-    <div class="json-footer">${parseError ? 'Fix JSON syntax to re-evaluate' : 'Parsed successfully & logged to Developer Console'}</div>
-  </div>
-  <script>
-    try {
-      var _data = ${parseError ? 'null' : JSON.stringify(parsedJson)};
-      if (_data) {
-        console.log("JSON parsed successfully (" + ${JSON.stringify(jsonFile.name)} + "):", _data);
-      } else {
-        console.error("JSON Syntax Error in " + ${JSON.stringify(jsonFile.name)} + ": " + ${JSON.stringify(parseError || 'Invalid format')});
-      }
-    } catch(e) {}
-  </script>
+  <div>There is no html to render</div>
 </body>
 </html>`;
-      } else {
-        // If user has no HTML or JSON file (e.g. only JS and CSS), synthesize entry
-        htmlContent = `<!DOCTYPE html><html><head><title>Preview</title></head><body><div id="root"></div></body></html>`;
-      }
     }
 
     const parser = new DOMParser();
     const doc = parser.parseFromString(htmlContent, 'text/html');
 
-    // Ensure responsive viewport meta is present in preview
+    // Ensure responsive viewport meta is present
     if (!doc.querySelector('meta[name="viewport"]')) {
       const metaVp = doc.createElement('meta');
       metaVp.name = 'viewport';
@@ -1555,76 +944,211 @@ document.getElementById('demoBtn').addEventListener('click', () => {
       }
     }
 
-    // 2. Resolve CSS Links (<link rel="stylesheet" href="...">)
-    const linkTags = Array.from(doc.querySelectorAll('link[rel="stylesheet"]'));
-    linkTags.forEach(link => {
-      const href = link.getAttribute('href');
-      if (!href) return;
-      const cleanHref = href.replace(/^(\.\/|\/)/, '');
-      const matchingFile = state.files.find(f => f.name === cleanHref && f.type === 'css');
-      if (matchingFile) {
+    // 1. Resolve CSS
+    if (entryHtmlFile) {
+      const linkTags = Array.from(doc.querySelectorAll('link[rel="stylesheet"]'));
+      linkTags.forEach(link => {
+        const href = link.getAttribute('href');
+        if (!href) return;
+        const cleanHref = href.replace(/^(\.\/|\/)/, '');
+        const matchingFile = cssFiles.find(f => f.name === cleanHref);
+        if (matchingFile) {
+          const styleTag = doc.createElement('style');
+          styleTag.setAttribute('data-bundle-source', matchingFile.name);
+          styleTag.textContent = matchingFile.content;
+          link.replaceWith(styleTag);
+        }
+      });
+    } else {
+      // If no HTML file, inject CSS into head so dynamic elements can be styled
+      cssFiles.forEach(cssFile => {
         const styleTag = doc.createElement('style');
-        styleTag.setAttribute('data-bundle-source', matchingFile.name);
-        styleTag.textContent = matchingFile.content;
-        link.replaceWith(styleTag);
-      }
-    });
+        styleTag.setAttribute('data-bundle-source', cssFile.name);
+        styleTag.textContent = cssFile.content;
+        doc.head.appendChild(styleTag);
+      });
+    }
 
-    // 3. Resolve Virtual JavaScript Files via ES Module Import Map
-    // Modern browsers support native importmaps: { imports: { "./store.js": "blob:..." } }
+    // 2. Prepare ES Module Import Map for JS and JSON files
     const importMap = { imports: {} };
-    const jsFiles = state.files.filter(f => f.type === 'js');
 
+    // Register JS files
     jsFiles.forEach(file => {
-      const blob = new Blob([file.content], { type: 'application/javascript' });
+      const preparedContent = normalizeJsonImports(file.content);
+      const blob = new Blob([preparedContent], { type: 'application/javascript' });
       const blobUrl = URL.createObjectURL(blob);
       activeBlobUrls.push(blobUrl);
 
-      // Map variations: store.js, ./store.js, /store.js
-      importMap.imports[file.name] = blobUrl;
-      importMap.imports['./' + file.name] = blobUrl;
-      importMap.imports['/' + file.name] = blobUrl;
-    });
-
-    // 4. Resolve standard non-module <script src="...">
-    const scriptTags = Array.from(doc.querySelectorAll('script[src]'));
-    scriptTags.forEach(script => {
-      const src = script.getAttribute('src');
-      if (!src) return;
-      const cleanSrc = src.replace(/^(\.\/|\/)/, '');
-      const isModule = script.getAttribute('type') === 'module';
-
-      const matchingFile = jsFiles.find(f => f.name === cleanSrc);
-      if (matchingFile) {
-        if (isModule) {
-          // Point src to blob url
-          const blobUrl = importMap.imports[matchingFile.name];
-          script.setAttribute('src', blobUrl);
-        } else {
-          // Inline standard script
-          const inlineScript = doc.createElement('script');
-          inlineScript.setAttribute('data-bundle-source', matchingFile.name);
-          inlineScript.textContent = matchingFile.content;
-          script.replaceWith(inlineScript);
-        }
+      const cleanName = file.name.replace(/^(\.\/|\/)/, '');
+      importMap.imports[cleanName] = blobUrl;
+      importMap.imports['./' + cleanName] = blobUrl;
+      importMap.imports['/' + cleanName] = blobUrl;
+      if (cleanName.endsWith('.js')) {
+        const withoutExt = cleanName.slice(0, -3);
+        importMap.imports[withoutExt] = blobUrl;
+        importMap.imports['./' + withoutExt] = blobUrl;
       }
     });
 
-    // 5. Inject Import Map if JS files exist
-    if (jsFiles.length > 0) {
+    // Register JSON files as ES Modules
+    jsonFiles.forEach(file => {
+      let parsed = {};
+      let isValid = true;
+      try {
+        parsed = JSON.parse(file.content);
+      } catch (e) {
+        isValid = false;
+        parsed = null;
+      }
+
+      let jsModuleContent = '';
+      if (!isValid) {
+        jsModuleContent = `console.error("SyntaxError: Invalid JSON in ${escapeJsString(file.name)}");\nexport default null;\n`;
+      } else {
+        jsModuleContent = `const _jsonData = ${JSON.stringify(parsed)};\nexport default _jsonData;\n`;
+        if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+          for (const [key, val] of Object.entries(parsed)) {
+            if (/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(key)) {
+              jsModuleContent += `export const ${key} = _jsonData[${JSON.stringify(key)}];\n`;
+            }
+          }
+        }
+      }
+
+      const jsonBlob = new Blob([jsModuleContent], { type: 'application/javascript' });
+      const jsonBlobUrl = URL.createObjectURL(jsonBlob);
+      activeBlobUrls.push(jsonBlobUrl);
+
+      const cleanName = file.name.replace(/^(\.\/|\/)/, '');
+      importMap.imports[cleanName] = jsonBlobUrl;
+      importMap.imports['./' + cleanName] = jsonBlobUrl;
+      importMap.imports['/' + cleanName] = jsonBlobUrl;
+      if (cleanName.endsWith('.json')) {
+        const withoutExt = cleanName.slice(0, -5);
+        importMap.imports[withoutExt] = jsonBlobUrl;
+        importMap.imports['./' + withoutExt] = jsonBlobUrl;
+      }
+    });
+
+    // 3. Handle Script tags in HTML or inject execution scripts if no HTML file
+    if (entryHtmlFile) {
+      const scriptTags = Array.from(doc.querySelectorAll('script[src]'));
+      scriptTags.forEach(script => {
+        const src = script.getAttribute('src');
+        if (!src) return;
+        const cleanSrc = src.replace(/^(\.\/|\/)/, '');
+        const isExplicitModule = script.getAttribute('type') === 'module';
+
+        const matchingFile = jsFiles.find(f => f.name === cleanSrc);
+        if (matchingFile) {
+          const hasImportOrExport = /\b(import|export)\b/.test(matchingFile.content);
+          if (isExplicitModule || hasImportOrExport) {
+            const blobUrl = importMap.imports[matchingFile.name];
+            script.setAttribute('type', 'module');
+            script.setAttribute('src', blobUrl);
+          } else {
+            const inlineScript = doc.createElement('script');
+            inlineScript.setAttribute('data-bundle-source', matchingFile.name);
+            inlineScript.textContent = normalizeJsonImports(matchingFile.content);
+            script.replaceWith(inlineScript);
+          }
+        }
+      });
+    } else {
+      // No HTML file: inject root scripts into body as modules
+      const importedFileNames = new Set();
+      jsFiles.forEach(f => {
+        const matches = f.content.matchAll(/from\s+['"]\.?\/?([^'"]+)['"]/g);
+        for (const m of matches) {
+          importedFileNames.add(m[1].replace(/^\.?\//, ''));
+        }
+      });
+
+      const entryJsFile = state.files.find(f => ['index.js', 'main.js', 'app.js', 'script.js'].includes(f.name.toLowerCase()))
+        || (getActiveFile() && getActiveFile().type === 'js' ? getActiveFile() : null)
+        || jsFiles[0];
+
+      const rootJsFiles = jsFiles.filter(f => !importedFileNames.has(f.name));
+      const executionFiles = rootJsFiles.length > 0 ? rootJsFiles : (entryJsFile ? [entryJsFile] : []);
+
+      executionFiles.forEach(file => {
+        const scriptTag = doc.createElement('script');
+        scriptTag.type = 'module';
+        scriptTag.setAttribute('data-bundle-source', file.name);
+        scriptTag.textContent = normalizeJsonImports(file.content);
+        doc.body.appendChild(scriptTag);
+      });
+    }
+
+    // 4. Inject Import Map
+    if (Object.keys(importMap.imports).length > 0) {
       const mapScript = doc.createElement('script');
       mapScript.type = 'importmap';
       mapScript.textContent = JSON.stringify(importMap, null, 2);
       doc.head.insertBefore(mapScript, doc.head.firstChild);
     }
 
-    // 6. Inject Console Interceptor, Storage Isolation & Boundary into <head>
+    // 5. Inject DOM Observer if there is no HTML file (to notify host whether dynamic HTML was generated)
+    if (!entryHtmlFile && jsFiles.length > 0) {
+      const domObserverScript = doc.createElement('script');
+      domObserverScript.textContent = `
+        (function() {
+          var _hostParent = window.parent;
+          function checkDom() {
+            try {
+              if (!document.body) return false;
+              if (document.body.children && document.body.children.length > 0) {
+                var hasCustom = false;
+                for (var i = 0; i < document.body.children.length; i++) {
+                  if (document.body.children[i].tagName !== 'SCRIPT') {
+                    hasCustom = true;
+                    break;
+                  }
+                }
+                if (hasCustom) return true;
+              }
+              for (var j = 0; j < document.body.childNodes.length; j++) {
+                var n = document.body.childNodes[j];
+                if (n.nodeType === 1 && n.tagName !== 'SCRIPT') return true;
+                if (n.nodeType === 3 && n.nodeValue.trim().length > 0) return true;
+              }
+            } catch(e) {}
+            return false;
+          }
+
+          function notify() {
+            try {
+              var has = checkDom();
+              _hostParent.postMessage({
+                type: 'AG_DOM_STATUS',
+                hasHtml: has
+              }, '*');
+            } catch(e) {}
+          }
+
+          notify();
+          window.addEventListener('DOMContentLoaded', notify);
+          window.addEventListener('load', notify);
+          if (window.MutationObserver) {
+            var obs = new MutationObserver(function() { notify(); });
+            if (document.body) {
+              obs.observe(document.body, { childList: true, subtree: true, characterData: true });
+            } else {
+              document.addEventListener('DOMContentLoaded', function() {
+                if (document.body) obs.observe(document.body, { childList: true, subtree: true, characterData: true });
+              });
+            }
+          }
+        })();
+      `;
+      doc.head.insertBefore(domObserverScript, doc.head.firstChild);
+    }
+
+    // 6. Inject Console Interceptor & Storage Isolation
     const consoleInterceptor = doc.createElement('script');
     consoleInterceptor.textContent = `
       (function() {
-        var _hostParent = window.parent; // Capture host parent before shadowing
-
-        // Storage Isolation: Virtualize localStorage so user scripts cannot wipe app state
+        var _hostParent = window.parent;
         try {
           var _rawLS = window.localStorage;
           var _PREFIX = '__preview_store__';
@@ -1652,7 +1176,6 @@ document.getElementById('demoBtn').addEventListener('click', () => {
           });
         } catch(e) {}
 
-        // UI Decoupling: Shadow window.parent and window.top from mutating parent workbench DOM
         try {
           Object.defineProperty(window, 'parent', { get: function() { return window; }, configurable: true });
           Object.defineProperty(window, 'top', { get: function() { return window; }, configurable: true });
@@ -1701,17 +1224,52 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     els.runtimeErrorBanner.classList.add('hidden');
     els.runtimeErrorBanner.textContent = '';
 
-    try {
-      const bundledHtml = bundleProject();
-      els.previewFrame.srcdoc = bundledHtml;
-    } catch (err) {
-      displayRuntimeError('Compilation / Bundle Error: ' + err.message);
+    const hasHtmlFile = state.files.some(f => f.type === 'html' || f.name.toLowerCase().endsWith('.html'));
+    const jsFiles = state.files.filter(f => f.type === 'js' || f.name.toLowerCase().endsWith('.js'));
+    const hasJsFiles = jsFiles.length > 0;
+    const hasJsOrJson = state.files.some(f => f.type === 'js' || f.type === 'json' || f.name.toLowerCase().endsWith('.js') || f.name.toLowerCase().endsWith('.json'));
+
+    // If project has no JS/JSON (console not required), show blank empty console panel
+    if (!hasJsOrJson) {
+      clearConsole();
+      els.consoleLogs.innerHTML = '';
+      els.logCount.textContent = '0 logs';
+    }
+
+    if (hasHtmlFile) {
+      updateOutputPanelState(true);
+      try {
+        const bundledHtml = bundleProject();
+        els.previewFrame.srcdoc = bundledHtml;
+      } catch (err) {
+        displayRuntimeError('Compilation / Bundle Error: ' + err.message);
+      }
+    } else if (!hasJsFiles) {
+      // Only JSON, CSS, etc. without JS: no HTML to render
+      updateOutputPanelState(false);
+      cleanActiveBlobs();
+      els.previewFrame.srcdoc = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Output</title><style>body{margin:0;padding:20px;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:system-ui,-apple-system,sans-serif;font-size:14px;color:#64748b;background:#f8fafc;}</style></head><body><div>There is no html to render</div></body></html>`;
+    } else {
+      // Has JS files without an HTML file:
+      // Perform static check for immediate UI responsiveness
+      const staticHtmlGenerated = jsFiles.some(f => checkJsGeneratesHtml(f.content));
+      updateOutputPanelState(staticHtmlGenerated);
+
+      try {
+        const bundledHtml = bundleProject();
+        els.previewFrame.srcdoc = bundledHtml;
+      } catch (err) {
+        displayRuntimeError('Compilation / Bundle Error: ' + err.message);
+      }
     }
   }
 
   function scheduleRun() {
     clearTimeout(runDebounceTimer);
-    runDebounceTimer = setTimeout(runCode, 500);
+    runDebounceTimer = setTimeout(() => {
+      clearConsole();
+      runCode();
+    }, 500);
   }
 
   function displayRuntimeError(msg) {
@@ -1760,7 +1318,12 @@ document.getElementById('demoBtn').addEventListener('click', () => {
       els.mobileConsoleBadge.classList.add('hidden');
       els.mobileConsoleBadge.classList.remove('has-error');
     }
-    els.consoleLogs.innerHTML = '<div class="console-empty">Console cleared.</div>';
+    const hasJsOrJson = state.files.some(f => f.type === 'js' || f.type === 'json' || f.name.toLowerCase().endsWith('.js') || f.name.toLowerCase().endsWith('.json'));
+    if (!hasJsOrJson) {
+      els.consoleLogs.innerHTML = '';
+    } else {
+      els.consoleLogs.innerHTML = '<div class="console-empty">Console ready. Outputs from <code>console.log()</code>, warnings, and errors appear here.</div>';
+    }
   }
 
   window.addEventListener('message', (event) => {
@@ -1769,6 +1332,9 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     if (event.data && event.data.type === 'AG_CONSOLE_EVENT') {
       const { level, message, timestamp } = event.data;
       addConsoleLog(level, message, timestamp);
+    } else if (event.data && event.data.type === 'AG_DOM_STATUS') {
+      const { hasHtml } = event.data;
+      updateOutputPanelState(hasHtml);
     }
   });
 
@@ -2180,10 +1746,17 @@ document.getElementById('demoBtn').addEventListener('click', () => {
   }
 
   function handleRun(isMobile = false) {
+    clearConsole();
     runCode();
     showToast('Code executed!');
     if ((isMobile || isMobileViewport()) && state.mobileActiveView === 'editor') {
-      setMobileView('preview');
+      const hasHtml = state.files.some(f => f.type === 'html' || f.name.toLowerCase().endsWith('.html')) ||
+        state.files.filter(f => f.type === 'js').some(f => checkJsGeneratesHtml(f.content));
+      if (!hasHtml) {
+        setMobileView('console');
+      } else {
+        setMobileView('preview');
+      }
     }
   }
 
@@ -2355,7 +1928,7 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     }
 
     els.resetBtn.addEventListener('click', () => {
-      loadTemplate('simple-json');
+      loadTemplate('template-json');
     });
 
     els.themeToggleBtn.addEventListener('click', toggleTheme);
@@ -2432,7 +2005,7 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     if (els.mobileResetBtn) {
       els.mobileResetBtn.addEventListener('click', () => {
         closeMobileDrawer();
-        loadTemplate('simple-json');
+        loadTemplate('template-json');
       });
     }
 
@@ -3816,17 +3389,21 @@ document.getElementById('demoBtn').addEventListener('click', () => {
     const hasHashTemplate = handleStartupTemplate();
     const hasExisting = !hasHashTemplate && loadState();
 
-    // Migrate from the old default multi-file starter template if untouched
-    const isOldDefaultMulti = hasExisting &&
-      state.files.length === 3 &&
-      state.files[0]?.name === 'index.html' &&
-      state.files[0]?.content?.includes('Hello from Developer Zone!') &&
-      state.files[1]?.name === 'style.css' &&
-      state.files[2]?.name === 'script.js';
+    // Migrate from the old starter templates if present in localStorage
+    const isOldTemplate = hasExisting && (
+      state.files.some(f => 
+        f.content?.includes('Particle Network') ||
+        f.content?.includes('TaskFlow') ||
+        f.content?.includes('3D Glass Card') ||
+        f.content?.includes('Single File Concept') ||
+        f.content?.includes('Developer Zone Project') ||
+        f.content?.includes('Hello from Developer Zone!')
+      )
+    );
 
-    if ((!hasExisting || isOldDefaultMulti) && !hasHashTemplate) {
-      // Default landing template: Simple JSON (one file)
-      state.files = JSON.parse(JSON.stringify(TEMPLATES['simple-json']));
+    if ((!hasExisting || isOldTemplate) && !hasHashTemplate) {
+      // Default landing template: Template 1: JSON (one file)
+      state.files = JSON.parse(JSON.stringify(TEMPLATES['template-json']));
       state.activeFileId = state.files[0].id;
       state.openTabIds = state.files.map(f => f.id);
       saveState();

@@ -1178,6 +1178,27 @@ body.theme-light .modern-select {
   background-color: #ffffff;
 }
 
+.no-html-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-primary);
+  color: var(--text-muted);
+  font-family: var(--font-sans, system-ui, sans-serif);
+  font-size: 14px;
+  font-weight: 500;
+  user-select: none;
+  z-index: 10;
+  text-align: center;
+  padding: 20px;
+}
+
+.no-html-placeholder.hidden {
+  display: none !important;
+}
+
 .error-banner {
   position: absolute;
   bottom: 10px;
@@ -3651,7 +3672,8 @@ body.theme-light .mobile-nav-item.active {
   .dropdown-menu.hidden,
   .mobile-nav-bar.hidden,
   .tool-active-badge.hidden,
-  .subtool-status-tag.hidden {
+  .subtool-status-tag.hidden,
+  .no-html-placeholder.hidden {
     display: none !important;
   }
 
