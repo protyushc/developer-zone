@@ -3,7 +3,7 @@
  * Provides full offline support, asset pre-caching, and instant loading.
  */
 
-const CACHE_NAME = 'developer-zone-cache-v12';
+const CACHE_NAME = 'developer-zone-cache-v13';
 
 const PRECACHE_ASSETS = [
   './',

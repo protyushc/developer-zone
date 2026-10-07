@@ -50,12 +50,10 @@
         <div class="templates-dropdown desktop-only" id="webToolsNavLeft">
           <select id="templateSelect" title="Load Starter Template" class="modern-select">
             <option value="" disabled selected>📂 Templates</option>
-            <option value="simple-json">📋 Simple JSON (data.json)</option>
-            <option value="single-canvas">⚡ Single-File: Particle Simulation (Canvas)</option>
-            <option value="multifile-kanban">📦 Multi-File: Modular Kanban (ES Modules)</option>
-            <option value="glass-card">🎨 UI Concept: 3D Tilt Glass Card</option>
-            <option value="blank-multifile">📄 Blank Multi-File (HTML + CSS + JS)</option>
-            <option value="blank-single">📝 Blank Single File (index.html)</option>
+            <option value="template-json">JSON</option>
+            <option value="template-html">HTML</option>
+            <option value="template-js">JS</option>
+            <option value="template-multifile">Multi-file</option>
           </select>
         </div>
         
@@ -319,6 +317,7 @@
 
         <!-- Sandboxed iframe Preview -->
         <div class="iframe-container" id="iframeContainer">
+          <div id="noHtmlPlaceholder" class="no-html-placeholder hidden">There is no html to render</div>
           <iframe 
             id="previewFrame" 
             sandbox="allow-scripts allow-modals allow-forms allow-same-origin allow-popups" 
@@ -432,34 +431,24 @@
               <div class="sub-tool-section">
                 <span class="sub-tool-header">Starter Templates</span>
                 <div class="drawer-btn-list" id="mobileTemplateList">
-                  <button class="drawer-action-btn mobile-template-btn" data-value="simple-json">
+                  <button class="drawer-action-btn mobile-template-btn" data-value="template-json">
                     <div class="action-btn-info">
-                      <span class="action-btn-title">📋 Simple JSON (data.json)</span>
+                      <span class="action-btn-title">JSON</span>
                     </div>
                   </button>
-                  <button class="drawer-action-btn mobile-template-btn" data-value="single-canvas">
+                  <button class="drawer-action-btn mobile-template-btn" data-value="template-html">
                     <div class="action-btn-info">
-                      <span class="action-btn-title">⚡ Single-File: Particle Simulation (Canvas)</span>
+                      <span class="action-btn-title">HTML</span>
                     </div>
                   </button>
-                  <button class="drawer-action-btn mobile-template-btn" data-value="multifile-kanban">
+                  <button class="drawer-action-btn mobile-template-btn" data-value="template-js">
                     <div class="action-btn-info">
-                      <span class="action-btn-title">📦 Multi-File: Modular Kanban (ES Modules)</span>
+                      <span class="action-btn-title">JS</span>
                     </div>
                   </button>
-                  <button class="drawer-action-btn mobile-template-btn" data-value="glass-card">
+                  <button class="drawer-action-btn mobile-template-btn" data-value="template-multifile">
                     <div class="action-btn-info">
-                      <span class="action-btn-title">🎨 UI Concept: 3D Tilt Glass Card</span>
-                    </div>
-                  </button>
-                  <button class="drawer-action-btn mobile-template-btn" data-value="blank-multifile">
-                    <div class="action-btn-info">
-                      <span class="action-btn-title">📄 Blank Multi-File (HTML + CSS + JS)</span>
-                    </div>
-                  </button>
-                  <button class="drawer-action-btn mobile-template-btn" data-value="blank-single">
-                    <div class="action-btn-info">
-                      <span class="action-btn-title">📝 Blank Single File (index.html)</span>
+                      <span class="action-btn-title">Multi-file</span>
                     </div>
                   </button>
                 </div>
