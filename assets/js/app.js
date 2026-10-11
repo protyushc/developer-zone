@@ -3143,9 +3143,9 @@ if (alertBtn) {
   }
 
   const APP_METADATA = {
-    version: '2.4.0',
+    version: '2.5.0',
     developer: 'Protyush',
-    fallbackBuildDate: 'October 6, 2026, 10:39:47 AM'
+    fallbackBuildDate: 'October 11, 2026, 03:48:00 PM'
   };
 
   let isResolvingDeploymentTime = false;
